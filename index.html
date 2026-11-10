@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>បញ្ជីរើសទំនិញ Telegram Web App</title>
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Khmer -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kantumruy Pro', sans-serif;
+            background-color: var(--tg-theme-bg-color, #f4f6f8);
+            color: var(--tg-theme-text-color, #1c1e21);
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tg-card {
+            background-color: var(--tg-theme-secondary-bg-color, #ffffff);
+            border-color: var(--tg-theme-hint-color, #e2e8f0);
+        }
+        .tg-button {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+        }
+        .tg-hint {
+            color: var(--tg-theme-hint-color, #8e8e93);
+        }
+        /* Custom Checkbox */
+        .custom-checkbox {
+            accent-color: var(--tg-theme-button-color, #2481cc);
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="pb-24">
+
+    <!-- Header Section -->
+    <div class="tg-card p-4 shadow-sm border-b sticky top-0 z-10">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-bold tracking-tight">🛍️ បញ្ជីគណនាតម្លៃទំនិញ</h1>
+                <p class="text-xs tg-hint mt-0.5">ជ្រើសរើសទំនិញដើម្បីគណនាតម្លៃសរុប</p>
+            </div>
+            <span class="px-2.5 py-1 text-xs rounded-full bg-blue-100 text-blue-800 font-medium dark:bg-blue-900/40 dark:text-blue-300">
+                Aura Decor
+            </span>
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto p-4 space-y-4">
+        
+        <!-- Action Toolbar -->
+        <div class="flex justify-between items-center px-1 text-sm">
+            <button onclick="toggleSelectAll(true)" class="text-blue-600 dark:text-blue-400 font-medium text-xs hover:underline">☑️ ជ្រើសរើសទាំងអស់</button>
+            <button onclick="toggleSelectAll(false)" class="text-gray-500 font-medium text-xs hover:underline">☒ បោះបង់ទាំងអស់</button>
+        </div>
+
+        <!-- Product List -->
+        <div id="product-list" class="space-y-3">
+            <!-- Dynamic product items will be injected here -->
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="tg-card rounded-2xl p-4 shadow-sm border space-y-2 mt-4">
+            <h3 class="font-bold text-sm border-b pb-2 mb-2 tg-hint uppercase tracking-wider">📊 សរុបការបញ្ជាទិញ</h3>
+            
+            <div class="flex justify-between text-sm">
+                <span class="tg-hint">ចំនួនមុខទំនិញ៖</span>
+                <span id="selected-count" class="font-medium">0 មុខ</span>
+            </div>
+            
+            <div class="flex justify-between text-sm">
+                <span class="tg-hint">សរុបតម្លៃទំនិញ៖</span>
+                <span id="total-items-price" class="font-medium">$0.00</span>
+            </div>
+            
+            <div class="flex justify-between text-sm">
+                <span class="tg-hint">សរុបថ្លៃដឹកជញ្ជូន៖</span>
+                <span id="total-shipping-price" class="font-medium">$0.00</span>
+            </div>
+            
+            <div class="border-t pt-2 mt-2 flex justify-between items-center">
+                <span class="font-bold text-base">តម្លៃសរុបរួម៖</span>
+                <span id="grand-total" class="font-extrabold text-xl text-blue-600 dark:text-blue-400">$0.00</span>
+            </div>
+        </div>
+
+        <!-- Instruction / Setup Toggle -->
+        <details class="tg-card rounded-xl p-3 text-xs border tg-hint cursor-pointer">
+            <summary class="font-semibold text-center select-none text-blue-500">📖 របៀបបង្កើត និងដាក់ចូល Telegram Bot (ចុចមើល)</summary>
+            <div class="mt-3 space-y-2 text-left leading-relaxed">
+                <p><strong>ជំហានទី ១៖ Up Host ស្រួលៗ</strong><br> Upload ឯកសារ <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">index.html</code> នេះទៅកាន់ <strong>GitHub Pages</strong>, <strong>Vercel</strong> ឬ <strong>Netlify</strong> ដើម្បីទទួលបាន Link Web (HTTPS)។</p>
+                <p><strong>ជំហានទី ២៖ បង្កើត Web App តាម @BotFather</strong><br> 
+                1. បើក Telegram រចហើយស្វែងរក <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">@BotFather</code><br>
+                2. ផ្ញើសារ <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">/newapp</code><br>
+                3. ជ្រើសរើស Bot របស់អ្នក<br>
+                4. វាយបញ្ចូល Title & Description<br>
+                5. ដាក់ Link HTTPS ដែលបានពី ជំហានទី ១<br>
+                6. ដាក់ Short Name សម្រាប់ Web App</p>
+                <p><strong>ជំហានទី ៣៖ ដាក់ប៊ូតុង Menu ក្នុង Telegram Chat</strong><br>
+                ផ្ញើសារ <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">/setmenubutton</code> ទៅកាន់ @BotFather ដើម្បីដាក់ប៊ូតុង <strong>"🛒 មើលទំនិញ"</strong> នៅលើ Telegram Chat!</p>
+            </div>
+        </details>
+    </div>
+
+    <!-- Bottom Action Bar (Telegram WebApp Main Button Area) -->
+    <div class="fixed bottom-0 left-0 right-0 p-3 tg-card border-t shadow-lg flex gap-2 justify-center max-w-md mx-auto">
+        <button onclick="sendOrderToTelegram()" class="tg-button w-full py-3 px-4 rounded-xl font-bold text-base shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
+            <span>✈️ ផ្ញើការកម្មង់ចូល Telegram</span>
+        </button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-4 py-2 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50">
+        បានចម្លងអត្ថបទការកម្មង់រួចរាល់!
+    </div>
+
+    <script>
+        // Initialize Telegram WebApp SDK
+        const tg = window.Telegram ? window.Telegram.WebApp : null;
+
+        if (tg) {
+            tg.ready();
+            tg.expand(); // Make Web App full height in Telegram
+        }
+
+        // Product List Data
+        const products = [
+            { id: 1, name: "សេះមាសលើកជើងពីរ", price: 4.08, shipping: 1.86, icon: "🐎", checked: true },
+            { id: 2, name: "ស្លាបហង្សមាស ខ្សាច់ហូរ", price: 4.15, shipping: 1.56, icon: "🪶", checked: true },
+            { id: 3, name: "ឥន្ទ្រី mini", price: 4.82, shipping: 0.98, icon: "🦅", checked: true },
+            { id: 4, name: "សំពៅមាស", price: 3.52, shipping: 1.50, icon: "⛵", checked: true }
+        ];
+
+        // Render Product List
+        function renderProducts() {
+            const container = document.getElementById('product-list');
+            container.innerHTML = '';
+
+            products.forEach(product => {
+                const totalItemPrice = (product.price + product.shipping).toFixed(2);
+                
+                const card = document.createElement('div');
+                card.className = `tg-card rounded-xl p-3.5 border transition-all duration-200 flex items-center gap-3 cursor-pointer select-none ${
+                    product.checked ? 'border-blue-500/50 shadow-sm' : 'opacity-70 border-gray-200'
+                }`;
+                card.onclick = (e) => {
+                    // Prevent double toggling if clicking directly on checkbox
+                    if (e.target.tagName !== 'INPUT') {
+                        toggleProduct(product.id);
+                    }
+                };
+
+                card.innerHTML = `
+                    <div>
+                        <input type="checkbox" class="custom-checkbox" ${product.checked ? 'checked' : ''} onchange="toggleProduct(${product.id})">
+                    </div>
+                    <div class="text-2xl">${product.icon}</div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-semibold text-sm truncate">${product.name}</h4>
+                        <div class="text-xs tg-hint mt-0.5 flex gap-2">
+                            <span>តម្លៃ៖ $${product.price.toFixed(2)}</span>
+                            <span>•</span>
+                            <span>ដឹក៖ $${product.shipping.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-sm text-blue-600 dark:text-blue-400">$${totalItemPrice}</div>
+                        <div class="text-[10px] tg-hint">សរុប</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            calculateTotal();
+        }
+
+        // Toggle Single Checkbox
+        function toggleProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (product) {
+                product.checked = !product.checked;
+                renderProducts();
+            }
+        }
+
+        // Select All / Deselect All
+        function toggleSelectAll(status) {
+            products.forEach(p => p.checked = status);
+            renderProducts();
+        }
+
+        // Calculate Totals
+        function calculateTotal() {
+            let selectedCount = 0;
+            let totalItemsPrice = 0;
+            let totalShippingPrice = 0;
+
+            products.forEach(p => {
+                if (p.checked) {
+                    selectedCount++;
+                    totalItemsPrice += p.price;
+                    totalShippingPrice += p.shipping;
+                }
+            });
+
+            const grandTotal = totalItemsPrice + totalShippingPrice;
+
+            document.getElementById('selected-count').innerText = `${selectedCount} មុខ`;
+            document.getElementById('total-items-price').innerText = `$${totalItemsPrice.toFixed(2)}`;
+            document.getElementById('total-shipping-price').innerText = `$${totalShippingPrice.toFixed(2)}`;
+            document.getElementById('grand-total').innerText = `$${grandTotal.toFixed(2)}`;
+        }
+
+        // Show Notification Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.remove('opacity-0');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0');
+            }, 2500);
+        }
+
+        // Send Order / Copy Order
+        function sendOrderToTelegram() {
+            const selectedItems = products.filter(p => p.checked);
+
+            if (selectedItems.length === 0) {
+                if (tg && tg.showAlert) {
+                    tg.showAlert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់មួយ!");
+                } else {
+                    alert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់មួយ!");
+                }
+                return;
+            }
+
+            let orderText = "🛒 **ការបញ្ជាទិញថ្មីពី Web App**\n---------------------------\n";
+            let totalItems = 0;
+            let totalShip = 0;
+
+            selectedItems.forEach((item, index) => {
+                const subtotal = item.price + item.shipping;
+                totalItems += item.price;
+                totalShip += item.shipping;
+                orderText += `${index + 1}. ${item.name}\n   - តម្លៃ: $${item.price.toFixed(2)} | ដឹក: $${item.shipping.toFixed(2)} => **$${subtotal.toFixed(2)}**\n`;
+            });
+
+            const grandTotal = totalItems + totalShip;
+            orderText += "---------------------------\n";
+            orderText += `📦 សរុបទំនិញ: $${totalItems.toFixed(2)}\n`;
+            orderText += `🚚 សរុបថ្លៃដឹក: $${totalShip.toFixed(2)}\n`;
+            orderText += `💰 **តម្លៃសរុបរួម: $${grandTotal.toFixed(2)}**`;
+
+            // If inside Telegram WebApp, send data back to bot
+            if (tg && tg.sendData) {
+                try {
+                    tg.sendData(JSON.stringify({
+                        items: selectedItems,
+                        totalItemsPrice: totalItems.toFixed(2),
+                        totalShippingPrice: totalShip.toFixed(2),
+                        grandTotal: grandTotal.toFixed(2)
+                    }));
+                    tg.close();
+                } catch (e) {
+                    copyToClipboard(orderText);
+                }
+            } else {
+                // Fallback for normal browsers: Copy to clipboard
+                copyToClipboard(orderText);
+            }
+        }
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            showToast("បានចម្លងអត្ថបទការកម្មង់! អាច Paste ផ្ញើក្នុង Chat បាន");
+        }
+
+        // Initial Render
+        renderProducts();
+    </script>
+</body>
+</html>
