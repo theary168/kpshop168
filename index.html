@@ -2,6 +2,24 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPaura គណនាតម្លៃទំនិញ</title>
+    <script>
+        const MY_PASSWORD = "040794"; 
+
+        let userEntered = prompt("🔒 សូមវាយបញ្ចូលលេខសម្ងាត់៖");
+
+        if (userEntered !== MY_PASSWORD) {
+            document.write(`
+                <div style="text-align: center; margin-top: 100px; font-family: sans-serif;">
+                    <h2 style="color: red;">⛔ ហាមឃាត់! </h2>
+                    <p style="color: gray;"></p>
+                </div>
+            `);
+            throw new Error("Access Denied");
+        }
+    </script>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>បញ្ជីរើសទំនិញ Telegram Web App</title>
     <!-- Telegram Web App SDK -->
