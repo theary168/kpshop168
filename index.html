@@ -616,7 +616,7 @@
         </div>
     </div>
 
-    <!-- ADMIN PASSWORD MODAL -->
+    <!-- ADMIN LOGIN MODAL (EMAIL + PASSWORD) -->
     <div id="adminGateModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-charcoal border border-gold-500/30 rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <div class="text-center space-y-1">
@@ -624,12 +624,14 @@
                     <i class="fa-solid fa-lock"></i>
                 </div>
                 <h3 class="text-base font-extrabold text-white">ចូលប្រើផ្ទាំង Admin</h3>
-                <p class="text-xs text-zinc-400">សូមបញ្ចូលលេខសម្ងាត់ (Default: 168)</p>
+                <p class="text-xs text-zinc-400">សូមបញ្ចូល Email និង Password គណនី Admin</p>
             </div>
-            <form onsubmit="verifyAdminPin(event)" class="space-y-3">
-                <input id="adminPinInput" type="password" required placeholder="បញ្ចូលលេខសម្ងាត់..."
-                       class="w-full px-4 py-2.5 rounded-xl bg-surface border border-zinc-700 text-center text-sm text-white focus:outline-none focus:border-gold-400">
-                <p id="adminPinError" class="hidden text-xs text-rose-400 text-center font-bold">លេខសម្ងាត់មិនត្រឹមត្រូវទេ!</p>
+            <form onsubmit="verifyAdminLogin(event)" class="space-y-3">
+                <input id="adminEmailInput" type="email" required placeholder="Admin Email..."
+                       class="w-full px-4 py-2.5 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
+                <input id="adminPinInput" type="password" required placeholder="Password..."
+                       class="w-full px-4 py-2.5 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
+                <p id="adminPinError" class="hidden text-xs text-rose-400 text-center font-bold">Email ឬ Password មិនត្រឹមត្រូវទេ!</p>
                 <div class="flex gap-2">
                     <button type="button" onclick="closeAdminGate()" class="flex-1 py-2.5 rounded-xl bg-surface text-zinc-300 text-xs font-bold">បិទ</button>
                     <button type="submit" class="flex-1 py-2.5 rounded-xl bg-gold-500 text-obsidian text-xs font-extrabold">ចូល</button>
@@ -727,6 +729,7 @@
         const SUPABASE_URL = 'https://ajrygpheedcmeswzvbsw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqcnlncGhlZWRjbWVzd3p2YnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNTc5ODUsImV4cCI6MjExMDgzMzk4NX0.pa5pauFJ0BtJiiUj8I6Iw6vtR-_X50VAA7q_fF7F7LU';
         const SUPABASE_BUCKET = 'aura-media';
+        const MY_ORDER_IDS_KEY = 'aura_my_order_ids';
 
         let supabaseClient = null;
         try {
@@ -818,6 +821,56 @@
         let toastTimer = null;
         let activeReceiptOrder = null;
 
+        // ==================== ORDER ID ISOLATION HELPERS ====================
+        function getMyOrderIds() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(MY_ORDER_IDS_KEY) || '[]');
+                return Array.isArray(raw) ? raw.map(String) : [];
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function saveMyOrderId(orderId) {
+            if (!orderId) return;
+            const list = getMyOrderIds();
+            const idStr = String(orderId);
+            if (!list.includes(idStr)) {
+                list.unshift(idStr);
+                localStorage.setItem(MY_ORDER_IDS_KEY, JSON.stringify(list));
+            }
+        }
+
+        function mapOrderRowToState(r) {
+            const rawItems = r.items;
+            const isMetaObj = rawItems && !Array.isArray(rawItems) && typeof rawItems === 'object';
+            const localMatch = state.orders.find((o) => String(o.id) === String(r.id)) || {};
+            const itemsList = isMetaObj && Array.isArray(rawItems.items)
+                ? rawItems.items
+                : (Array.isArray(rawItems) ? rawItems : (localMatch.items || []));
+
+            const dbTotal = Number(r.total || 0);
+            const rawSubtotal = itemsList.reduce((s, it) => s + Number(it.price || 0) * Number(it.qty || 1), 0);
+            const discount = (isMetaObj && rawItems.discount !== undefined)
+                ? Number(rawItems.discount)
+                : Math.max(0, Number((rawSubtotal - dbTotal).toFixed(2)));
+
+            return {
+                id: r.id,
+                createdAt: (isMetaObj && rawItems.createdAt) || localMatch.createdAt || new Date(r.created_at || Date.now()).toLocaleString('km-KH'),
+                customerName: r.customer_name || localMatch.customerName || '',
+                customerPhone: r.customer_phone || localMatch.customerPhone || '',
+                customerAddress: (isMetaObj && rawItems.customerAddress) || localMatch.customerAddress || '',
+                paymentMethod: (isMetaObj && rawItems.paymentMethod) || localMatch.paymentMethod || 'ABA / KHQR',
+                status: r.status || localMatch.status || 'To Ship',
+                items: itemsList,
+                subtotal: (isMetaObj && rawItems.subtotal !== undefined) ? Number(rawItems.subtotal) : rawSubtotal,
+                discount,
+                shippingFee: 0,
+                total: dbTotal
+            };
+        }
+
         // ==================== INITIALIZATION & SYNC ====================
         function initApp() {
             try {
@@ -833,8 +886,12 @@
                 const savedCart = localStorage.getItem(STORAGE_KEYS.CART);
                 state.cart = savedCart ? JSON.parse(savedCart) : [];
 
+                const myIds = getMyOrderIds();
                 const savedOrders = localStorage.getItem(STORAGE_KEYS.ORDERS);
-                state.orders = savedOrders ? JSON.parse(savedOrders) : [];
+                const parsedOrders = savedOrders ? JSON.parse(savedOrders) : [];
+                state.orders = Array.isArray(parsedOrders)
+                    ? parsedOrders.filter((o) => myIds.includes(String(o.id)))
+                    : [];
 
                 const savedBanner = localStorage.getItem(STORAGE_KEYS.BANNER);
                 state.banner = savedBanner ? { ...DEFAULT_BANNER, ...JSON.parse(savedBanner) } : { ...DEFAULT_BANNER };
@@ -852,6 +909,12 @@
             renderProductsGrid();
             renderOrderStatusTabs();
             updateCartBadges();
+
+            if (supabaseClient && supabaseClient.auth && typeof supabaseClient.auth.onAuthStateChange === 'function') {
+                supabaseClient.auth.onAuthStateChange((_event, session) => {
+                    state.adminAuthenticated = Boolean(session && session.user);
+                });
+            }
 
             // Synchronize latest data from Supabase in background
             syncFromSupabase();
@@ -958,12 +1021,13 @@
         async function syncFromSupabase() {
             if (!supabaseClient) return;
             try {
+                // 1. Sync Products from central Database across all browsers
                 const { data: prodRows, error: prodErr } = await supabaseClient
                     .from('products')
                     .select('*')
                     .order('created_at', { ascending: false });
 
-                if (!prodErr && Array.isArray(prodRows) && prodRows.length > 0) {
+                if (!prodErr && Array.isArray(prodRows)) {
                     state.products = prodRows.map((row) => {
                         let descText = row.description || '';
                         let imgs = row.image_url ? [row.image_url] : [];
@@ -994,43 +1058,46 @@
                     }
                 }
 
-                const { data: orderRows, error: ordErr } = await supabaseClient
-                    .from('orders')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                // 2. Check Admin Auth Session
+                const { data: sessData } = await supabaseClient.auth.getSession();
+                state.adminAuthenticated = Boolean(sessData?.session?.user);
 
-                if (!ordErr && Array.isArray(orderRows) && orderRows.length > 0) {
-                    const cloudOrders = orderRows.map((r) => {
-                        const rawItems = r.items;
-                        const isMetaObj = rawItems && !Array.isArray(rawItems) && typeof rawItems === 'object';
-                        const localMatch = state.orders.find((o) => o.id === r.id) || {};
-                        return {
-                            id: r.id,
-                            createdAt: (isMetaObj && rawItems.createdAt) || localMatch.createdAt || '',
-                            customerName: r.customer_name || localMatch.customerName || '',
-                            customerPhone: r.customer_phone || localMatch.customerPhone || '',
-                            customerAddress: (isMetaObj && rawItems.customerAddress) || localMatch.customerAddress || '',
-                            paymentMethod: (isMetaObj && rawItems.paymentMethod) || localMatch.paymentMethod || 'ABA / KHQR',
-                            status: r.status || localMatch.status || 'To Ship',
-                            items: isMetaObj && Array.isArray(rawItems.items)
-                                ? rawItems.items
-                                : (Array.isArray(rawItems) ? rawItems : (localMatch.items || [])),
-                            subtotal: (isMetaObj && rawItems.subtotal !== undefined) ? rawItems.subtotal : Number(r.total || 0),
-                            discount: (isMetaObj && rawItems.discount !== undefined) ? rawItems.discount : 0,
-                            shippingFee: 0,
-                            total: Number(r.total || 0)
-                        };
-                    });
+                if (state.adminAuthenticated) {
+                    const { data: allOrderRows, error: allOrdErr } = await supabaseClient
+                        .from('orders')
+                        .select('*')
+                        .order('created_at', { ascending: false });
 
-                    const mapById = new Map();
-                    cloudOrders.forEach((o) => mapById.set(o.id, o));
-                    state.orders.forEach((o) => {
-                        if (!mapById.has(o.id)) mapById.set(o.id, o);
-                    });
-                    state.orders = Array.from(mapById.values());
-                    saveState(STORAGE_KEYS.ORDERS, state.orders);
+                    if (!allOrdErr && Array.isArray(allOrderRows)) {
+                        state.orders = allOrderRows.map(mapOrderRowToState);
+                        saveState(STORAGE_KEYS.ORDERS, state.orders);
+                        if (state.activeTab === 'admin' && state.adminTab === 'orders') renderAdminOrdersList();
+                    }
+                } else {
+                    // Customer browser isolation: fetch only orders saved in this browser's aura_my_order_ids
+                    const myIds = getMyOrderIds();
+                    if (myIds.length > 0) {
+                        const { data: myRows, error: myOrdErr } = await supabaseClient
+                            .from('orders')
+                            .select('*')
+                            .in('id', myIds)
+                            .order('created_at', { ascending: false });
+
+                        if (!myOrdErr && Array.isArray(myRows)) {
+                            const cloudMap = new Map(myRows.map((r) => [String(r.id), mapOrderRowToState(r)]));
+                            state.orders = state.orders
+                                .filter((o) => myIds.includes(String(o.id)))
+                                .map((o) => cloudMap.get(String(o.id)) || o);
+                            cloudMap.forEach((v, k) => {
+                                if (!state.orders.some((o) => String(o.id) === k)) state.orders.unshift(v);
+                            });
+                            saveState(STORAGE_KEYS.ORDERS, state.orders);
+                        }
+                    } else {
+                        state.orders = [];
+                        saveState(STORAGE_KEYS.ORDERS, state.orders);
+                    }
                     if (state.activeTab === 'me') renderCustomerOrdersView();
-                    if (state.activeTab === 'admin' && state.adminTab === 'orders') renderAdminOrdersList();
                 }
             } catch (err) {
                 console.warn('syncFromSupabase warning:', err);
@@ -1500,7 +1567,7 @@
             document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
         }
 
-        function submitOrder(e) {
+        async function submitOrder(e) {
             e.preventDefault();
             if (state.cart.length === 0) return;
 
@@ -1508,49 +1575,110 @@
             const phone = document.getElementById('custPhone').value.trim();
             const address = document.getElementById('custAddress').value.trim();
             const paymentMethod = document.getElementById('custPayment').value;
-
             if (!name || !phone || !address) return;
 
-            const { subtotal, discount, total } = calculateCartTotals();
             const orderId = 'ORD-' + Date.now().toString().slice(-6);
+            const { discount } = calculateCartTotals();
+            const createdAtStr = new Date().toLocaleString('km-KH');
 
-            const newOrder = {
-                id: orderId,
-                createdAt: new Date().toLocaleString('km-KH'),
-                customerName: name,
-                customerPhone: phone,
-                customerAddress: address,
-                paymentMethod,
-                status: 'To Ship',
-                items: state.cart.map((item) => ({ ...item })),
-                subtotal,
-                discount,
-                shippingFee: 0,
-                total
-            };
+            const rpcItems = state.cart.map((item) => ({
+                id: item.productId,
+                qty: Number(item.qty || 1)
+            }));
 
-            newOrder.items.forEach((orderedItem) => {
-                const prod = state.products.find((p) => p.id === orderedItem.productId);
-                if (prod) {
-                    prod.stock = Math.max(0, Number(prod.stock || 0) - orderedItem.qty);
-                    upsertProductCloud(prod);
+            let createdOrder = null;
+
+            if (supabaseClient) {
+                const { data, error } = await supabaseClient.rpc('place_order', {
+                    p_order_id: orderId,
+                    p_customer_name: name,
+                    p_customer_phone: phone,
+                    p_items: rpcItems,
+                    p_status: 'To Ship'
+                });
+
+                if (error) {
+                    alert(error.message || 'មិនអាចបញ្ជាទិញបានទេ (សូមពិនិត្យស្តុកទំនិញ)');
+                    return;
                 }
-            });
-            saveState(STORAGE_KEYS.PRODUCTS, state.products);
 
+                const serverRow = data || {};
+                const enrichedItems = Array.isArray(serverRow.items) && serverRow.items.length > 0
+                    ? serverRow.items.map((it) => ({
+                        productId: it.id,
+                        name: it.name,
+                        sku: it.sku,
+                        price: Number(it.price || 0),
+                        image: it.image_url || 'https://placehold.co/200x200/1c1c24/e5be52?text=Aura',
+                        qty: Number(it.qty || 1)
+                    }))
+                    : state.cart.map((item) => ({ ...item }));
+
+                const subtotal = enrichedItems.reduce((s, it) => s + Number(it.price) * Number(it.qty), 0);
+                const finalTotal = Number(serverRow.total ?? Math.max(0, subtotal - discount));
+
+                createdOrder = {
+                    id: serverRow.id || orderId,
+                    createdAt: createdAtStr,
+                    customerName: name,
+                    customerPhone: phone,
+                    customerAddress: address,
+                    paymentMethod,
+                    status: serverRow.status || 'To Ship',
+                    items: enrichedItems,
+                    subtotal,
+                    discount,
+                    shippingFee: 0,
+                    total: finalTotal
+                };
+
+                await supabaseClient
+                    .from('orders')
+                    .update({
+                        items: {
+                            createdAt: createdAtStr,
+                            customerAddress: address,
+                            paymentMethod,
+                            subtotal,
+                            discount,
+                            shippingFee: 0,
+                            items: enrichedItems
+                        }
+                    })
+                    .eq('id', createdOrder.id);
+
+                await syncFromSupabase();
+            } else {
+                const { subtotal, total } = calculateCartTotals();
+                createdOrder = {
+                    id: orderId,
+                    createdAt: createdAtStr,
+                    customerName: name,
+                    customerPhone: phone,
+                    customerAddress: address,
+                    paymentMethod,
+                    status: 'To Ship',
+                    items: state.cart.map((item) => ({ ...item })),
+                    subtotal,
+                    discount,
+                    shippingFee: 0,
+                    total
+                };
+            }
+
+            saveMyOrderId(createdOrder.id);
             state.customerProfile = { name, phone, address };
             saveState(STORAGE_KEYS.CUSTOMER_PROFILE, state.customerProfile);
 
-            state.orders.unshift(newOrder);
+            state.orders = [createdOrder, ...state.orders.filter((o) => String(o.id) !== String(createdOrder.id))];
             saveState(STORAGE_KEYS.ORDERS, state.orders);
-            upsertOrderCloud(newOrder);
 
             state.cart = [];
             saveState(STORAGE_KEYS.CART, state.cart);
             updateCartBadges();
 
             showToast('ការបញ្ជាទិញជោគជ័យ! អរគុណសម្រាប់ការគាំទ្រ');
-            openReceiptModal(newOrder);
+            openReceiptModal(createdOrder);
             switchTab('me');
         }
 
@@ -1834,11 +1962,14 @@
         }
 
         function renderCustomerOrdersView() {
+            const myIds = getMyOrderIds();
+            const visibleOrders = state.orders.filter((o) => myIds.includes(String(o.id)));
+
             const countEl = document.getElementById('meOrderCount');
-            if (countEl) countEl.textContent = String(state.orders.length);
+            if (countEl) countEl.textContent = String(visibleOrders.length);
 
             const listEl = document.getElementById('customerOrdersList');
-            const filtered = state.orders.filter((o) =>
+            const filtered = visibleOrders.filter((o) =>
                 state.orderStatusFilter === 'All' || o.status === state.orderStatusFilter
             );
 
@@ -1888,11 +2019,17 @@
         }
 
         // ==================== ADMIN GATE & DASHBOARD ====================
-        function openAdminGate() {
+        async function openAdminGate() {
+            if (!state.adminAuthenticated && supabaseClient) {
+                const { data } = await supabaseClient.auth.getSession();
+                state.adminAuthenticated = Boolean(data?.session?.user);
+            }
             if (state.adminAuthenticated) {
                 switchTab('admin');
                 return;
             }
+            const emailEl = document.getElementById('adminEmailInput');
+            if (emailEl && !emailEl.value) emailEl.value = '';
             document.getElementById('adminPinInput').value = '';
             document.getElementById('adminPinError').classList.add('hidden');
             document.getElementById('adminGateModal').classList.remove('hidden');
@@ -1902,21 +2039,39 @@
             document.getElementById('adminGateModal').classList.add('hidden');
         }
 
-        function verifyAdminPin(e) {
+        async function verifyAdminLogin(e) {
             e.preventDefault();
-            const pin = document.getElementById('adminPinInput').value.trim();
-            if (pin === '168') {
-                state.adminAuthenticated = true;
-                closeAdminGate();
-                switchTab('admin');
-                showToast('ចូលប្រើផ្ទាំង Admin ជោគជ័យ');
-            } else {
-                document.getElementById('adminPinError').classList.remove('hidden');
+            const email = document.getElementById('adminEmailInput').value.trim();
+            const password = document.getElementById('adminPinInput').value;
+            const errEl = document.getElementById('adminPinError');
+            errEl.classList.add('hidden');
+
+            if (!supabaseClient) {
+                errEl.textContent = 'មិនអាចភ្ជាប់ Supabase Auth បានទេ';
+                errEl.classList.remove('hidden');
+                return;
             }
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error || !data?.user) {
+                errEl.textContent = error?.message || 'Email ឬ Password មិនត្រឹមត្រូវទេ!';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            state.adminAuthenticated = true;
+            closeAdminGate();
+            await syncFromSupabase();
+            switchTab('admin');
+            showToast('ចូលប្រើផ្ទាំង Admin ជោគជ័យ');
         }
 
-        function exitAdminMode() {
+        async function exitAdminMode() {
             state.adminAuthenticated = false;
+            if (supabaseClient) {
+                await supabaseClient.auth.signOut();
+            }
+            await syncFromSupabase();
             switchTab('home');
         }
 
