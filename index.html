@@ -1,3 +1,5 @@
+សុំត្រលប់ទប្រេីកូដនេះវិញ
+
 <!DOCTYPE html>
 <html lang="km">
 <head>
@@ -52,27 +54,27 @@
             background: rgba(20, 20, 26, 0.88);
             backdrop-filter: blur(14px);
         }
-        @keyframes floatSticker {
-            0%, 100% { transform: translateY(0px) rotate(-2deg); }
-            50% { transform: translateY(-5px) rotate(1.5deg); }
-        }
-        @keyframes shimmerSweep {
-            0% { transform: translateX(-140%) skewX(-20deg); }
-            60%, 100% { transform: translateX(240%) skewX(-20deg); }
-        }
-        .promo-sticker-float {
-            animation: floatSticker 2.8s ease-in-out infinite;
-        }
-        .promo-shimmer::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 45%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-            animation: shimmerSweep 3.2s infinite;
-        }
+            .promo-shimmer::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 45%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+                animation: shimmerSweep 3.2s infinite;
+            }
+            /* Horizontal right-to-left snap carousel for product images */
+            .gallery-rtl-scroll {
+                direction: rtl;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+            }
+            .gallery-rtl-slide {
+                direction: ltr;
+                scroll-snap-align: start;
+                flex: 0 0 100%;
+            }
     </style>
 </head>
 <body class="min-h-screen bg-obsidian text-zinc-100 pb-24">
@@ -160,18 +162,6 @@
                     <p id="heroSubtitleText" class="text-xs sm:text-sm text-zinc-300 leading-relaxed">
                         ជ្រើសរើសវត្ថុតុបតែង និងផលិតផលហុងស៊ុយគុណភាពខ្ពស់ ជាមួយសេវាកម្មដឹកជញ្ជូនហ្វ្រី ២៥ រាជធានី-ខេត្ត និងភ្នំពេញ។
                     </p>
-                    <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-xl">
-                        <a href="https://t.me/+855962223220" target="_blank" rel="noopener noreferrer"
-                           class="w-full px-4 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20 transition">
-                            <i class="fa-brands fa-telegram text-base shrink-0"></i>
-                            <span class="truncate">កម្មង់ផ្ទាល់តាម Telegram</span>
-                        </a>
-                        <a href="https://www.facebook.com/share/1Caqax6ya1/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer"
-                           class="w-full px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 transition">
-                            <i class="fa-brands fa-facebook-messenger text-base shrink-0"></i>
-                            <span class="truncate">កម្មង់ផ្ទាល់តាម Messenger</span>
-                        </a>
-                    </div>
                 </div>
             </div>
 
@@ -447,10 +437,17 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 p-5">
                 <div class="space-y-2.5">
-                    <div class="aspect-square rounded-2xl overflow-hidden bg-surface border border-zinc-800">
-                        <img id="detailMainImg" src="" alt="Product"
-                             onerror="this.src='https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'"
-                             class="w-full h-full object-cover">
+                    <!-- Right-to-left horizontal scrollable gallery -->
+                    <div class="relative rounded-2xl overflow-hidden bg-surface border border-zinc-800">
+                        <div id="detailGalleryTrack"
+                             onscroll="handleDetailGalleryScroll()"
+                             class="gallery-rtl-scroll flex overflow-x-auto no-scrollbar aspect-square"></div>
+                        <button type="button" onclick="openZoomLightbox(getCurrentDetailImage())"
+                                title="ពង្រីកមើលរូបភាពធំ"
+                                class="absolute bottom-3 right-3 z-10 px-3 py-1.5 rounded-xl bg-obsidian/85 hover:bg-obsidian border border-gold-500/40 text-gold-300 text-[11px] font-extrabold flex items-center gap-1.5 shadow-lg transition">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                            <span>ពង្រីករូប</span>
+                        </button>
                     </div>
                     <div id="detailThumbnails" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
                 </div>
@@ -528,6 +525,58 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- FULLSCREEN ZOOM LIGHTBOX MODAL -->
+    <div id="imageZoomModal"
+         onclick="handleZoomBackdropClick(event)"
+         class="hidden fixed inset-0 z-[60] bg-black/95 backdrop-blur-md flex flex-col justify-between p-3 sm:p-5 select-none">
+        <!-- Top Bar -->
+        <div class="flex items-center justify-between gap-2 z-20">
+            <span id="zoomScaleBadge" class="px-3 py-1.5 rounded-xl bg-surface/90 border border-gold-500/30 text-gold-300 text-xs font-extrabold">
+                100%
+            </span>
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button type="button" onclick="adjustZoomScale(-0.5)" title="ពង្រួម"
+                        class="w-9 h-9 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-white text-xs font-bold flex items-center justify-center transition">
+                    <i class="fa-solid fa-minus"></i>
+                </button>
+                <button type="button" onclick="resetZoomTransform()" title="កំណត់ដើមវិញ"
+                        class="px-3 h-9 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-zinc-200 text-xs font-bold transition">
+                    1x
+                </button>
+                <button type="button" onclick="adjustZoomScale(0.5)" title="ពង្រីក"
+                        class="w-9 h-9 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-white text-xs font-bold flex items-center justify-center transition">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+                <button type="button" onclick="closeZoomLightbox()" title="បិទ"
+                        class="w-9 h-9 rounded-xl bg-rose-950/80 hover:bg-rose-900 border border-rose-500/40 text-rose-200 text-sm flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Interactive Zoom Stage -->
+        <div id="zoomStage"
+             onwheel="handleZoomWheel(event)"
+             onmousedown="handleZoomMouseDown(event)"
+             onmousemove="handleZoomMouseMove(event)"
+             onmouseup="handleZoomMouseUp()"
+             onmouseleave="handleZoomMouseUp()"
+             ontouchstart="handleZoomTouchStart(event)"
+             ontouchmove="handleZoomTouchMove(event)"
+             ontouchend="handleZoomTouchEnd(event)"
+             class="relative flex-1 flex items-center justify-center overflow-hidden my-2 touch-none">
+            <img id="zoomTargetImg" src="" alt="Zoomed Product"
+                 ondblclick="toggleDoubleTapZoom(event)"
+                 onerror="this.src='https://placehold.co/800x800/1c1c24/e5be52?text=Aura+Decor'"
+                 class="max-w-full max-h-[78vh] object-contain rounded-2xl transition-transform duration-75 cursor-zoom-in">
+        </div>
+
+        <!-- Bottom Hint -->
+        <div class="text-center text-[11px] text-zinc-400 z-20">
+            ចុច ២ ដងលើរូប (Double Tap) ឬ ប្រើប៊ូតុង + / - ឬ ទាញម្រាមដៃ/Mouse ដើម្បីពង្រីកពង្រួម
         </div>
     </div>
 
@@ -731,6 +780,10 @@
         const SUPABASE_BUCKET = 'aura-media';
         const MY_ORDER_IDS_KEY = 'aura_my_order_ids';
 
+        // Telegram Bot Notification (@orderkpbot -> Shop Group)
+        const TELEGRAM_BOT_TOKEN = '9246578991:AAEer6ak8XZTOoXZqAjOP088fQkI0DXUUSs';
+        const TELEGRAM_CHAT_ID = '-4856530869';
+
         let supabaseClient = null;
         try {
             if (window.supabase && typeof window.supabase.createClient === 'function') {
@@ -849,11 +902,18 @@
                 ? rawItems.items
                 : (Array.isArray(rawItems) ? rawItems : (localMatch.items || []));
 
-            const dbTotal = Number(r.total || 0);
+            const totalQty = itemsList.reduce((s, it) => s + Number(it.qty || 1), 0);
             const rawSubtotal = itemsList.reduce((s, it) => s + Number(it.price || 0) * Number(it.qty || 1), 0);
+            const expectedDiscount = totalQty >= 2 ? totalQty * 1.0 : 0;
             const discount = (isMetaObj && rawItems.discount !== undefined)
                 ? Number(rawItems.discount)
-                : Math.max(0, Number((rawSubtotal - dbTotal).toFixed(2)));
+                : expectedDiscount;
+
+            const subtotal = (isMetaObj && rawItems.subtotal !== undefined) ? Number(rawItems.subtotal) : rawSubtotal;
+            const rawDbTotal = Number(r.total || 0);
+            const finalTotal = (isMetaObj && rawItems.total !== undefined)
+                ? Number(rawItems.total)
+                : (rawDbTotal === subtotal && discount > 0 ? Math.max(0, subtotal - discount) : rawDbTotal);
 
             return {
                 id: r.id,
@@ -864,10 +924,10 @@
                 paymentMethod: (isMetaObj && rawItems.paymentMethod) || localMatch.paymentMethod || 'ABA / KHQR',
                 status: r.status || localMatch.status || 'To Ship',
                 items: itemsList,
-                subtotal: (isMetaObj && rawItems.subtotal !== undefined) ? Number(rawItems.subtotal) : rawSubtotal,
+                subtotal,
                 discount,
                 shippingFee: 0,
-                total: dbTotal
+                total: finalTotal
             };
         }
 
@@ -1119,7 +1179,7 @@
         }
 
         // ==================== TOAST & CONFIRM ====================
-        function showToast(msg) {
+        function showToast(msg, durationMs = 5500) {
             const box = document.getElementById('toastBox');
             const text = document.getElementById('toastMessage');
             text.textContent = msg;
@@ -1127,7 +1187,7 @@
             clearTimeout(toastTimer);
             toastTimer = setTimeout(() => {
                 box.classList.add('hidden');
-            }, 2600);
+            }, durationMs);
         }
 
         function openConfirmModal(title, message) {
@@ -1306,7 +1366,14 @@
             }).join('');
         }
 
-        // ==================== DIGITAL MENU MODAL ====================
+        // ==================== DIGITAL MENU MODAL & RTL GALLERY ====================
+        let detailGalleryImages = [];
+        let detailActiveIndex = 0;
+
+        function getCurrentDetailImage() {
+            return detailGalleryImages[detailActiveIndex] || 'https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor';
+        }
+
         function openProductDetail(productId) {
             const prod = state.products.find((p) => p.id === productId);
             if (!prod) return;
@@ -1321,28 +1388,245 @@
             document.getElementById('detailQtyValue').textContent = '1';
             updateDetailPriceSummary();
 
-            const imgs = (prod.images && prod.images.length > 0)
-                ? prod.images
+            detailGalleryImages = (prod.images && prod.images.length > 0)
+                ? [...prod.images]
                 : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'];
-            document.getElementById('detailMainImg').src = imgs[0];
+            detailActiveIndex = 0;
 
+            const trackEl = document.getElementById('detailGalleryTrack');
+            trackEl.innerHTML = detailGalleryImages.map((src, idx) => `
+                <div class="gallery-rtl-slide aspect-square bg-surface flex items-center justify-center">
+                    <img src="${escapeAttr(src)}" alt="${escapeAttr(prod.name)} ${idx + 1}"
+                         onclick="openZoomLightbox('${escapeAttr(src)}')"
+                         onerror="this.src='https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'"
+                         class="w-full h-full object-cover cursor-zoom-in">
+                </div>
+            `).join('');
+
+            // Start at first slide on the right edge in RTL flex layout
+            requestAnimationFrame(() => {
+                trackEl.scrollLeft = 0;
+            });
+
+            renderDetailThumbnails();
+            document.getElementById('productDetailModal').classList.remove('hidden');
+        }
+
+        function renderDetailThumbnails() {
             const thumbContainer = document.getElementById('detailThumbnails');
-            if (imgs.length > 1) {
-                thumbContainer.innerHTML = imgs.map((src, idx) => `
-                    <button type="button" onclick="setDetailMainImage('${escapeAttr(src)}')"
-                            class="w-14 h-14 rounded-xl overflow-hidden border-2 ${idx === 0 ? 'border-gold-400' : 'border-zinc-700'} shrink-0">
+            if (detailGalleryImages.length > 1) {
+                thumbContainer.innerHTML = detailGalleryImages.map((src, idx) => `
+                    <button type="button" onclick="scrollDetailToIndex(${idx})"
+                            class="w-14 h-14 rounded-xl overflow-hidden border-2 ${idx === detailActiveIndex ? 'border-gold-400' : 'border-zinc-700'} shrink-0 transition">
                         <img src="${escapeAttr(src)}" class="w-full h-full object-cover">
                     </button>
                 `).join('');
             } else {
                 thumbContainer.innerHTML = '';
             }
+        }
 
-            document.getElementById('productDetailModal').classList.remove('hidden');
+        function scrollDetailToIndex(idx) {
+            const trackEl = document.getElementById('detailGalleryTrack');
+            if (!trackEl || idx < 0 || idx >= detailGalleryImages.length) return;
+            detailActiveIndex = idx;
+            const slideWidth = trackEl.clientWidth || 1;
+            const sign = trackEl.scrollLeft <= 0 && getComputedStyle(trackEl).direction === 'rtl' ? -1 : 1;
+            trackEl.scrollTo({
+                left: sign * idx * slideWidth,
+                behavior: 'smooth'
+            });
+            renderDetailThumbnails();
+        }
+
+        function handleDetailGalleryScroll() {
+            const trackEl = document.getElementById('detailGalleryTrack');
+            if (!trackEl || detailGalleryImages.length <= 1) return;
+            const slideWidth = trackEl.clientWidth || 1;
+            const rawOffset = Math.abs(trackEl.scrollLeft);
+            const nextIdx = Math.min(
+                detailGalleryImages.length - 1,
+                Math.max(0, Math.round(rawOffset / slideWidth))
+            );
+            if (nextIdx !== detailActiveIndex) {
+                detailActiveIndex = nextIdx;
+                renderDetailThumbnails();
+            }
         }
 
         function setDetailMainImage(src) {
-            document.getElementById('detailMainImg').src = src;
+            const foundIdx = detailGalleryImages.indexOf(src);
+            if (foundIdx >= 0) {
+                scrollDetailToIndex(foundIdx);
+            } else {
+                openZoomLightbox(src);
+            }
+        }
+
+        // ==================== FULLSCREEN ZOOM LIGHTBOX STATE ====================
+        let zoomState = {
+            scale: 1,
+            translateX: 0,
+            translateY: 0,
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            pinchStartDist: 0,
+            pinchStartScale: 1,
+            lastTapTime: 0
+        };
+
+        function applyZoomTransform() {
+            const imgEl = document.getElementById('zoomTargetImg');
+            const badgeEl = document.getElementById('zoomScaleBadge');
+            if (!imgEl) return;
+
+            const maxPan = Math.max(0, (zoomState.scale - 1) * 260);
+            zoomState.translateX = Math.min(maxPan, Math.max(-maxPan, zoomState.translateX));
+            zoomState.translateY = Math.min(maxPan, Math.max(-maxPan, zoomState.translateY));
+
+            imgEl.style.transform = `translate3d(${zoomState.translateX}px, ${zoomState.translateY}px, 0) scale(${zoomState.scale})`;
+            imgEl.classList.toggle('cursor-zoom-in', zoomState.scale <= 1);
+            imgEl.classList.toggle('cursor-grab', zoomState.scale > 1 && !zoomState.isDragging);
+            imgEl.classList.toggle('cursor-grabbing', zoomState.scale > 1 && zoomState.isDragging);
+
+            if (badgeEl) {
+                badgeEl.textContent = `${Math.round(zoomState.scale * 100)}%`;
+            }
+        }
+
+        function resetZoomTransform() {
+            zoomState.scale = 1;
+            zoomState.translateX = 0;
+            zoomState.translateY = 0;
+            zoomState.isDragging = false;
+            applyZoomTransform();
+        }
+
+        function openZoomLightbox(imgSrc) {
+            const modalEl = document.getElementById('imageZoomModal');
+            const imgEl = document.getElementById('zoomTargetImg');
+            if (!modalEl || !imgEl) return;
+
+            imgEl.src = imgSrc || getCurrentDetailImage();
+            resetZoomTransform();
+            modalEl.classList.remove('hidden');
+        }
+
+        function closeZoomLightbox() {
+            const modalEl = document.getElementById('imageZoomModal');
+            if (modalEl) modalEl.classList.add('hidden');
+            resetZoomTransform();
+        }
+
+        function handleZoomBackdropClick(e) {
+            if (e.target && e.target.id === 'imageZoomModal') {
+                closeZoomLightbox();
+            }
+        }
+
+        function adjustZoomScale(delta) {
+            const nextScale = Math.min(4, Math.max(1, Number((zoomState.scale + delta).toFixed(2))));
+            zoomState.scale = nextScale;
+            if (nextScale === 1) {
+                zoomState.translateX = 0;
+                zoomState.translateY = 0;
+            }
+            applyZoomTransform();
+        }
+
+        function toggleDoubleTapZoom() {
+            if (zoomState.scale > 1) {
+                resetZoomTransform();
+            } else {
+                zoomState.scale = 2.2;
+                applyZoomTransform();
+            }
+        }
+
+        function handleZoomWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY < 0 ? 0.35 : -0.35;
+            adjustZoomScale(delta);
+        }
+
+        function handleZoomMouseDown(e) {
+            if (zoomState.scale <= 1) return;
+            zoomState.isDragging = true;
+            zoomState.startX = e.clientX - zoomState.translateX;
+            zoomState.startY = e.clientY - zoomState.translateY;
+            applyZoomTransform();
+        }
+
+        function handleZoomMouseMove(e) {
+            if (!zoomState.isDragging || zoomState.scale <= 1) return;
+            zoomState.translateX = e.clientX - zoomState.startX;
+            zoomState.translateY = e.clientY - zoomState.startY;
+            applyZoomTransform();
+        }
+
+        function handleZoomMouseUp() {
+            if (!zoomState.isDragging) return;
+            zoomState.isDragging = false;
+            applyZoomTransform();
+        }
+
+        function getTouchDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.hypot(dx, dy);
+        }
+
+        function handleZoomTouchStart(e) {
+            if (e.touches.length === 2) {
+                zoomState.isDragging = false;
+                zoomState.pinchStartDist = getTouchDistance(e.touches);
+                zoomState.pinchStartScale = zoomState.scale;
+            } else if (e.touches.length === 1) {
+                const now = Date.now();
+                if (now - zoomState.lastTapTime < 280) {
+                    e.preventDefault();
+                    toggleDoubleTapZoom();
+                    zoomState.lastTapTime = 0;
+                    return;
+                }
+                zoomState.lastTapTime = now;
+
+                if (zoomState.scale > 1) {
+                    zoomState.isDragging = true;
+                    zoomState.startX = e.touches[0].clientX - zoomState.translateX;
+                    zoomState.startY = e.touches[0].clientY - zoomState.translateY;
+                }
+            }
+        }
+
+        function handleZoomTouchMove(e) {
+            if (e.touches.length === 2 && zoomState.pinchStartDist > 0) {
+                e.preventDefault();
+                const currentDist = getTouchDistance(e.touches);
+                const ratio = currentDist / zoomState.pinchStartDist;
+                zoomState.scale = Math.min(4, Math.max(1, Number((zoomState.pinchStartScale * ratio).toFixed(2))));
+                if (zoomState.scale === 1) {
+                    zoomState.translateX = 0;
+                    zoomState.translateY = 0;
+                }
+                applyZoomTransform();
+            } else if (e.touches.length === 1 && zoomState.isDragging && zoomState.scale > 1) {
+                e.preventDefault();
+                zoomState.translateX = e.touches[0].clientX - zoomState.startX;
+                zoomState.translateY = e.touches[0].clientY - zoomState.startY;
+                applyZoomTransform();
+            }
+        }
+
+        function handleZoomTouchEnd(e) {
+            if (e.touches.length < 2) {
+                zoomState.pinchStartDist = 0;
+            }
+            if (e.touches.length === 0) {
+                zoomState.isDragging = false;
+                applyZoomTransform();
+            }
         }
 
         function closeProductDetailModal() {
@@ -1567,6 +1851,33 @@
             document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
         }
 
+        // ==================== TELEGRAM BOT NOTIFICATION ====================
+        async function sendOrderToTelegramBot(order) {
+            if (!order || !TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+                return { ok: false, reason: 'មិនទាន់កំណត់ Bot Token ឬ Chat ID' };
+            }
+            try {
+                const text = buildReceiptText(order);
+                const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_BOT_TOKEN)}/sendMessage`;
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: String(TELEGRAM_CHAT_ID).trim(),
+                        text: text
+                    })
+                });
+                const data = await res.json().catch(() => null);
+                if (!res.ok || !data || !data.ok) {
+                    return { ok: false, reason: data?.description || `HTTP ${res.status}` };
+                }
+                return { ok: true, reason: '' };
+            } catch (err) {
+                console.warn('Telegram Bot notification error:', err);
+                return { ok: false, reason: err?.message || 'បញ្ហាបណ្តាញ' };
+            }
+        }
+
         async function submitOrder(e) {
             e.preventDefault();
             if (state.cart.length === 0) return;
@@ -1598,7 +1909,7 @@
                 });
 
                 if (error) {
-                    alert(error.message || 'មិនអាចបញ្ជាទិញបានទេ (សូមពិនិត្យស្តុកទំនិញ)');
+                    showToast(error.message || 'មិនអាចបញ្ជាទិញបានទេ (សូមពិនិត្យស្តុកទំនិញ)');
                     return;
                 }
 
@@ -1615,7 +1926,9 @@
                     : state.cart.map((item) => ({ ...item }));
 
                 const subtotal = enrichedItems.reduce((s, it) => s + Number(it.price) * Number(it.qty), 0);
-                const finalTotal = Number(serverRow.total ?? Math.max(0, subtotal - discount));
+                const totalQty = enrichedItems.reduce((s, it) => s + Number(it.qty || 1), 0);
+                const appliedDiscount = totalQty >= 2 ? totalQty * 1.0 : 0;
+                const finalTotal = Math.max(0, Number((subtotal - appliedDiscount).toFixed(2)));
 
                 createdOrder = {
                     id: serverRow.id || orderId,
@@ -1627,7 +1940,7 @@
                     status: serverRow.status || 'To Ship',
                     items: enrichedItems,
                     subtotal,
-                    discount,
+                    discount: appliedDiscount,
                     shippingFee: 0,
                     total: finalTotal
                 };
@@ -1635,12 +1948,14 @@
                 await supabaseClient
                     .from('orders')
                     .update({
+                        total: finalTotal,
                         items: {
                             createdAt: createdAtStr,
                             customerAddress: address,
                             paymentMethod,
                             subtotal,
-                            discount,
+                            discount: appliedDiscount,
+                            total: finalTotal,
                             shippingFee: 0,
                             items: enrichedItems
                         }
@@ -1677,7 +1992,13 @@
             saveState(STORAGE_KEYS.CART, state.cart);
             updateCartBadges();
 
-            showToast('ការបញ្ជាទិញជោគជ័យ! អរគុណសម្រាប់ការគាំទ្រ');
+            const tgResult = await sendOrderToTelegramBot(createdOrder);
+            if (tgResult && tgResult.ok) {
+                showToast('ការបញ្ជាទិញជោគជ័យ! Invoice បានផ្ញើចូល Telegram ហាងរួចរាល់');
+            } else {
+                showToast(`ការបញ្ជាទិញជោគជ័យ! (ផ្ញើទៅ Telegram ហាងមិនបាន៖ ${tgResult?.reason || 'មិនបានកំណត់'})`);
+            }
+
             openReceiptModal(createdOrder);
             switchTab('me');
         }
@@ -1686,12 +2007,17 @@
         function openReceiptModal(order) {
             activeReceiptOrder = order;
             document.getElementById('receiptOrderId').textContent = `លេខវិក្កយបត្រ៖ ${order.id} • ${order.createdAt}`;
-            const itemsHtml = order.items.map((it) => `
-                <div class="flex justify-between py-1.5 border-b border-zinc-100">
-                    <span>${escapeHtml(it.name)} (x${it.qty})</span>
-                    <span class="font-bold">$${(it.price * it.qty).toFixed(2)}</span>
-                </div>
-            `).join('');
+            const itemsHtml = order.items.map((it) => {
+                const prodMatch = state.products.find((p) => String(p.id) === String(it.productId));
+                const skuLabel = it.sku || (prodMatch && prodMatch.sku) || '';
+                const skuBadge = skuLabel ? `<span class="inline-block px-1.5 py-0.5 mr-1 rounded bg-zinc-200 text-zinc-800 font-mono text-[10px] font-extrabold">[${escapeHtml(skuLabel)}]</span>` : '';
+                return `
+                    <div class="flex justify-between items-start gap-2 py-1.5 border-b border-zinc-100">
+                        <span>${skuBadge}${escapeHtml(it.name)} (x${it.qty})</span>
+                        <span class="font-bold shrink-0">$${(it.price * it.qty).toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
 
             document.getElementById('receiptBody').innerHTML = `
                 <div class="p-3 rounded-2xl bg-zinc-50 space-y-1">
@@ -1721,6 +2047,10 @@
                         <span>សរុបត្រូវបង់៖</span>
                         <span>$${Number(order.total).toFixed(2)}</span>
                     </div>
+                </div>
+                <div class="pt-2.5 mt-1 border-t border-dashed border-zinc-200 text-center space-y-0.5 text-[11px] text-zinc-500">
+                    <p class="font-bold text-zinc-700">អរគុណសម្រាប់ការគាំទ្រហាង Aura Decor 🙏</p>
+                    <p>ទំនាក់ទំនងហាង៖ <span class="font-semibold text-zinc-700">096 222 3220</span> • ដឹកហ្វ្រី ២៥ ខេត្ត-ក្រុង</p>
                 </div>
             `;
 
@@ -1753,13 +2083,19 @@
                 `------------------------`
             ];
             (order.items || []).forEach((it) => {
-                lines.push(`• ${it.name} x${it.qty} = $${(Number(it.price) * Number(it.qty)).toFixed(2)}`);
+                const prodMatch = state.products.find((p) => String(p.id) === String(it.productId));
+                const skuLabel = it.sku || (prodMatch && prodMatch.sku) || '';
+                const skuPrefix = skuLabel ? `[${skuLabel}] ` : '';
+                lines.push(`• ${skuPrefix}${it.name} x${it.qty} = $${(Number(it.price) * Number(it.qty)).toFixed(2)}`);
             });
             lines.push(`------------------------`);
             lines.push(`តម្លៃដើម៖ $${Number(order.subtotal).toFixed(2)}`);
             lines.push(`បញ្ចុះតម្លៃ៖ -$${Number(order.discount).toFixed(2)}`);
             lines.push(`ដឹកជញ្ជូន៖ FREE ($0.00)`);
             lines.push(`💰 សរុបត្រូវបង់៖ $${Number(order.total).toFixed(2)}`);
+            lines.push(`------------------------`);
+            lines.push(`🙏 អរគុណសម្រាប់ការគាំទ្រ Aura Decor!`);
+            lines.push(`📞 ទំនាក់ទំនងហាង៖ 096 222 3220`);
             return lines.join('\n');
         }
 
@@ -1834,17 +2170,18 @@
                 ctx.fillStyle = '#1E293B';
                 ctx.fillRect(34, y, canvas.width - 68, 44);
                 ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 18px "Noto Sans Khmer", Inter, sans-serif';
+                ctx.font = 'bold 17px "Noto Sans Khmer", Inter, sans-serif';
                 ctx.fillText('បញ្ជីទំនិញ', 54, y + 29);
-                ctx.textAlign = 'right';
-                ctx.fillText('ចំនួន & តម្លៃ', canvas.width - 54, y + 29);
-                ctx.textAlign = 'left';
+                ctx.fillText('ចំនួន & តម្លៃ', canvas.width - 175, y + 29);
 
                 y += 74;
                 ctx.font = '18px "Noto Sans Khmer", Inter, sans-serif';
                 (order.items || []).forEach((it) => {
                     const lineTotal = (Number(it.price || 0) * Number(it.qty || 1)).toFixed(2);
-                    const itemName = String(it.name || '').slice(0, 34);
+                    const prodMatch = state.products.find((p) => String(p.id) === String(it.productId));
+                    const skuLabel = it.sku || (prodMatch && prodMatch.sku) || '';
+                    const skuPrefix = skuLabel ? `[${skuLabel}] ` : '';
+                    const itemName = `${skuPrefix}${String(it.name || '')}`.slice(0, 36);
                     ctx.fillStyle = '#18181B';
                     ctx.fillText(`• ${itemName}`, 50, y);
 
@@ -1890,12 +2227,33 @@
                 ctx.fillText(`-$${Number(order.discount || 0).toFixed(2)}`, canvas.width - 54, footerY + 108);
                 ctx.textAlign = 'left';
 
-                ctx.fillStyle = '#111827';
-                ctx.font = 'bold 24px "Noto Sans Khmer", Inter, sans-serif';
-                ctx.fillText('សរុបត្រូវបង់៖', 54, footerY + 152);
+                ctx.font = 'bold 22px "Noto Sans Khmer", Inter, sans-serif';
+                ctx.fillStyle = '#0F172A';
+                ctx.fillText('សរុបត្រូវបង់៖', 54, footerY + 150);
                 ctx.textAlign = 'right';
                 ctx.fillStyle = '#B45309';
-                ctx.fillText(`$${Number(order.total || 0).toFixed(2)}`, canvas.width - 54, footerY + 152);
+                ctx.fillText(`$${Number(order.total || 0).toFixed(2)}`, canvas.width - 54, footerY + 150);
+                ctx.textAlign = 'left';
+
+                // Compact thank you & shop phone note below summary box (2 lines so Khmer font never clips)
+                const noteY = footerY + 198;
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#3F3F46';
+                ctx.font = 'bold 14px "Noto Sans Khmer", Inter, sans-serif';
+                ctx.fillText(
+                    'អរគុណសម្រាប់ការគាំទ្រ Aura Decor',
+                    canvas.width / 2,
+                    noteY,
+                    canvas.width - 80
+                );
+                ctx.fillStyle = '#52525B';
+                ctx.font = '13px "Noto Sans Khmer", Inter, sans-serif';
+                ctx.fillText(
+                    'ទូរស័ព្ទហាង៖ 096 222 3220',
+                    canvas.width / 2,
+                    noteY + 22,
+                    canvas.width - 80
+                );
                 ctx.textAlign = 'left';
 
                 canvas.toBlob((blob) => {
@@ -2288,12 +2646,17 @@
 
             container.innerHTML = state.orders.map((order) => {
                 const normPhone = String(order.customerPhone || '').replace(/\s+/g, '');
-                const orderTimes = phoneCounts[normPhone] || 1;
-                const customerBadge = orderTimes > 1
-                    ? `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-extrabold"><i class="fa-solid fa-crown mr-1"></i>ភ្ញៀវចាស់ (ទិញ ${orderTimes} លើក)</span>`
-                    : `<span class="px-2 py-0.5 rounded-full bg-sky-500/15 border border-sky-400/30 text-sky-300 text-[10px] font-bold">ភ្ញៀវថ្មី</span>`;
+                const orderCountForPhone = normPhone ? (phoneCounts[normPhone] || 1) : 1;
+                const customerBadge = orderCountForPhone > 1
+                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-950 text-emerald-300 border border-emerald-500/30">ភ្ញៀវទិញ ${orderCountForPhone} ដង</span>`
+                    : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-800 text-zinc-300">ភ្ញៀវថ្មី</span>`;
 
-                const itemsText = order.items.map((i) => `${escapeHtml(i.name)} (x${i.qty})`).join(', ');
+                const itemsText = order.items.map((i) => {
+                    const prodMatch = state.products.find((p) => String(p.id) === String(i.productId));
+                    const skuLabel = i.sku || (prodMatch && prodMatch.sku) || '';
+                    const skuTag = skuLabel ? `[${escapeHtml(skuLabel)}] ` : '';
+                    return `${skuTag}${escapeHtml(i.name)} (x${i.qty})`;
+                }).join(', ');
 
                 return `
                     <div class="p-4 sm:p-5 rounded-2xl bg-charcoal border border-zinc-800 space-y-3">
