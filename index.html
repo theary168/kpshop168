@@ -122,8 +122,9 @@
 
             <!-- Right Actions: Admin Button & Cart Quick Button -->
             <div class="flex items-center gap-2">
-                <button type="button" onclick="openAdminGate()"
-                        class="relative px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/30 text-gold-300 text-xs font-bold flex items-center gap-1.5 transition">
+                <!-- Hidden from regular guests; Admin login is accessed via /admin, #/admin, #admin, or ?admin -->
+                <button type="button" id="headerAdminBtn" onclick="openAdminGate()"
+                        class="hidden relative px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/30 text-gold-300 text-xs font-bold items-center gap-1.5 transition">
                     <i class="fa-solid fa-user-shield"></i>
                     <span>Admin</span>
                     <span id="adminMsgBadge" class="hidden px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-extrabold">0</span>
@@ -1042,10 +1043,15 @@
             if (supabaseClient && supabaseClient.auth && typeof supabaseClient.auth.onAuthStateChange === 'function') {
                 supabaseClient.auth.onAuthStateChange((_event, session) => {
                     state.adminAuthenticated = Boolean(session && session.user);
+                    syncAdminHeaderButtonVisibility();
                 });
             }
 
-            syncFromSupabase();
+            syncFromSupabase().finally(() => {
+                checkAdminRouteFromLocation();
+            });
+            window.addEventListener('hashchange', checkAdminRouteFromLocation);
+            window.addEventListener('popstate', checkAdminRouteFromLocation);
         }
 
         function saveState(key, data) {
@@ -1053,6 +1059,50 @@
                 localStorage.setItem(key, JSON.stringify(data));
             } catch (err) {
                 console.warn('Error saving local storage:', err);
+            }
+        }
+
+        function isAdminUrlPath() {
+            const path = (window.location.pathname || '').toLowerCase().replace(/\/+$/, '');
+            const hash = (window.location.hash || '').toLowerCase();
+            const search = (window.location.search || '').toLowerCase();
+            const params = new URLSearchParams(search);
+
+            return (
+                path === '/admin' ||
+                path.endsWith('/admin') ||
+                hash === '#/admin' ||
+                hash === '#admin' ||
+                hash.startsWith('#/admin') ||
+                search.includes('admin') ||
+                params.has('admin')
+            );
+        }
+
+        function syncAdminHeaderButtonVisibility() {
+            const btn = document.getElementById('headerAdminBtn');
+            if (!btn) return;
+            const showBtn = Boolean(state.adminAuthenticated);
+            btn.classList.toggle('hidden', !showBtn);
+            btn.classList.toggle('flex', showBtn);
+        }
+
+        async function checkAdminRouteFromLocation() {
+            syncAdminHeaderButtonVisibility();
+            if (!isAdminUrlPath()) return;
+
+            if (!state.adminAuthenticated && supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.auth.getSession();
+                    state.adminAuthenticated = Boolean(data && data.session && data.session.user);
+                } catch (_) {}
+            }
+
+            syncAdminHeaderButtonVisibility();
+            if (state.adminAuthenticated) {
+                switchTab('admin');
+            } else {
+                openAdminGate();
             }
         }
 
@@ -2891,6 +2941,7 @@
                 const { data } = await supabaseClient.auth.getSession();
                 state.adminAuthenticated = Boolean(data?.session?.user);
             }
+            syncAdminHeaderButtonVisibility();
             if (state.adminAuthenticated) {
                 switchTab('admin');
                 return;
@@ -2904,6 +2955,14 @@
 
         function closeAdminGate() {
             document.getElementById('adminGateModal').classList.add('hidden');
+            if (isAdminUrlPath()) {
+                try {
+                    const cleanUrl = window.location.origin + '/';
+                    window.history.replaceState({}, '', cleanUrl);
+                } catch (_) {
+                    window.location.hash = '';
+                }
+            }
         }
 
         async function verifyAdminLogin(e) {
@@ -2927,6 +2986,7 @@
             }
 
             state.adminAuthenticated = true;
+            syncAdminHeaderButtonVisibility();
             closeAdminGate();
             await syncFromSupabase();
             switchTab('admin');
@@ -2935,11 +2995,18 @@
 
         async function exitAdminMode() {
             state.adminAuthenticated = false;
+            syncAdminHeaderButtonVisibility();
             if (supabaseClient) {
                 await supabaseClient.auth.signOut();
             }
             await syncFromSupabase();
-            switchTab('home');
+            state.activeTab = 'home';
+            ['home', 'message', 'cart', 'me', 'admin'].forEach((t) => {
+                const section = document.getElementById(`view-${t}`);
+                if (section) section.classList.toggle('hidden', t !== 'home');
+            });
+            showToast('បានចាកចេញពីគណនី Admin');
+            openAdminGate();
         }
 
         function switchAdminTab(tab) {
