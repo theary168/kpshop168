@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Khmer:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
         // Configure Tailwind theme tokens for dark obsidian and gold accents
@@ -17,7 +17,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Noto Sans Khmer"', 'Inter', 'sans-serif']
+                        sans: ['"Kantumruy Pro"', '"Noto Sans Khmer"', 'Inter', 'sans-serif']
                     },
                     colors: {
                         obsidian: '#0B0B0E',
@@ -35,10 +35,15 @@
         };
     </script>
     <style>
+        html, body, button, input, select, textarea {
+            font-family: 'Kantumruy Pro', 'Noto Sans Khmer', 'Inter', sans-serif;
+            font-feature-settings: "kern" 1, "liga" 1, "ccmp" 1, "mark" 1, "mkmk" 1;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
         body {
             background-color: #0B0B0E;
             color: #F4F4F6;
-            font-family: 'Noto Sans Khmer', 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
         .no-scrollbar::-webkit-scrollbar {
@@ -52,27 +57,44 @@
             background: rgba(20, 20, 26, 0.88);
             backdrop-filter: blur(14px);
         }
-            .promo-shimmer::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 45%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
-                animation: shimmerSweep 3.2s infinite;
+        @keyframes shimmerSweep {
+            0% {
+                transform: translateX(-160%) skewX(-20deg);
             }
-            /* Horizontal right-to-left snap carousel for product images */
-            .gallery-rtl-scroll {
-                direction: rtl;
-                scroll-snap-type: x mandatory;
-                -webkit-overflow-scrolling: touch;
+            60%, 100% {
+                transform: translateX(320%) skewX(-20deg);
             }
-            .gallery-rtl-slide {
-                direction: ltr;
-                scroll-snap-align: start;
-                flex: 0 0 100%;
+        }
+        @keyframes promoStickerFloat {
+            0%, 100% {
+                transform: translateY(0px);
             }
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+        .promo-sticker-float {
+            animation: promoStickerFloat 3.6s ease-in-out infinite;
+        }
+        .promo-shimmer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 45%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            animation: shimmerSweep 3.2s infinite;
+        }
+        .gallery-rtl-scroll {
+            direction: ltr;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .gallery-rtl-slide {
+            scroll-snap-align: start;
+            flex: 0 0 100%;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-obsidian text-zinc-100 pb-24">
@@ -80,7 +102,7 @@
     <header class="sticky top-0 z-30 glass-panel border-b border-gold-500/20">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
             <!-- Brand Logo -->
-            <button onclick="switchTab('home')" class="flex items-center gap-3 text-left group">
+            <button type="button" onclick="switchTab('home')" class="flex items-center gap-3 text-left group">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-obsidian font-extrabold shadow-lg shadow-gold-500/20 group-hover:scale-105 transition">
                     <i class="fa-solid fa-crown text-base"></i>
                 </div>
@@ -100,12 +122,13 @@
 
             <!-- Right Actions: Admin Button & Cart Quick Button -->
             <div class="flex items-center gap-2">
-                <button onclick="openAdminGate()"
-                        class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/30 text-gold-300 text-xs font-bold flex items-center gap-1.5 transition">
+                <button type="button" onclick="openAdminGate()"
+                        class="relative px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/30 text-gold-300 text-xs font-bold flex items-center gap-1.5 transition">
                     <i class="fa-solid fa-user-shield"></i>
                     <span>Admin</span>
+                    <span id="adminMsgBadge" class="hidden px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-extrabold">0</span>
                 </button>
-                <button onclick="switchTab('cart')"
+                <button type="button" onclick="switchTab('cart')"
                         class="relative px-3 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs font-extrabold flex items-center gap-1.5 shadow-md shadow-gold-500/20 transition">
                     <i class="fa-solid fa-bag-shopping"></i>
                     <span class="hidden sm:inline">រទេះ</span>
@@ -179,18 +202,57 @@
 
         <!-- MESSAGE / SUPPORT VIEW -->
         <section id="view-message" class="hidden space-y-5">
-            <div class="rounded-3xl bg-charcoal border border-gold-500/25 p-6 space-y-4">
+            <div class="rounded-3xl bg-charcoal border border-gold-500/25 p-4 sm:p-6 space-y-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-2xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-gold-400 text-xl">
+                    <div class="w-12 h-12 rounded-2xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-gold-400 text-xl shrink-0">
                         <i class="fa-solid fa-headset"></i>
                     </div>
                     <div>
-                        <h2 class="text-lg font-extrabold text-white">ទំនាក់ទំនង និងប្រឹក្សាយោបល់</h2>
-                        <p class="text-xs text-zinc-400">ឆ្លើយតបរហ័ស • ប្រឹក្សាហុងស៊ុយ &amp; ការកម្មង់ • ដឹកជញ្ជូនហ្វ្រីទូទាំងប្រទេស</p>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-white">ទំនាក់ទំនង និងប្រឹក្សាយោបល់</h2>
+                        <p class="text-xs sm:text-sm text-zinc-400">ផ្ញើសារ ឬរូបភាពផ្ទាល់លើវេបសាយ ឬតាមបណ្តាញសង្គមរបស់ហាង</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <!-- Live Website Chat Box (Expanded Height & Larger Text) -->
+                <div class="rounded-2xl bg-surface/90 border border-zinc-800 p-4 sm:p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                        <span class="text-xs sm:text-sm font-extrabold text-gold-300">
+                            <i class="fa-solid fa-comments mr-1.5"></i> ប្រអប់ផ្ញើសារលើវេបសាយ (ផ្ញើទៅ Telegram ហាង &amp; ទទួលការតបពី Admin)
+                        </span>
+                        <span class="text-xs text-emerald-400 font-bold shrink-0">● Online</span>
+                    </div>
+
+                    <div id="liveChatThread" class="min-h-[340px] max-h-[58vh] overflow-y-auto space-y-3 pr-1"></div>
+
+                    <form id="liveChatForm" onsubmit="sendWebsiteMessage(event)" class="space-y-2.5 pt-2 border-t border-zinc-800/80">
+                        <div id="chatImagePreviewBar" class="hidden items-center justify-between gap-2 p-2.5 rounded-xl bg-charcoal border border-gold-500/30">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <img id="chatImagePreviewImg" src="" alt="Preview" class="w-14 h-14 rounded-lg object-cover bg-surface shrink-0">
+                                <span id="chatImagePreviewName" class="text-xs text-zinc-300 truncate"></span>
+                            </div>
+                            <button type="button" onclick="clearChatImageSelection()" title="លុបរូបភាព"
+                                    class="w-8 h-8 rounded-lg bg-rose-950/70 hover:bg-rose-900 text-rose-300 text-sm flex items-center justify-center shrink-0 transition">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center gap-1.5 sm:gap-2.5 w-full min-w-0">
+                            <input id="chatImageInput" type="file" accept="image/*" onchange="handleChatImageSelected(event)" class="hidden">
+                            <button type="button" onclick="document.getElementById('chatImageInput').click()" title="ផ្ញើរូបភាព"
+                                    class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-charcoal hover:bg-zinc-800 border border-zinc-700 text-gold-300 text-base flex items-center justify-center shrink-0 transition">
+                                <i class="fa-solid fa-image"></i>
+                            </button>
+                            <input id="chatMessageInput" type="text" placeholder="សរសេរសារ ឬជ្រើសរើសរូបភាព..."
+                                   class="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-charcoal border border-zinc-700 text-sm sm:text-base text-white placeholder-zinc-500 focus:outline-none focus:border-gold-400">
+                            <button type="submit"
+                                    class="h-11 sm:h-12 px-3.5 sm:px-5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs sm:text-sm font-extrabold flex items-center justify-center gap-1.5 shrink-0 transition">
+                                <span>ផ្ញើ</span>
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                     <a href="https://t.me/+855962223220" target="_blank" rel="noopener noreferrer"
                        class="p-4 rounded-2xl bg-surface hover:bg-zinc-800/90 border border-sky-500/30 flex items-center justify-between transition">
                         <div class="flex items-center gap-3">
@@ -215,12 +277,6 @@
                         <i class="fa-solid fa-arrow-up-right-from-square text-blue-400 text-sm"></i>
                     </a>
                 </div>
-
-                <div class="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/25 text-xs text-emerald-200 space-y-1">
-                    <p class="font-bold text-emerald-300"><i class="fa-solid fa-truck-fast mr-1"></i> គោលការណ៍ដឹកជញ្ជូន</p>
-                    <p>• ដឹកជញ្ជូនហ្វ្រី (Free Delivery) គ្រប់ខេត្ត-ក្រុង និងក្នុងរាជធានីភ្នំពេញ។</p>
-                    <p>• ទិញចាប់ពី ២ មុខឡើងទៅ បញ្ចុះតម្លៃបន្ថែម $1.00 ក្នុងមួយមុខដោយស្វ័យប្រវត្តិ។</p>
-                </div>
             </div>
         </section>
 
@@ -231,7 +287,7 @@
                     <i class="fa-solid fa-bag-shopping text-gold-400"></i>
                     <span>រទេះទំនិញ និងការបញ្ជាទិញ</span>
                 </h2>
-                <button onclick="clearCart()" id="clearCartBtn" class="hidden text-xs font-bold text-rose-400 hover:text-rose-300">
+                <button type="button" onclick="clearCart()" id="clearCartBtn" class="hidden text-xs font-bold text-rose-400 hover:text-rose-300">
                     <i class="fa-solid fa-trash mr-1"></i> សម្អាតរទេះ
                 </button>
             </div>
@@ -240,16 +296,14 @@
                 <i class="fa-solid fa-cart-shopping text-4xl text-zinc-600"></i>
                 <p class="text-zinc-300 font-bold">រទេះទំនិញរបស់លោកអ្នកនៅទទេ</p>
                 <p class="text-xs text-zinc-500">សូមជ្រើសរើសទំនិញពីមុខហាង ឬ Digital Menu ដើម្បីដាក់ចូលរទេះ។</p>
-                <button onclick="switchTab('home')" class="mt-2 px-5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-obsidian text-xs font-extrabold transition">
+                <button type="button" onclick="switchTab('home')" class="mt-2 px-5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-obsidian text-xs font-extrabold transition">
                     ទៅមើលទំនិញ
                 </button>
             </div>
 
             <div id="cartContentGrid" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Cart Items List -->
                 <div id="cartItemsList" class="lg:col-span-2 space-y-3"></div>
 
-                <!-- Checkout Form & Summary -->
                 <div class="rounded-3xl bg-charcoal border border-gold-500/25 p-5 space-y-4 h-fit">
                     <h3 class="text-base font-extrabold text-gold-300 border-b border-zinc-800 pb-2.5">
                         ព័ត៌មានអ្នកបញ្ជាទិញ (មិនបាច់បង្កើតគណនី)
@@ -282,7 +336,6 @@
                             </select>
                         </div>
 
-                        <!-- Summary Breakdown -->
                         <div class="pt-3 border-t border-zinc-800 space-y-2 text-xs">
                             <div class="flex justify-between text-zinc-400">
                                 <span>តម្លៃដើមសរុប:</span>
@@ -335,7 +388,17 @@
                 </div>
             </div>
 
-            <div id="orderStatusTabs" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+            <div class="rounded-3xl bg-charcoal border border-gold-500/20 p-4 sm:p-5 space-y-3">
+                <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2.5">
+                    <span class="text-xs font-extrabold text-zinc-200">ស្ថានភាពការបញ្ជាទិញ</span>
+                    <button id="orderAllTopBtn" type="button" onclick="selectOrderStatusFilter('All')"
+                            class="px-3 py-1 rounded-full text-xs font-extrabold bg-gold-500 text-obsidian flex items-center gap-1 transition">
+                        <span>All</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                </div>
+                <div id="orderStatusTabs" class="grid grid-cols-3 sm:grid-cols-5 gap-2 pt-1"></div>
+            </div>
             <div id="customerOrdersList" class="space-y-3"></div>
         </section>
 
@@ -349,12 +412,12 @@
                     <h2 class="text-xl font-extrabold text-white mt-2">គ្រប់គ្រងហាង Aura Decor</h2>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="openProductModal()"
+                    <button type="button" onclick="openProductModal()"
                             class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs font-extrabold flex items-center gap-1.5 transition">
                         <i class="fa-solid fa-plus"></i>
                         <span>បន្ថែមទំនិញថ្មី</span>
                     </button>
-                    <button onclick="exitAdminMode()"
+                    <button type="button" onclick="exitAdminMode()"
                             class="px-3.5 py-2.5 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs font-bold transition">
                         ចាកចេញ
                     </button>
@@ -362,22 +425,29 @@
             </div>
 
             <div class="flex items-center gap-2 border-b border-zinc-800 pb-3 overflow-x-auto no-scrollbar">
-                <button id="adminTabProducts" onclick="switchAdminTab('products')"
-                        class="px-4 py-2 rounded-xl bg-gold-500 text-obsidian text-xs font-extrabold transition">
+                <button type="button" id="adminTabProducts" onclick="switchAdminTab('products')"
+                        class="px-4 py-2 rounded-xl bg-gold-500 text-obsidian text-xs font-extrabold whitespace-nowrap transition">
                     <i class="fa-solid fa-boxes-stacked mr-1"></i> គ្រប់គ្រងទំនិញ &amp; ស្តុក
                 </button>
-                <button id="adminTabOrders" onclick="switchAdminTab('orders')"
-                        class="px-4 py-2 rounded-xl bg-surface hover:bg-zinc-800 text-zinc-300 text-xs font-bold transition">
+                <button type="button" id="adminTabOrders" onclick="switchAdminTab('orders')"
+                        class="px-4 py-2 rounded-xl bg-surface hover:bg-zinc-800 text-zinc-300 text-xs font-bold whitespace-nowrap transition">
                     <i class="fa-solid fa-receipt mr-1"></i> វិក្កយបត្រ &amp; ភ្ញៀវ
                 </button>
-                <button id="adminTabBanner" onclick="switchAdminTab('banner')"
-                        class="px-4 py-2 rounded-xl bg-surface hover:bg-zinc-800 text-zinc-300 text-xs font-bold transition">
+                <button type="button" id="adminTabMessages" onclick="switchAdminTab('messages')"
+                        class="px-4 py-2 rounded-xl bg-surface hover:bg-zinc-800 text-zinc-300 text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-comment-dots"></i>
+                    <span>តបសារភ្ញៀវ</span>
+                    <span id="adminTabMsgBadge" class="hidden px-1.5 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-extrabold">0</span>
+                </button>
+                <button type="button" id="adminTabBanner" onclick="switchAdminTab('banner')"
+                        class="px-4 py-2 rounded-xl bg-surface hover:bg-zinc-800 text-zinc-300 text-xs font-bold whitespace-nowrap transition">
                     <i class="fa-solid fa-image mr-1"></i> កែក្របមុខ &amp; Banner
                 </button>
             </div>
 
             <div id="adminSectionProducts" class="space-y-3"></div>
             <div id="adminSectionOrders" class="hidden space-y-3"></div>
+            <div id="adminSectionMessages" class="hidden space-y-4"></div>
             <div id="adminSectionBanner" class="hidden rounded-3xl bg-charcoal border border-zinc-800 p-5 sm:p-6 space-y-4">
                 <h3 class="text-base font-extrabold text-gold-300">កែសម្រួលផ្ទាំងអក្សរ និងរូបភាពក្របមុខ (Hero Banner)</h3>
                 <form id="bannerSettingsForm" onsubmit="saveBannerSettings(event)" class="space-y-4">
@@ -428,14 +498,13 @@
         <div class="bg-charcoal border border-gold-500/30 rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl my-auto">
             <div class="flex items-center justify-between px-5 py-3.5 border-b border-zinc-800">
                 <span class="text-xs font-extrabold text-gold-300 uppercase tracking-wider">Digital Menu &amp; ព័ត៌មានលម្អិត</span>
-                <button onclick="closeProductDetailModal()" class="w-8 h-8 rounded-full bg-surface hover:bg-zinc-700 flex items-center justify-center text-zinc-300">
+                <button type="button" onclick="closeProductDetailModal()" class="w-8 h-8 rounded-full bg-surface hover:bg-zinc-700 flex items-center justify-center text-zinc-300">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 p-5">
                 <div class="space-y-2.5">
-                    <!-- Right-to-left horizontal scrollable gallery -->
                     <div class="relative rounded-2xl overflow-hidden bg-surface border border-zinc-800">
                         <div id="detailGalleryTrack"
                              onscroll="handleDetailGalleryScroll()"
@@ -496,11 +565,11 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-2.5">
-                            <button onclick="addDetailToCart()"
+                            <button type="button" onclick="addDetailToCart()"
                                     class="py-3 px-3 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/40 text-gold-300 text-xs sm:text-sm font-extrabold transition">
                                 <i class="fa-solid fa-cart-plus mr-1"></i> ដាក់ចូលរទេះ
                             </button>
-                            <button onclick="buyDetailNow()"
+                            <button type="button" onclick="buyDetailNow()"
                                     class="py-3 px-3 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs sm:text-sm font-extrabold shadow-lg shadow-gold-500/20 transition">
                                 <i class="fa-solid fa-bolt mr-1"></i> ទិញឥឡូវនេះ
                             </button>
@@ -530,7 +599,6 @@
     <div id="imageZoomModal"
          onclick="handleZoomBackdropClick(event)"
          class="hidden fixed inset-0 z-[60] bg-black/95 backdrop-blur-md flex flex-col justify-between p-3 sm:p-5 select-none">
-        <!-- Top Bar -->
         <div class="flex items-center justify-between gap-2 z-20">
             <span id="zoomScaleBadge" class="px-3 py-1.5 rounded-xl bg-surface/90 border border-gold-500/30 text-gold-300 text-xs font-extrabold">
                 100%
@@ -555,7 +623,6 @@
             </div>
         </div>
 
-        <!-- Interactive Zoom Stage -->
         <div id="zoomStage"
              onwheel="handleZoomWheel(event)"
              onmousedown="handleZoomMouseDown(event)"
@@ -572,7 +639,6 @@
                  class="max-w-full max-h-[78vh] object-contain rounded-2xl transition-transform duration-75 cursor-zoom-in">
         </div>
 
-        <!-- Bottom Hint -->
         <div class="text-center text-[11px] text-zinc-400 z-20">
             ចុច ២ ដងលើរូប (Double Tap) ឬ ប្រើប៊ូតុង + / - ឬ ទាញម្រាមដៃ/Mouse ដើម្បីពង្រីកពង្រួម
         </div>
@@ -583,7 +649,7 @@
         <div class="bg-charcoal border border-gold-500/30 rounded-3xl max-w-xl w-full p-5 sm:p-6 space-y-4 my-auto shadow-2xl">
             <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <h3 id="productFormTitle" class="text-base font-extrabold text-gold-300">បន្ថែមទំនិញថ្មី</h3>
-                <button onclick="closeProductFormModal()" class="w-8 h-8 rounded-full bg-surface hover:bg-zinc-700 flex items-center justify-center text-zinc-300">
+                <button type="button" onclick="closeProductFormModal()" class="w-8 h-8 rounded-full bg-surface hover:bg-zinc-700 flex items-center justify-center text-zinc-300">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -695,7 +761,7 @@
                     <h3 class="text-base font-extrabold text-zinc-900">វិក្កយបត្របញ្ជាទិញ (INVOICE)</h3>
                     <p id="receiptOrderId" class="text-xs text-zinc-500 font-semibold"></p>
                 </div>
-                <button onclick="closeReceiptModal()" class="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-700">
+                <button type="button" onclick="closeReceiptModal()" class="w-8 h-8 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center text-zinc-700">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -724,7 +790,7 @@
                 </button>
             </div>
 
-            <button onclick="closeReceiptModal()" class="w-full py-2.5 rounded-xl bg-zinc-900 text-white text-xs font-bold">
+            <button type="button" onclick="closeReceiptModal()" class="w-full py-2.5 rounded-xl bg-zinc-900 text-white text-xs font-bold">
                 រួចរាល់
             </button>
         </div>
@@ -736,8 +802,8 @@
             <h3 id="confirmTitle" class="text-base font-extrabold text-white">បញ្ជាក់</h3>
             <p id="confirmMessage" class="text-xs text-zinc-300 leading-relaxed"></p>
             <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeConfirmModal(false)" class="px-4 py-2 rounded-xl bg-surface text-zinc-300 text-xs font-bold">បោះបង់</button>
-                <button onclick="closeConfirmModal(true)" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold">យល់ព្រម</button>
+                <button type="button" onclick="closeConfirmModal(false)" class="px-4 py-2 rounded-xl bg-surface text-zinc-300 text-xs font-bold">បោះបង់</button>
+                <button type="button" onclick="closeConfirmModal(true)" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold">យល់ព្រម</button>
             </div>
         </div>
     </div>
@@ -751,22 +817,24 @@
     <!-- BOTTOM NAVIGATION BAR -->
     <nav class="fixed bottom-0 inset-x-0 z-30 glass-panel border-t border-gold-500/20">
         <div class="max-w-6xl mx-auto px-2 py-2 grid grid-cols-4 gap-1">
-            <button id="nav-home" onclick="switchTab('home')" class="flex flex-col items-center py-1.5 rounded-xl text-gold-400 font-extrabold transition">
+            <button type="button" id="nav-home" onclick="switchTab('home')" class="flex flex-col items-center py-1.5 rounded-xl text-gold-400 font-extrabold transition">
                 <i class="fa-solid fa-house text-base"></i>
                 <span class="text-[11px] mt-0.5">Home</span>
             </button>
-            <button id="nav-message" onclick="switchTab('message')" class="flex flex-col items-center py-1.5 rounded-xl text-zinc-400 hover:text-zinc-200 font-semibold transition">
+            <button type="button" id="nav-message" onclick="switchTab('message')" class="relative flex flex-col items-center py-1.5 rounded-xl text-zinc-400 hover:text-zinc-200 font-semibold transition">
                 <i class="fa-solid fa-comment-dots text-base"></i>
                 <span class="text-[11px] mt-0.5">Message</span>
+                <span id="navMsgReplyBadge" class="hidden absolute top-0.5 right-6 px-1.5 rounded-full bg-emerald-500 text-obsidian text-[10px] font-extrabold">1</span>
             </button>
-            <button id="nav-cart" onclick="switchTab('cart')" class="relative flex flex-col items-center py-1.5 rounded-xl text-zinc-400 hover:text-zinc-200 font-semibold transition">
+            <button type="button" id="nav-cart" onclick="switchTab('cart')" class="relative flex flex-col items-center py-1.5 rounded-xl text-zinc-400 hover:text-zinc-200 font-semibold transition">
                 <i class="fa-solid fa-bag-shopping text-base"></i>
                 <span class="text-[11px] mt-0.5">Cart</span>
                 <span id="navCartBadge" class="hidden absolute top-0.5 right-6 px-1.5 rounded-full bg-gold-500 text-obsidian text-[10px] font-extrabold">0</span>
             </button>
-            <button id="nav-me" onclick="switchTab('me')" class="flex flex-col items-center py-1.5 rounded-xl text-zinc-400 hover:text-zinc-200 font-semibold transition">
+            <button type="button" id="nav-me" onclick="switchTab('me')" class="relative flex flex-col items-center py-1.5 rounded-xl text-zinc-400 hover:text-zinc-200 font-semibold transition">
                 <i class="fa-solid fa-user text-base"></i>
                 <span class="text-[11px] mt-0.5">Me</span>
+                <span id="navMeBadge" class="hidden absolute top-0.5 right-6 min-w-[18px] px-1.5 rounded-full bg-rose-600 text-white text-[10px] font-extrabold text-center">0</span>
             </button>
         </div>
     </nav>
@@ -778,7 +846,6 @@
         const SUPABASE_BUCKET = 'aura-media';
         const MY_ORDER_IDS_KEY = 'aura_my_order_ids';
 
-        // Telegram Bot Notification (@orderkpbot -> Shop Group)
         const TELEGRAM_BOT_TOKEN = '9246578991:AAEer6ak8XZTOoXZqAjOP088fQkI0DXUUSs';
         const TELEGRAM_CHAT_ID = '-4856530869';
 
@@ -791,13 +858,13 @@
             console.warn('Supabase client init warning:', err);
         }
 
-        // ==================== STORAGE KEYS & DEFAULT DATA ====================
         const STORAGE_KEYS = {
             PRODUCTS: 'aura_decor_products_v1',
             CART: 'aura_decor_cart_v1',
             ORDERS: 'aura_decor_orders_v1',
             BANNER: 'aura_decor_banner_v1',
-            CUSTOMER_PROFILE: 'aura_decor_customer_profile_v1'
+            CUSTOMER_PROFILE: 'aura_decor_customer_profile_v1',
+            MESSAGES: 'aura_decor_messages_v1'
         };
 
         const DEFAULT_BANNER = {
@@ -850,11 +917,11 @@
             }
         ];
 
-        // ==================== APPLICATION STATE ====================
         let state = {
             products: [],
             cart: [],
             orders: [],
+            messages: [],
             banner: { ...DEFAULT_BANNER },
             customerProfile: { name: '', phone: '', address: '' },
             selectedCategory: 'ទាំងអស់',
@@ -872,7 +939,6 @@
         let toastTimer = null;
         let activeReceiptOrder = null;
 
-        // ==================== ORDER ID ISOLATION HELPERS ====================
         function getMyOrderIds() {
             try {
                 const raw = JSON.parse(localStorage.getItem(MY_ORDER_IDS_KEY) || '[]');
@@ -929,7 +995,6 @@
             };
         }
 
-        // ==================== INITIALIZATION & SYNC ====================
         function initApp() {
             try {
                 const savedProducts = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
@@ -956,6 +1021,9 @@
 
                 const savedProfile = localStorage.getItem(STORAGE_KEYS.CUSTOMER_PROFILE);
                 state.customerProfile = savedProfile ? JSON.parse(savedProfile) : { name: '', phone: '', address: '' };
+
+                const savedMessages = localStorage.getItem(STORAGE_KEYS.MESSAGES);
+                state.messages = savedMessages ? JSON.parse(savedMessages) : [];
             } catch (err) {
                 console.error('Error loading local storage:', err);
                 state.products = [...DEFAULT_PRODUCTS];
@@ -963,10 +1031,13 @@
 
             applyBannerToDOM();
             prefillCustomerCheckoutForm();
+            renderChatMessages();
+            updateMessageBadges();
             renderCategoryPills();
             renderProductsGrid();
             renderOrderStatusTabs();
             updateCartBadges();
+            updateMeOrderBadge();
 
             if (supabaseClient && supabaseClient.auth && typeof supabaseClient.auth.onAuthStateChange === 'function') {
                 supabaseClient.auth.onAuthStateChange((_event, session) => {
@@ -974,7 +1045,6 @@
                 });
             }
 
-            // Synchronize latest data from Supabase in background
             syncFromSupabase();
         }
 
@@ -1002,7 +1072,6 @@
                             .from(SUPABASE_BUCKET)
                             .upload(filePath, file, { cacheControl: '3600', upsert: true });
                         if (error) {
-                            console.warn('Supabase storage upload warning:', error.message);
                             resolve(fallbackDataUrl);
                             return;
                         }
@@ -1010,8 +1079,7 @@
                             .from(SUPABASE_BUCKET)
                             .getPublicUrl(filePath);
                         resolve((pub && pub.publicUrl) || fallbackDataUrl);
-                    } catch (err) {
-                        console.warn('Supabase storage exception:', err);
+                    } catch (_) {
                         resolve(fallbackDataUrl);
                     }
                 };
@@ -1079,7 +1147,6 @@
         async function syncFromSupabase() {
             if (!supabaseClient) return;
             try {
-                // 1. Sync Products from central Database across all browsers
                 const { data: prodRows, error: prodErr } = await supabaseClient
                     .from('products')
                     .select('*')
@@ -1116,7 +1183,6 @@
                     }
                 }
 
-                // 2. Check Admin Auth Session
                 const { data: sessData } = await supabaseClient.auth.getSession();
                 state.adminAuthenticated = Boolean(sessData?.session?.user);
 
@@ -1132,7 +1198,6 @@
                         if (state.activeTab === 'admin' && state.adminTab === 'orders') renderAdminOrdersList();
                     }
                 } else {
-                    // Customer browser isolation: fetch only orders saved in this browser's aura_my_order_ids
                     const myIds = getMyOrderIds();
                     if (myIds.length > 0) {
                         const { data: myRows, error: myOrdErr } = await supabaseClient
@@ -1155,6 +1220,8 @@
                         state.orders = [];
                         saveState(STORAGE_KEYS.ORDERS, state.orders);
                     }
+                    renderOrderStatusTabs();
+                    updateMeOrderBadge();
                     if (state.activeTab === 'me') renderCustomerOrdersView();
                 }
             } catch (err) {
@@ -1162,7 +1229,6 @@
             }
         }
 
-        // ==================== ESCAPE HELPERS ====================
         function escapeHtml(str) {
             return String(str ?? '')
                 .replace(/&/g, '&amp;')
@@ -1176,7 +1242,6 @@
             return String(str ?? '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
 
-        // ==================== TOAST & CONFIRM ====================
         function showToast(msg, durationMs = 5500) {
             const box = document.getElementById('toastBox');
             const text = document.getElementById('toastMessage');
@@ -1205,7 +1270,6 @@
             }
         }
 
-        // ==================== NAVIGATION ====================
         function switchTab(tab) {
             if (tab === 'admin' && !state.adminAuthenticated) {
                 openAdminGate();
@@ -1230,10 +1294,15 @@
                 }
             });
 
-            if (tab === 'cart') {
+            if (tab === 'message') {
+                renderChatMessages();
+                updateMessageBadges();
+            } else if (tab === 'cart') {
                 prefillCustomerCheckoutForm();
                 renderCartView();
             } else if (tab === 'me') {
+                syncFromSupabase();
+                renderOrderStatusTabs();
                 renderCustomerOrdersView();
             } else if (tab === 'admin') {
                 renderAdminDashboard();
@@ -1242,7 +1311,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ==================== BANNER ====================
         function applyBannerToDOM() {
             const badgeEl = document.getElementById('heroBadgeText');
             const titleEl = document.getElementById('heroTitleText');
@@ -1265,7 +1333,6 @@
             }
         }
 
-        // ==================== STOREFRONT (HOME) ====================
         function handleSearchInput(val) {
             state.searchQuery = val.trim().toLowerCase();
             const dInput = document.getElementById('desktopSearchInput');
@@ -1278,10 +1345,11 @@
         function renderCategoryPills() {
             const categories = ['ទាំងអស់', 'ហុងស៊ុយ', 'តុបតែងគេហដ្ឋាន', 'អំណោយពិសេស', 'ពន្លឺ & ចង្កៀង'];
             const container = document.getElementById('categoryPills');
+            if (!container) return;
             container.innerHTML = categories.map((cat) => {
                 const active = state.selectedCategory === cat;
                 return `
-                    <button onclick="selectCategory('${escapeAttr(cat)}')"
+                    <button type="button" onclick="selectCategory('${escapeAttr(cat)}')"
                             class="px-4 py-2 rounded-full text-xs font-extrabold whitespace-nowrap transition ${
                                 active
                                     ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-obsidian shadow-md shadow-gold-500/20'
@@ -1364,7 +1432,6 @@
             }).join('');
         }
 
-        // ==================== DIGITAL MENU MODAL & RTL GALLERY ====================
         let detailGalleryImages = [];
         let detailActiveIndex = 0;
 
@@ -1392,8 +1459,9 @@
             detailActiveIndex = 0;
 
             const trackEl = document.getElementById('detailGalleryTrack');
+            trackEl.classList.remove('flex-row-reverse');
             trackEl.innerHTML = detailGalleryImages.map((src, idx) => `
-                <div class="gallery-rtl-slide aspect-square bg-surface flex items-center justify-center">
+                <div class="gallery-rtl-slide aspect-square bg-surface flex items-center justify-center" data-slide-idx="${idx}">
                     <img src="${escapeAttr(src)}" alt="${escapeAttr(prod.name)} ${idx + 1}"
                          onclick="openZoomLightbox('${escapeAttr(src)}')"
                          onerror="this.src='https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'"
@@ -1401,7 +1469,6 @@
                 </div>
             `).join('');
 
-            // Start at first slide on the right edge in RTL flex layout
             requestAnimationFrame(() => {
                 trackEl.scrollLeft = 0;
             });
@@ -1410,15 +1477,32 @@
             document.getElementById('productDetailModal').classList.remove('hidden');
         }
 
+        function scrollThumbnailsForwardToActive(idx) {
+            const thumbContainer = document.getElementById('detailThumbnails');
+            if (!thumbContainer) return;
+            const activeThumb = thumbContainer.querySelector(`[data-thumb-idx="${idx}"]`);
+            if (!activeThumb) return;
+
+            const targetScrollLeft = Math.max(
+                0,
+                activeThumb.offsetLeft - thumbContainer.clientWidth * 0.25
+            );
+            thumbContainer.scrollTo({
+                left: targetScrollLeft,
+                behavior: 'smooth'
+            });
+        }
+
         function renderDetailThumbnails() {
             const thumbContainer = document.getElementById('detailThumbnails');
             if (detailGalleryImages.length > 1) {
                 thumbContainer.innerHTML = detailGalleryImages.map((src, idx) => `
-                    <button type="button" onclick="scrollDetailToIndex(${idx})"
-                            class="w-14 h-14 rounded-xl overflow-hidden border-2 ${idx === detailActiveIndex ? 'border-gold-400' : 'border-zinc-700'} shrink-0 transition">
+                    <button type="button" data-thumb-idx="${idx}" onclick="scrollDetailToIndex(${idx})"
+                            class="w-14 h-14 rounded-xl overflow-hidden border-2 ${idx === detailActiveIndex ? 'border-gold-400 scale-105' : 'border-zinc-700 opacity-75'} shrink-0 transition">
                         <img src="${escapeAttr(src)}" class="w-full h-full object-cover">
                     </button>
                 `).join('');
+                requestAnimationFrame(() => scrollThumbnailsForwardToActive(detailActiveIndex));
             } else {
                 thumbContainer.innerHTML = '';
             }
@@ -1429,9 +1513,8 @@
             if (!trackEl || idx < 0 || idx >= detailGalleryImages.length) return;
             detailActiveIndex = idx;
             const slideWidth = trackEl.clientWidth || 1;
-            const sign = trackEl.scrollLeft <= 0 && getComputedStyle(trackEl).direction === 'rtl' ? -1 : 1;
             trackEl.scrollTo({
-                left: sign * idx * slideWidth,
+                left: idx * slideWidth,
                 behavior: 'smooth'
             });
             renderDetailThumbnails();
@@ -1441,10 +1524,9 @@
             const trackEl = document.getElementById('detailGalleryTrack');
             if (!trackEl || detailGalleryImages.length <= 1) return;
             const slideWidth = trackEl.clientWidth || 1;
-            const rawOffset = Math.abs(trackEl.scrollLeft);
             const nextIdx = Math.min(
                 detailGalleryImages.length - 1,
-                Math.max(0, Math.round(rawOffset / slideWidth))
+                Math.max(0, Math.round(trackEl.scrollLeft / slideWidth))
             );
             if (nextIdx !== detailActiveIndex) {
                 detailActiveIndex = nextIdx;
@@ -1452,16 +1534,6 @@
             }
         }
 
-        function setDetailMainImage(src) {
-            const foundIdx = detailGalleryImages.indexOf(src);
-            if (foundIdx >= 0) {
-                scrollDetailToIndex(foundIdx);
-            } else {
-                openZoomLightbox(src);
-            }
-        }
-
-        // ==================== FULLSCREEN ZOOM LIGHTBOX STATE ====================
         let zoomState = {
             scale: 1,
             translateX: 0,
@@ -1706,7 +1778,6 @@
             }, 150);
         }
 
-        // ==================== CART & DISCOUNT LOGIC ====================
         function quickAddToCart(productId) {
             addProductToCart(productId, 1);
         }
@@ -1764,6 +1835,66 @@
             return { totalQty, subtotal, discount, total };
         }
 
+        function renderCartView() {
+            const emptyBox = document.getElementById('emptyCartBox');
+            const contentGrid = document.getElementById('cartContentGrid');
+            const clearBtn = document.getElementById('clearCartBtn');
+            const listEl = document.getElementById('cartItemsList');
+
+            if (!state.cart || state.cart.length === 0) {
+                emptyBox.classList.remove('hidden');
+                contentGrid.classList.add('hidden');
+                if (clearBtn) clearBtn.classList.add('hidden');
+                return;
+            }
+
+            emptyBox.classList.add('hidden');
+            contentGrid.classList.remove('hidden');
+            if (clearBtn) clearBtn.classList.remove('hidden');
+
+            const { totalQty, subtotal, discount, total } = calculateCartTotals();
+            const perItemDiscount = totalQty >= 2 ? 1.0 : 0;
+
+            listEl.innerHTML = state.cart.map((item, idx) => {
+                const effectiveUnit = Math.max(0, Number(item.price || 0) - perItemDiscount);
+                const lineTotal = effectiveUnit * item.qty;
+                const origLineTotal = Number(item.price || 0) * item.qty;
+                return `
+                    <div class="p-4 rounded-2xl bg-charcoal border border-zinc-800 flex items-center gap-3.5">
+                        <img src="${escapeAttr(item.image || 'https://placehold.co/200x200/1c1c24/e5be52?text=Aura')}"
+                             onerror="this.src='https://placehold.co/200x200/1c1c24/e5be52?text=Aura'"
+                             class="w-16 h-16 rounded-xl object-cover bg-surface shrink-0">
+                        <div class="flex-1 min-w-0 space-y-1">
+                            <p class="text-[10px] font-bold text-gold-300">${escapeHtml(item.sku || '')}</p>
+                            <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(item.name)}</h4>
+                            <div class="flex items-center gap-2 text-xs">
+                                <span class="font-extrabold text-gold-400">$${effectiveUnit.toFixed(2)}</span>
+                                ${perItemDiscount > 0 ? `<span class="text-zinc-500 line-through">$${Number(item.price || 0).toFixed(2)}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-2 shrink-0">
+                            <button type="button" onclick="removeCartItem(${idx})" class="text-zinc-500 hover:text-rose-400 text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                            <div class="flex items-center gap-1.5 bg-surface border border-zinc-700 rounded-xl p-0.5">
+                                <button type="button" onclick="updateCartItemQty(${idx}, -1)" class="w-7 h-7 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold">-</button>
+                                <span class="w-6 text-center text-xs font-extrabold text-gold-300">${item.qty}</span>
+                                <button type="button" onclick="updateCartItemQty(${idx}, 1)" class="w-7 h-7 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold">+</button>
+                            </div>
+                            <div class="text-xs font-extrabold text-white">
+                                $${lineTotal.toFixed(2)}
+                                ${perItemDiscount > 0 ? `<span class="text-[10px] text-zinc-500 line-through ml-1">$${origLineTotal.toFixed(2)}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cartDiscount').textContent = `-$${discount.toFixed(2)}`;
+            document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+        }
+
         function updateCartItemQty(index, delta) {
             if (!state.cart[index]) return;
             state.cart[index].qty += delta;
@@ -1800,79 +1931,398 @@
             if (addrEl && !addrEl.value && state.customerProfile.address) addrEl.value = state.customerProfile.address;
         }
 
-        function renderCartView() {
-            const emptyBox = document.getElementById('emptyCartBox');
-            const grid = document.getElementById('cartContentGrid');
-            const clearBtn = document.getElementById('clearCartBtn');
-            const listEl = document.getElementById('cartItemsList');
+        let pendingChatImageUrl = '';
+        let pendingChatImageFile = null;
+        let pendingChatImageName = '';
 
-            if (state.cart.length === 0) {
-                emptyBox.classList.remove('hidden');
-                grid.classList.add('hidden');
-                clearBtn.classList.add('hidden');
-                return;
-            }
+        function handleChatImageSelected(e) {
+            const file = e.target && e.target.files && e.target.files[0];
+            if (!file) return;
+            pendingChatImageFile = file;
+            pendingChatImageName = file.name || 'image.jpg';
 
-            emptyBox.classList.add('hidden');
-            grid.classList.remove('hidden');
-            clearBtn.classList.remove('hidden');
-
-            listEl.innerHTML = state.cart.map((item, idx) => `
-                <div class="p-3.5 sm:p-4 rounded-2xl bg-charcoal border border-zinc-800 flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3 min-w-0">
-                        <img src="${escapeAttr(item.image)}" alt="${escapeAttr(item.name)}"
-                             onerror="this.src='https://placehold.co/200x200/1c1c24/e5be52?text=Aura'"
-                             class="w-16 h-16 rounded-xl object-cover bg-surface shrink-0">
-                        <div class="min-w-0">
-                            <p class="text-[10px] font-bold text-zinc-400">${escapeHtml(item.sku || '')}</p>
-                            <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(item.name)}</h4>
-                            <p class="text-xs font-extrabold text-gold-400 mt-0.5">$${Number(item.price).toFixed(2)}</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 shrink-0">
-                        <div class="flex items-center gap-1.5 bg-surface border border-zinc-700 rounded-xl p-1">
-                            <button type="button" onclick="updateCartItemQty(${idx}, -1)" class="w-7 h-7 rounded-lg bg-zinc-800 text-white text-xs font-bold">-</button>
-                            <span class="w-6 text-center text-xs font-extrabold text-gold-300">${item.qty}</span>
-                            <button type="button" onclick="updateCartItemQty(${idx}, 1)" class="w-7 h-7 rounded-lg bg-zinc-800 text-white text-xs font-bold">+</button>
-                        </div>
-                        <button type="button" onclick="removeCartItem(${idx})" class="w-8 h-8 rounded-xl bg-rose-950/50 hover:bg-rose-900/60 text-rose-400 text-xs">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-
-            const { subtotal, discount, total } = calculateCartTotals();
-            document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById('cartDiscount').textContent = `-$${discount.toFixed(2)}`;
-            document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                pendingChatImageUrl = (ev.target && ev.target.result) || '';
+                const bar = document.getElementById('chatImagePreviewBar');
+                const img = document.getElementById('chatImagePreviewImg');
+                const nameEl = document.getElementById('chatImagePreviewName');
+                if (img && pendingChatImageUrl) img.src = pendingChatImageUrl;
+                if (nameEl) nameEl.textContent = pendingChatImageName;
+                if (bar) {
+                    bar.classList.remove('hidden');
+                    bar.classList.add('flex');
+                }
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
         }
 
-        // ==================== TELEGRAM BOT NOTIFICATION ====================
-        async function sendOrderToTelegramBot(order) {
-            if (!order || !TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-                return { ok: false, reason: 'មិនទាន់កំណត់ Bot Token ឬ Chat ID' };
+        function clearChatImageSelection() {
+            pendingChatImageUrl = '';
+            pendingChatImageFile = null;
+            pendingChatImageName = '';
+            const bar = document.getElementById('chatImagePreviewBar');
+            const img = document.getElementById('chatImagePreviewImg');
+            const nameEl = document.getElementById('chatImagePreviewName');
+            if (img) img.src = '';
+            if (nameEl) nameEl.textContent = '';
+            if (bar) {
+                bar.classList.add('hidden');
+                bar.classList.remove('flex');
             }
+            const fileInput = document.getElementById('chatImageInput');
+            if (fileInput) fileInput.value = '';
+        }
+
+        async function sendWebsiteMessage(e) {
+            e.preventDefault();
+            const msgInput = document.getElementById('chatMessageInput');
+            if (!msgInput) return;
+
+            const text = msgInput.value.trim();
+            const fileToSend = pendingChatImageFile;
+            const fallbackDataUrl = pendingChatImageUrl;
+            if (!text && !fileToSend && !fallbackDataUrl) return;
+
+            let finalImageUrl = fallbackDataUrl;
+            if (fileToSend) {
+                finalImageUrl = await uploadImageToSupabase(fileToSend, 'chat');
+            }
+
+            const sender = state.customerProfile.name || 'ភ្ញៀវវេបសាយ';
+            const phone = state.customerProfile.phone || '';
+            const timeStr = new Date().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' });
+
+            const entry = {
+                id: 'msg-' + Date.now(),
+                sender,
+                phone,
+                text,
+                image: finalImageUrl || '',
+                time: timeStr,
+                reply: '',
+                replyTime: ''
+            };
+
+            state.messages.push(entry);
+            saveState(STORAGE_KEYS.MESSAGES, state.messages);
+            renderChatMessages();
+            updateMessageBadges();
+            msgInput.value = '';
+            clearChatImageSelection();
+
+            const tgLines = [
+                `💬 សារថ្មីពីវេបសាយ AURA DECOR`,
+                `👤 អ្នកផ្ញើ៖ ${sender}${phone ? ` (${phone})` : ''}`,
+                `🕒 ម៉ោង៖ ${timeStr}`,
+                text ? `📝 សារ៖ ${text}` : '',
+                finalImageUrl ? `🖼️ រូបភាព៖ មានផ្ញើរូបភាពលើវេបសាយ` : ''
+            ].filter(Boolean).join('\n');
+
             try {
-                const text = buildReceiptText(order);
                 const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_BOT_TOKEN)}/sendMessage`;
                 const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         chat_id: String(TELEGRAM_CHAT_ID).trim(),
-                        text: text
+                        text: tgLines
                     })
                 });
                 const data = await res.json().catch(() => null);
-                if (!res.ok || !data || !data.ok) {
-                    return { ok: false, reason: data?.description || `HTTP ${res.status}` };
+                if (res.ok && data && data.ok) {
+                    showToast('បានផ្ញើសារចូល Telegram ហាងរួចរាល់!');
+                } else {
+                    showToast('បានរក្សាសារលើឧបករណ៍ (មិនអាចផ្ញើទៅ Telegram បាន)');
                 }
-                return { ok: true, reason: '' };
+            } catch (_) {
+                showToast('បានរក្សាសារលើឧបករណ៍ (ពិនិត្យអ៊ីនធឺណិតសម្រាប់ Telegram)');
+            }
+        }
+
+        function updateMessageBadges() {
+            const groups = getCustomerMessageGroups();
+            const unansweredCount = groups.filter((g) => !g.reply).length;
+            const adminBadge = document.getElementById('adminMsgBadge');
+            const adminTabBadge = document.getElementById('adminTabMsgBadge');
+            if (adminBadge) {
+                adminBadge.textContent = String(unansweredCount);
+                adminBadge.classList.toggle('hidden', unansweredCount === 0);
+            }
+            if (adminTabBadge) {
+                adminTabBadge.textContent = String(unansweredCount);
+                adminTabBadge.classList.toggle('hidden', unansweredCount === 0);
+            }
+
+            const repliedCount = groups.filter((g) => Boolean(g.reply)).length;
+            const navMsgBadge = document.getElementById('navMsgReplyBadge');
+            if (navMsgBadge) {
+                navMsgBadge.textContent = String(repliedCount);
+                navMsgBadge.classList.toggle('hidden', repliedCount === 0 || state.activeTab === 'message');
+            }
+        }
+
+        // Group consecutive customer messages into a single conversation block until an admin reply exists
+        function getCustomerMessageGroups() {
+            if (!Array.isArray(state.messages) || state.messages.length === 0) return [];
+            const groups = [];
+            let current = null;
+
+            state.messages.forEach((m) => {
+                const isAdminOnlyRow = m.role === 'admin' && !m.isCustomerGroup;
+                if (isAdminOnlyRow) {
+                    if (current && m.text) {
+                        current.reply = m.text;
+                        current.replyTime = m.time || current.replyTime || '';
+                    }
+                    return;
+                }
+
+                if (!current || (current.reply && current.reply.trim() !== '')) {
+                    current = {
+                        id: m.id,
+                        sender: m.sender || 'ភ្ញៀវវេបសាយ',
+                        phone: m.phone || '',
+                        startTime: m.time || '',
+                        endTime: m.time || '',
+                        items: [],
+                        reply: m.reply || '',
+                        replyTime: m.replyTime || ''
+                    };
+                    groups.push(current);
+                } else {
+                    current.endTime = m.time || current.endTime;
+                    if (m.reply && !current.reply) {
+                        current.reply = m.reply;
+                        current.replyTime = m.replyTime || '';
+                    }
+                }
+
+                current.items.push({
+                    id: m.id,
+                    text: m.text || '',
+                    image: m.image || '',
+                    time: m.time || ''
+                });
+            });
+
+            return groups;
+        }
+
+        function renderChatMessages() {
+            const threadEl = document.getElementById('liveChatThread');
+            if (!threadEl) return;
+
+            const groups = getCustomerMessageGroups();
+            if (groups.length === 0) {
+                threadEl.innerHTML = `
+                    <div class="p-4 rounded-2xl bg-charcoal/80 border border-zinc-800/80 text-sm text-zinc-300 leading-relaxed">
+                        សួស្តី! លោកអ្នកអាចផ្ញើសារសួរអំពីទំនិញ ហុងស៊ុយ ឬការដឹកជញ្ជូនហ្វ្រី ២៥ ខេត្ត-ក្រុងនៅទីនេះបាន។ Admin នឹងតបសារជូនលើវេបសាយវិញ។
+                    </div>
+                `;
+                return;
+            }
+
+            threadEl.innerHTML = groups.map((g) => {
+                const timeLabel = g.startTime === g.endTime || !g.endTime
+                    ? escapeHtml(g.startTime)
+                    : `${escapeHtml(g.startTime)} - ${escapeHtml(g.endTime)}`;
+
+                const bubblesHtml = g.items.map((item) => `
+                    <div class="px-3.5 py-2.5 rounded-xl bg-surface/95 border border-zinc-700/70 space-y-2">
+                        ${item.text ? `<p class="text-sm sm:text-[15px] text-zinc-100 whitespace-pre-line leading-relaxed">${escapeHtml(item.text)}</p>` : ''}
+                        ${item.image ? `
+                            <img src="${escapeAttr(item.image)}" alt="រូបភាពពីភ្ញៀវ"
+                                 onclick="openZoomLightbox('${escapeAttr(item.image)}')"
+                                 class="max-w-[260px] max-h-60 rounded-xl object-cover border border-zinc-700 cursor-zoom-in">
+                        ` : ''}
+                        <div class="text-right text-[11px] text-zinc-400">${escapeHtml(item.time || '')}</div>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="p-3.5 sm:p-4 rounded-2xl bg-charcoal border border-gold-500/20 space-y-2.5">
+                        <div class="flex items-center justify-between gap-2 text-xs text-zinc-400">
+                            <span class="font-bold text-gold-300">${escapeHtml(g.sender)} ${g.phone ? `(${escapeHtml(g.phone)})` : ''}</span>
+                            <span>${timeLabel}</span>
+                        </div>
+                        <div class="space-y-1.5">
+                            ${bubblesHtml}
+                        </div>
+                        ${g.reply ? `
+                            <div class="mt-2.5 pt-2.5 border-t border-zinc-800/90 bg-gold-500/10 border border-gold-400/30 rounded-xl p-3 space-y-1.5">
+                                <div class="flex items-center justify-between gap-2 text-xs">
+                                    <span class="font-extrabold text-gold-300"><i class="fa-solid fa-reply mr-1"></i> Admin Aura Decor (តបសរុប)</span>
+                                    <span class="text-zinc-400">${escapeHtml(g.replyTime || '')}</span>
+                                </div>
+                                <p class="text-sm sm:text-[15px] text-gold-100 whitespace-pre-line leading-relaxed">${escapeHtml(g.reply)}</p>
+                            </div>
+                        ` : `
+                            <p class="text-xs text-zinc-400 italic">កំពុងរង់ចាំ Admin ឆ្លើយតបសរុប...</p>
+                        `}
+                    </div>
+                `;
+            }).join('');
+            threadEl.scrollTop = threadEl.scrollHeight;
+        }
+
+        function renderAdminMessagesSection() {
+            const container = document.getElementById('adminSectionMessages');
+            if (!container) return;
+
+            const groups = getCustomerMessageGroups();
+            if (groups.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 px-4 rounded-3xl bg-charcoal border border-zinc-800 text-xs text-zinc-400">
+                        មិនទាន់មានសារពីភ្ញៀវលើវេបសាយនៅឡើយទេ
+                    </div>
+                `;
+                return;
+            }
+
+            const ordered = [...groups].reverse();
+            container.innerHTML = ordered.map((g) => {
+                const timeLabel = g.startTime === g.endTime || !g.endTime
+                    ? escapeHtml(g.startTime)
+                    : `${escapeHtml(g.startTime)} - ${escapeHtml(g.endTime)}`;
+
+                const customerMessagesHtml = g.items.map((item, idx) => `
+                    <div class="p-2.5 rounded-xl bg-charcoal/90 border border-zinc-800 space-y-1.5">
+                        <div class="flex items-center justify-between text-[10px] text-zinc-400">
+                            <span class="font-bold text-zinc-300">សារទី ${idx + 1}</span>
+                            <span>${escapeHtml(item.time || '')}</span>
+                        </div>
+                        ${item.text ? `<p class="text-xs text-zinc-100 whitespace-pre-line leading-relaxed">${escapeHtml(item.text)}</p>` : ''}
+                        ${item.image ? `
+                            <img src="${escapeAttr(item.image)}" alt="រូបភាពពីភ្ញៀវ"
+                                 onclick="openZoomLightbox('${escapeAttr(item.image)}')"
+                                 class="max-w-[220px] max-h-52 rounded-xl object-cover border border-zinc-700 cursor-zoom-in">
+                        ` : ''}
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="p-4 sm:p-5 rounded-3xl bg-charcoal border border-zinc-800 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-extrabold text-gold-300">${escapeHtml(g.sender)}</span>
+                                ${g.phone ? `<span class="text-[11px] text-zinc-400">(${escapeHtml(g.phone)})</span>` : ''}
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-surface text-zinc-300 border border-zinc-700">${g.items.length} សារជាប់គ្នា</span>
+                                ${g.reply
+                                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/30">បានតប</span>`
+                                    : `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-950 text-rose-300 border border-rose-500/30">រង់ចាំតប</span>`}
+                            </div>
+                            <span class="text-[11px] text-zinc-400">${timeLabel}</span>
+                        </div>
+
+                        <div class="p-3 rounded-2xl bg-surface/70 space-y-2">
+                            ${customerMessagesHtml}
+                        </div>
+
+                        <form onsubmit="submitAdminReply(event, '${escapeAttr(g.id)}')" class="space-y-2">
+                            <textarea id="adminReplyInput-${escapeAttr(g.id)}" rows="2" required
+                                      placeholder="ចុច Reply ដើម្បីតបសរុបខាងក្រោមសារភ្ញៀវទាំងអស់នេះ..."
+                                      class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-gold-400">${escapeHtml(g.reply || '')}</textarea>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[10px] text-zinc-500">
+                                    ${g.replyTime ? `បានតបសរុបម៉ោង៖ ${escapeHtml(g.replyTime)}` : 'តបសរុបមួយដងនៅខាងក្រោមសារភ្ញៀវ'}
+                                </span>
+                                <button type="submit"
+                                        onclick="focusAdminReplyBox('${escapeAttr(g.id)}')"
+                                        class="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs font-extrabold transition">
+                                    <i class="fa-solid fa-reply mr-1"></i> Reply តបសរុប
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function focusAdminReplyBox(groupId) {
+            const box = document.getElementById(`adminReplyInput-${groupId}`);
+            if (box) box.focus();
+        }
+
+        function submitAdminReply(e, groupId) {
+            e.preventDefault();
+            const inputEl = document.getElementById(`adminReplyInput-${groupId}`);
+            if (!inputEl) return;
+            const replyText = inputEl.value.trim();
+            if (!replyText) return;
+
+            const groups = getCustomerMessageGroups();
+            const targetGroup = groups.find((g) => String(g.id) === String(groupId));
+            if (!targetGroup) return;
+
+            const replyTimeStr = new Date().toLocaleTimeString('km-KH', { hour: '2-digit', minute: '2-digit' });
+            const groupMsgIds = new Set(targetGroup.items.map((it) => String(it.id)));
+
+            state.messages.forEach((m) => {
+                if (groupMsgIds.has(String(m.id))) {
+                    m.reply = replyText;
+                    m.replyTime = replyTimeStr;
+                }
+            });
+
+            saveState(STORAGE_KEYS.MESSAGES, state.messages);
+            renderChatMessages();
+            renderAdminMessagesSection();
+            updateMessageBadges();
+            showToast('បានផ្ញើសារតបសរុបនៅខាងក្រោមសារភ្ញៀវរួចរាល់');
+        }
+
+        async function sendOrderToTelegramBot(order) {
+            if (!order) return { ok: false, reason: 'គ្មានទិន្នន័យ Order' };
+            if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+                return { ok: false, reason: 'មិនបានកំណត់ Bot Token ឬ Chat ID' };
+            }
+
+            const itemLines = (order.items || []).map((it) => {
+                const prodMatch = state.products.find((p) => String(p.id) === String(it.productId));
+                const skuLabel = it.sku || (prodMatch && prodMatch.sku) || '';
+                const skuPrefix = skuLabel ? `[${skuLabel}] ` : '';
+                const lineTotal = (Number(it.price || 0) * Number(it.qty || 1)).toFixed(2);
+                return `• ${skuPrefix}${it.name} x${it.qty} = $${lineTotal}`;
+            });
+
+            const textLines = [
+                `🛒 ការបញ្ជាទិញថ្មី — AURA DECOR`,
+                `🧾 លេខវិក្កយបត្រ៖ ${order.id}`,
+                `📅 កាលបរិច្ឆេទ៖ ${order.createdAt}`,
+                `👤 អតិថិជន៖ ${order.customerName}`,
+                `📞 ទូរស័ព្ទ៖ ${order.customerPhone}`,
+                `📍 ទីតាំង៖ ${order.customerAddress}`,
+                `💳 ការទូទាត់៖ ${order.paymentMethod}`,
+                `📦 ស្ថានភាព៖ ${order.status}`,
+                `------------------------`,
+                `🛍️ បញ្ជីទំនិញ៖`,
+                ...itemLines,
+                `------------------------`,
+                `💵 តម្លៃដើម៖ $${Number(order.subtotal || 0).toFixed(2)}`,
+                `🎁 បញ្ចុះតម្លៃ៖ -$${Number(order.discount || 0).toFixed(2)}`,
+                `🚚 ដឹកជញ្ជូន៖ FREE ($0.00)`,
+                `💰 សរុបត្រូវបង់៖ $${Number(order.total || 0).toFixed(2)}`
+            ].join('\n');
+
+            try {
+                const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_BOT_TOKEN)}/sendMessage`;
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: String(TELEGRAM_CHAT_ID).trim(),
+                        text: textLines
+                    })
+                });
+                const data = await res.json().catch(() => null);
+                if (res.ok && data && data.ok) {
+                    return { ok: true };
+                }
+                return { ok: false, reason: (data && data.description) || `HTTP ${res.status}` };
             } catch (err) {
-                console.warn('Telegram Bot notification error:', err);
-                return { ok: false, reason: err?.message || 'បញ្ហាបណ្តាញ' };
+                return { ok: false, reason: (err && err.message) || 'បញ្ហាបណ្តាញអ៊ីនធឺណិត' };
             }
         }
 
@@ -1989,6 +2439,8 @@
             state.cart = [];
             saveState(STORAGE_KEYS.CART, state.cart);
             updateCartBadges();
+            renderOrderStatusTabs();
+            updateMeOrderBadge();
 
             const tgResult = await sendOrderToTelegramBot(createdOrder);
             if (tgResult && tgResult.ok) {
@@ -2001,7 +2453,6 @@
             switchTab('me');
         }
 
-        // ==================== RECEIPT MODAL & A6 EXPORT ====================
         function openReceiptModal(order) {
             activeReceiptOrder = order;
             document.getElementById('receiptOrderId').textContent = `លេខវិក្កយបត្រ៖ ${order.id} • ${order.createdAt}`;
@@ -2233,7 +2684,6 @@
                 ctx.fillText(`$${Number(order.total || 0).toFixed(2)}`, canvas.width - 54, footerY + 150);
                 ctx.textAlign = 'left';
 
-                // Compact thank you & shop phone note below summary box (2 lines so Khmer font never clips)
                 const noteY = footerY + 198;
                 ctx.textAlign = 'center';
                 ctx.fillStyle = '#3F3F46';
@@ -2292,20 +2742,77 @@
             showToast('បាន Save រូបវិក្កយបត្រ A6 និង Copy អត្ថបទរួចរាល់!');
         }
 
-        // ==================== CUSTOMER ORDER HISTORY (ME) ====================
+        function getVisibleCustomerOrders() {
+            const myIds = getMyOrderIds();
+            return state.orders.filter((o) => myIds.includes(String(o.id)));
+        }
+
+        function isActiveOrderStatus(status) {
+            return ['To Pay', 'To Ship', 'To Receive', 'To received'].includes(status);
+        }
+
+        function updateMeOrderBadge() {
+            const visibleOrders = getVisibleCustomerOrders();
+            const activeCount = visibleOrders.filter((o) => isActiveOrderStatus(o.status)).length;
+            const navMeBadge = document.getElementById('navMeBadge');
+            if (navMeBadge) {
+                navMeBadge.textContent = String(activeCount);
+                navMeBadge.classList.toggle('hidden', activeCount === 0);
+            }
+        }
+
         function renderOrderStatusTabs() {
-            const statuses = ['All', 'To Pay', 'To Ship', 'To Receive', 'To Review', 'Refund'];
+            const visibleOrders = getVisibleCustomerOrders();
+            const statusItems = [
+                { key: 'To Pay', label: 'To Pay', icon: 'fa-wallet' },
+                { key: 'To Ship', label: 'To Ship', icon: 'fa-box-open' },
+                { key: 'To Receive', label: 'To Receive', icon: 'fa-truck-fast' },
+                { key: 'To Review', label: 'Reviews', icon: 'fa-comment-dots' },
+                { key: 'Refund', label: 'Refund', icon: 'fa-rotate-left' }
+            ];
+
+            const topAllBtn = document.getElementById('orderAllTopBtn');
+            if (topAllBtn) {
+                const isAllActive = state.orderStatusFilter === 'All';
+                topAllBtn.className = isAllActive
+                    ? 'px-3 py-1 rounded-full text-xs font-extrabold bg-gold-500 text-obsidian flex items-center gap-1 transition'
+                    : 'px-3 py-1 rounded-full text-xs font-bold bg-surface hover:bg-zinc-800 text-zinc-300 border border-zinc-700 flex items-center gap-1 transition';
+            }
+
             const container = document.getElementById('orderStatusTabs');
-            container.innerHTML = statuses.map((st) => {
-                const active = state.orderStatusFilter === st;
+            if (!container) return;
+
+            container.className = 'grid grid-cols-3 sm:grid-cols-5 gap-2 pt-1';
+            container.innerHTML = statusItems.map((item) => {
+                const count = visibleOrders.filter((o) => {
+                    if (!isActiveOrderStatus(o.status) && ['To Pay', 'To Ship', 'To Receive', 'To received'].includes(o.status)) {
+                        return false;
+                    }
+                    if (item.key === 'To Receive') {
+                        return o.status === 'To Receive' || o.status === 'To received';
+                    }
+                    return o.status === item.key;
+                }).length;
+
+                const active = state.orderStatusFilter === item.key;
+                const badgeHtml = count > 0
+                    ? `<span class="absolute -top-2 -right-2.5 min-w-[20px] h-5 px-1.5 rounded-full bg-charcoal border-[1.5px] border-rose-500 text-rose-400 text-[11px] font-extrabold flex items-center justify-center shadow-md">${count}</span>`
+                    : '';
+
                 return `
-                    <button onclick="selectOrderStatusFilter('${st}')"
-                            class="px-3.5 py-2 rounded-full text-xs font-extrabold whitespace-nowrap transition ${
+                    <button type="button" onclick="selectOrderStatusFilter('${item.key}')"
+                            class="flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition ${
                                 active
-                                    ? 'bg-gold-500 text-obsidian'
-                                    : 'bg-charcoal hover:bg-surface text-zinc-300 border border-zinc-800'
+                                    ? 'bg-gold-500/15 text-gold-300 ring-1 ring-gold-500/40'
+                                    : 'text-zinc-300 hover:bg-surface/80'
                             }">
-                        ${st}
+                        <div class="relative inline-flex items-center justify-center w-9 h-9">
+                            <i class="fa-solid ${item.icon} text-xl ${active ? 'text-gold-400' : 'text-zinc-400'}"></i>
+                            ${badgeHtml}
+                        </div>
+                        <span class="text-[11px] sm:text-xs font-bold mt-1.5 whitespace-nowrap ${active ? 'text-gold-300' : 'text-zinc-300'}">
+                            ${item.label}
+                        </span>
                     </button>
                 `;
             }).join('');
@@ -2318,16 +2825,21 @@
         }
 
         function renderCustomerOrdersView() {
-            const myIds = getMyOrderIds();
-            const visibleOrders = state.orders.filter((o) => myIds.includes(String(o.id)));
+            const visibleOrders = getVisibleCustomerOrders();
+            const activeOrdersCount = visibleOrders.filter((o) => isActiveOrderStatus(o.status)).length;
 
             const countEl = document.getElementById('meOrderCount');
-            if (countEl) countEl.textContent = String(visibleOrders.length);
+            if (countEl) countEl.textContent = String(activeOrdersCount);
+            updateMeOrderBadge();
 
             const listEl = document.getElementById('customerOrdersList');
-            const filtered = visibleOrders.filter((o) =>
-                state.orderStatusFilter === 'All' || o.status === state.orderStatusFilter
-            );
+            const filtered = visibleOrders.filter((o) => {
+                if (state.orderStatusFilter === 'All') return true;
+                if (state.orderStatusFilter === 'To Receive') {
+                    return o.status === 'To Receive' || o.status === 'To received';
+                }
+                return o.status === state.orderStatusFilter;
+            });
 
             if (filtered.length === 0) {
                 listEl.innerHTML = `
@@ -2359,7 +2871,7 @@
                             <span class="text-xs text-emerald-400 font-bold">
                                 <i class="fa-solid fa-truck-fast mr-1"></i> ដឹកជញ្ជូនហ្វ្រី • សរុប៖ <strong class="text-gold-300">$${Number(order.total).toFixed(2)}</strong>
                             </span>
-                            <button onclick="openReceiptById('${escapeAttr(order.id)}')"
+                            <button type="button" onclick="openReceiptById('${escapeAttr(order.id)}')"
                                     class="px-3 py-1.5 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-xs font-bold text-zinc-200 transition">
                                 មើលវិក្កយបត្រ
                             </button>
@@ -2374,7 +2886,6 @@
             if (ord) openReceiptModal(ord);
         }
 
-        // ==================== ADMIN GATE & DASHBOARD ====================
         async function openAdminGate() {
             if (!state.adminAuthenticated && supabaseClient) {
                 const { data } = await supabaseClient.auth.getSession();
@@ -2436,6 +2947,7 @@
             const map = {
                 products: ['adminTabProducts', 'adminSectionProducts'],
                 orders: ['adminTabOrders', 'adminSectionOrders'],
+                messages: ['adminTabMessages', 'adminSectionMessages'],
                 banner: ['adminTabBanner', 'adminSectionBanner']
             };
 
@@ -2446,21 +2958,22 @@
                 const isActive = key === tab;
 
                 btn.className = isActive
-                    ? 'px-4 py-2 rounded-xl bg-gold-500 text-obsidian text-xs font-extrabold transition'
-                    : 'px-4 py-2 rounded-xl bg-surface hover:bg-zinc-800 text-zinc-300 text-xs font-bold transition';
+                    ? 'px-4 py-2 rounded-xl bg-gold-500 text-obsidian text-xs font-extrabold whitespace-nowrap flex items-center gap-1.5 transition'
+                    : 'px-4 py-2 rounded-xl bg-surface hover:bg-zinc-800 text-zinc-300 text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition';
                 sec.classList.toggle('hidden', !isActive);
             });
 
             if (tab === 'products') renderAdminProductsList();
             if (tab === 'orders') renderAdminOrdersList();
+            if (tab === 'messages') renderAdminMessagesSection();
             if (tab === 'banner') populateBannerForm();
+            updateMessageBadges();
         }
 
         function renderAdminDashboard() {
             switchAdminTab(state.adminTab || 'products');
         }
 
-        // ==================== ADMIN: PRODUCTS ====================
         function renderAdminProductsList() {
             const container = document.getElementById('adminSectionProducts');
             if (state.products.length === 0) {
@@ -2485,11 +2998,11 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <button onclick="openProductModal('${escapeAttr(p.id)}')"
+                            <button type="button" onclick="openProductModal('${escapeAttr(p.id)}')"
                                     class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-gold-300 text-xs font-bold">
                                 <i class="fa-solid fa-pen mr-1"></i> កែប្រែ
                             </button>
-                            <button onclick="deleteAdminProduct('${escapeAttr(p.id)}')"
+                            <button type="button" onclick="deleteAdminProduct('${escapeAttr(p.id)}')"
                                     class="px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 text-rose-400 text-xs font-bold">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
@@ -2624,7 +3137,6 @@
             showToast('បានលុបទំនិញរួចរាល់');
         }
 
-        // ==================== ADMIN: ORDERS & RETURNING CUSTOMERS ====================
         function renderAdminOrdersList() {
             const container = document.getElementById('adminSectionOrders');
             if (state.orders.length === 0) {
@@ -2640,7 +3152,7 @@
                 }
             });
 
-            const statuses = ['To Pay', 'To Ship', 'To Receive', 'To Review', 'Refund'];
+            const statuses = ['To Pay', 'To Ship', 'To Receive', 'Completed', 'To Review', 'Refund'];
 
             container.innerHTML = state.orders.map((order) => {
                 const normPhone = String(order.customerPhone || '').replace(/\s+/g, '');
@@ -2693,10 +3205,11 @@
             ord.status = newStatus;
             saveState(STORAGE_KEYS.ORDERS, state.orders);
             upsertOrderCloud(ord);
+            renderOrderStatusTabs();
+            updateMeOrderBadge();
             showToast(`បានប្តូរស្ថានភាព ${orderId} ទៅជា ${newStatus}`);
         }
 
-        // ==================== ADMIN: BANNER EDITOR ====================
         function populateBannerForm() {
             document.getElementById('bannerBadgeInput').value = state.banner.badge || '';
             document.getElementById('bannerTitleInput').value = state.banner.title || '';
@@ -2736,7 +3249,6 @@
             showToast('បានត្រឡប់ក្របមុខទៅដើមវិញ');
         }
 
-        // Start application once DOM is ready
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
