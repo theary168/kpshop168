@@ -847,8 +847,6 @@
         const SUPABASE_BUCKET = 'aura-media';
         const MY_ORDER_IDS_KEY = 'aura_my_order_ids';
         const TELEGRAM_WORKER_URL = 'https://aura-decor-notify.khytheary11.workers.dev';
-        const TELEGRAM_DIRECT_BOT_TOKEN = '9246578991:AAEer6ak8XZTOoXZqAjOP088fQkI0DXUUSs';
-        const TELEGRAM_DIRECT_CHAT_ID = '-4856530869';
 
         let supabaseClient = null;
         try {
@@ -2025,25 +2023,6 @@
             if (fileInput) fileInput.value = '';
         }
 
-        async function sendTelegramDirectFallback(text) {
-            if (!text || !TELEGRAM_DIRECT_BOT_TOKEN || !TELEGRAM_DIRECT_CHAT_ID) return false;
-            try {
-                const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_DIRECT_BOT_TOKEN)}/sendMessage`;
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: String(TELEGRAM_DIRECT_CHAT_ID).trim(),
-                        text
-                    })
-                });
-                const data = await res.json().catch(() => null);
-                return Boolean(res.ok && data && data.ok);
-            } catch (_) {
-                return false;
-            }
-        }
-
         async function sendWebsiteMessage(e) {
             e.preventDefault();
             const msgInput = document.getElementById('chatMessageInput');
@@ -2113,12 +2092,7 @@
                     showToast(`បានរក្សាសារលើឧបករណ៍ (ផ្ញើទៅ Telegram មិនបាន៖ ${String(reason).slice(0, 90)})`);
                 }
             } catch (err) {
-                const fallbackOk = await sendTelegramDirectFallback(tgLines);
-                if (fallbackOk) {
-                    showToast('បានផ្ញើសារចូល Telegram ហាងរួចរាល់!');
-                } else {
-                    showToast(`បានរក្សាសារលើឧបករណ៍ (${(err && err.message) || 'បញ្ហាការតភ្ជាប់ / CORS'})`);
-                }
+                showToast(`បានរក្សាសារលើឧបករណ៍ (${(err && err.message) || 'បញ្ហាការតភ្ជាប់ / CORS'})`);
             }
         }
 
@@ -2407,10 +2381,6 @@
                 const reason = (data && (data.description || data.error || data.message)) || rawText || `HTTP ${res.status}`;
                 return { ok: false, reason: String(reason).slice(0, 110) };
             } catch (err) {
-                const fallbackOk = await sendTelegramDirectFallback(textLines);
-                if (fallbackOk) {
-                    return { ok: true };
-                }
                 return { ok: false, reason: (err && err.message) || 'បញ្ហាបណ្តាញអ៊ីនធឺណិត / CORS' };
             }
         }
