@@ -847,8 +847,7 @@
         const SUPABASE_BUCKET = 'aura-media';
         const MY_ORDER_IDS_KEY = 'aura_my_order_ids';
 
-        const TELEGRAM_BOT_TOKEN = '9246578991:AAEer6ak8XZTOoXZqAjOP088fQkI0DXUUSs';
-        const TELEGRAM_CHAT_ID = '-4856530869';
+
 
         let supabaseClient = null;
         try {
@@ -2070,16 +2069,24 @@
                 finalImageUrl ? `🖼️ រូបភាព៖ មានផ្ញើរូបភាពលើវេបសាយ` : ''
             ].filter(Boolean).join('\n');
 
-            try {
-                const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_BOT_TOKEN)}/sendMessage`;
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: String(TELEGRAM_CHAT_ID).trim(),
-                        text: tgLines
-                    })
-                });
+           const TELEGRAM_PROXY_URL = "https://aura-decor-notify.khytheary11.workers.dev";
+
+  try {
+    const res = await fetch(TELEGRAM_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: tglines }),
+    });
+
+    const data = await res.json().catch(() => null);
+    if (res.ok && data && data.ok) {
+      showToast("បានផ្ញើសារចូល Telegram ដោយជោគជ័យ!");
+    } else {
+      showToast("មានបញ្ហាពេលផ្ញើទៅ Telegram (មិនអាចផ្ញើទៅ Telegram បាន)");
+    }
+  } catch (_) {
+    showToast("មានបញ្ហាការតភ្ជាប់ (ពិនិត្យអ៊ីនធឺណិត ឬ Proxy Telegram)");
+  }
                 const data = await res.json().catch(() => null);
                 if (res.ok && data && data.ok) {
                     showToast('បានផ្ញើសារចូល Telegram ហាងរួចរាល់!');
