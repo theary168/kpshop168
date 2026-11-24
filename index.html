@@ -97,6 +97,15 @@
             scroll-snap-align: start;
             flex: 0 0 100%;
         }
+        .drag-item-active {
+            opacity: 0.45;
+            border-color: #E5BE52 !important;
+        }
+        .drag-item-over {
+            border-color: #E5BE52 !important;
+            box-shadow: 0 0 0 2px rgba(229, 190, 82, 0.4);
+            transform: scale(1.01);
+        }
     </style>
 </head>
 <body class="min-h-screen bg-obsidian text-zinc-100 pb-24">
@@ -104,11 +113,12 @@
     <header class="sticky top-0 z-30 glass-panel border-b border-gold-500/20">
         <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
             <!-- Brand Logo -->
-           <button type="button" onclick="switchTab('home')" class="flex items-center gap-3 text-left group">
-                <img src="https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png"
+            <button type="button" onclick="switchTab('home')" class="flex items-center gap-3 text-left group">
+                <img id="headerBrandLogoImg"
+                     src="https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png"
                      alt="Aura Decor Logo"
-                     onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%2314141A%27/%3E%3Cpath fill=%27%23E5BE52%27 d=%27M12 44l4-22 12 10 4-14 4 14 12-10 4 22H12zm0 5h40v5H12v-5z%27/%3E%3C/svg%3E';"
-                     class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shrink-0">
+                     onerror="this.onerror=null; this.src='https://placehold.co/120x120/14141a/e5be52?text=KP';"
+                     class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shrink-0 border border-gold-500/30">
                 <div>
                     <h1 class="text-base sm:text-lg font-extrabold tracking-wide text-gold-300 leading-tight group-hover:text-gold-400 transition">AURA DECOR</h1>
                     <p class="text-[11px] text-zinc-400">វត្ថុតុបតែង • ហុងស៊ុយ • ដឹកហ្វ្រី ២៥ ខេត្ត-ក្រុង</p>
@@ -335,9 +345,9 @@
                         <div>
                             <label class="block text-xs font-bold text-zinc-300 mb-1">វិធីទូទាត់ប្រាក់</label>
                             <select id="custPayment" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
-                                 <option value="COD ភ្នំពេញ (បង់ពេលទទួលទំនិញ)">COD ភ្នំពេញ (បង់ពេលទទួលទំនិញ)</option>
-                                 <option value="COD តាមខេត្ត (បង់តាមវីរះប៊ុនថាំ)">COD តាមខេត្ត (បង់តាមវីរះប៊ុនថាំ)</option>
-                                 <option value="ABA / KHQR">ABA / KHQR (ស្កេនផ្ទេរប្រាក់)</option>
+                                <option value="COD ភ្នំពេញ (បង់ពេលទទួលទំនិញ)">COD ភ្នំពេញ (បង់ពេលទទួលទំនិញ)</option>
+                                <option value="COD តាមខេត្ត (បង់តាមវីរះប៊ុនថាំ)">COD តាមខេត្ត (បង់តាមវីរះប៊ុនថាំ)</option>
+                                <option value="ABA / KHQR">ABA / KHQR (ស្កេនផ្ទេរប្រាក់)</option>
                             </select>
                         </div>
 
@@ -453,7 +463,50 @@
             <div id="adminSectionProducts" class="space-y-3"></div>
             <div id="adminSectionOrders" class="hidden space-y-3"></div>
             <div id="adminSectionMessages" class="hidden space-y-4"></div>
-            <div id="adminSectionBanner" class="hidden rounded-3xl bg-charcoal border border-zinc-800 p-5 sm:p-6 space-y-4">
+            <div id="adminSectionBanner" class="hidden rounded-3xl bg-charcoal border border-zinc-800 p-5 sm:p-6 space-y-5">
+                <!-- Store Icon Upload / URL / Save Card -->
+                <div class="p-4 sm:p-5 rounded-2xl bg-surface/90 border border-gold-500/25 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <h3 class="text-sm sm:text-base font-extrabold text-gold-300">
+                            <i class="fa-solid fa-crown mr-1.5"></i> កែរូបភាព Icon / Logo ហាង (Upload ឬ URL + Save Image)
+                        </h3>
+                        <span class="text-[11px] text-zinc-400">ប្តូរទាំង Header &amp; Browser Icon</span>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <img id="adminIconPreviewImg"
+                                 src="https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png"
+                                 alt="Store Icon Preview"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/120x120/14141a/e5be52?text=KP';"
+                                 class="w-14 h-14 rounded-full object-cover bg-charcoal border border-gold-400/50 shrink-0">
+                            <div class="text-xs text-zinc-300 space-y-0.5">
+                                <p class="font-bold text-white">រូបភាព Icon បច្ចុប្បន្ន</p>
+                                <p class="text-[11px] text-zinc-400">អាច Upload ពីឧបករណ៍ ឬដាក់ Link រូបភាព រួចចុច Save Image</p>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="saveStoreIconImage()"
+                                class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs font-extrabold flex items-center justify-center gap-1.5 shadow-md transition">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Save Image</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-300 mb-1">Upload Icon Image ពីឧបករណ៍</label>
+                            <input id="storeIconFileInput" type="file" accept="image/*" onchange="handleStoreIconFileUpload(event)"
+                                   class="w-full text-xs text-zinc-300 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:bg-gold-500/20 file:text-gold-300 file:font-bold hover:file:bg-gold-500/30">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-300 mb-1">ឬបញ្ចូល URL Image សម្រាប់ Icon</label>
+                            <input id="storeIconUrlInput" type="text" oninput="previewStoreIconUrl(this.value)" placeholder="https://..."
+                                   class="w-full px-3.5 py-2.5 rounded-xl bg-charcoal border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
+                        </div>
+                    </div>
+                </div>
+
                 <h3 class="text-base font-extrabold text-gold-300">កែសម្រួលផ្ទាំងអក្សរ និងរូបភាពក្របមុខ (Hero Banner)</h3>
                 <form id="bannerSettingsForm" onsubmit="saveBannerSettings(event)" class="space-y-4">
                     <div>
@@ -704,7 +757,7 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold text-zinc-300">រូបភាពទំនិញ (Upload ទៅ Supabase Storage ឬបញ្ចូល Link)</label>
+                    <label class="block text-xs font-bold text-zinc-300">រូបភាពទំនិញ (Drag រូបភាពដាក់ទីតាំង #1 ដើម្បីធ្វើជា Thumbnail)</label>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <input type="file" accept="image/*" multiple onchange="handleProductFilesUpload(event)"
                                class="text-xs text-zinc-300 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:bg-gold-500/20 file:text-gold-300 file:font-bold">
@@ -717,7 +770,7 @@
                             </button>
                         </div>
                     </div>
-                    <div id="prodFormImagesPreview" class="flex flex-wrap gap-2 pt-1"></div>
+                    <div id="prodFormImagesPreview" class="flex flex-wrap gap-2.5 pt-1"></div>
                 </div>
 
                 <div class="flex justify-end gap-2 pt-3 border-t border-zinc-800">
@@ -851,6 +904,7 @@
         const SUPABASE_BUCKET = 'aura-media';
         const MY_ORDER_IDS_KEY = 'aura_my_order_ids';
         const TELEGRAM_WORKER_URL = 'https://aura-decor-notify.khytheary11.workers.dev';
+        const DEFAULT_STORE_ICON = 'https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png';
 
         let supabaseClient = null;
         try {
@@ -866,6 +920,7 @@
             CART: 'aura_decor_cart_v1',
             ORDERS: 'aura_decor_orders_v1',
             BANNER: 'aura_decor_banner_v1',
+            STORE_ICON: 'aura_decor_store_icon_v1',
             CUSTOMER_PROFILE: 'aura_decor_customer_profile_v1',
             MESSAGES: 'aura_decor_messages_v1'
         };
@@ -926,6 +981,7 @@
             orders: [],
             messages: [],
             banner: { ...DEFAULT_BANNER },
+            storeIcon: DEFAULT_STORE_ICON,
             customerProfile: { name: '', phone: '', address: '' },
             selectedCategory: 'ទាំងអស់',
             searchQuery: '',
@@ -941,6 +997,8 @@
         let confirmResolver = null;
         let toastTimer = null;
         let activeReceiptOrder = null;
+        let draggedProductIdx = null;
+        let draggedFormImageIdx = null;
 
         function getMyOrderIds() {
             try {
@@ -1022,6 +1080,12 @@
                 const savedBanner = localStorage.getItem(STORAGE_KEYS.BANNER);
                 state.banner = savedBanner ? { ...DEFAULT_BANNER, ...JSON.parse(savedBanner) } : { ...DEFAULT_BANNER };
 
+                const savedIcon = localStorage.getItem(STORAGE_KEYS.STORE_ICON);
+                if (savedIcon) {
+                    const parsedIcon = JSON.parse(savedIcon);
+                    if (parsedIcon) state.storeIcon = parsedIcon;
+                }
+
                 const savedProfile = localStorage.getItem(STORAGE_KEYS.CUSTOMER_PROFILE);
                 state.customerProfile = savedProfile ? JSON.parse(savedProfile) : { name: '', phone: '', address: '' };
 
@@ -1032,6 +1096,7 @@
                 state.products = [...DEFAULT_PRODUCTS];
             }
 
+            applyStoreIconToDOM();
             applyBannerToDOM();
             prefillCustomerCheckoutForm();
             renderChatMessages();
@@ -1205,7 +1270,8 @@
                     .order('created_at', { ascending: false });
 
                 if (!prodErr && Array.isArray(prodRows)) {
-                    state.products = prodRows.map((row) => {
+                    const localOrderMap = new Map(state.products.map((p, idx) => [String(p.id), idx]));
+                    const mapped = prodRows.map((row) => {
                         let descText = row.description || '';
                         let imgs = row.image_url ? [row.image_url] : [];
                         try {
@@ -1228,6 +1294,14 @@
                             images: imgs.length > 0 ? imgs : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
                         };
                     });
+                    if (localOrderMap.size > 0) {
+                        mapped.sort((a, b) => {
+                            const ia = localOrderMap.has(String(a.id)) ? localOrderMap.get(String(a.id)) : 999999;
+                            const ib = localOrderMap.has(String(b.id)) ? localOrderMap.get(String(b.id)) : 999999;
+                            return ia - ib;
+                        });
+                    }
+                    state.products = mapped;
                     saveState(STORAGE_KEYS.PRODUCTS, state.products);
                     renderProductsGrid();
                     if (state.activeTab === 'admin' && state.adminTab === 'products') {
@@ -1361,6 +1435,46 @@
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function applyStoreIconToDOM() {
+            const iconUrl = (state.storeIcon && state.storeIcon.trim()) || DEFAULT_STORE_ICON;
+            const headerImg = document.getElementById('headerBrandLogoImg');
+            const previewImg = document.getElementById('adminIconPreviewImg');
+            if (headerImg) headerImg.src = iconUrl;
+            if (previewImg) previewImg.src = iconUrl;
+            document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach((linkEl) => {
+                linkEl.href = iconUrl;
+            });
+        }
+
+        function previewStoreIconUrl(val) {
+            const clean = String(val || '').trim() || DEFAULT_STORE_ICON;
+            const previewImg = document.getElementById('adminIconPreviewImg');
+            if (previewImg) previewImg.src = clean;
+        }
+
+        async function handleStoreIconFileUpload(e) {
+            const file = e.target && e.target.files && e.target.files[0];
+            if (!file) return;
+            const url = await uploadImageToSupabase(file, 'banner');
+            if (url) {
+                const urlInput = document.getElementById('storeIconUrlInput');
+                if (urlInput) urlInput.value = url;
+                previewStoreIconUrl(url);
+                showToast('បាន Upload រូប Icon រួចរាល់ — ចុច Save Image ដើម្បីរក្សាទុក');
+            }
+            e.target.value = '';
+        }
+
+        function saveStoreIconImage() {
+            const urlInput = document.getElementById('storeIconUrlInput');
+            const previewImg = document.getElementById('adminIconPreviewImg');
+            const chosenUrl = (urlInput && urlInput.value.trim()) || (previewImg && previewImg.src) || DEFAULT_STORE_ICON;
+            state.storeIcon = chosenUrl;
+            saveState(STORAGE_KEYS.STORE_ICON, state.storeIcon);
+            applyStoreIconToDOM();
+            showToast('បានរក្សាទុករូបភាព Icon ហាងជោគជ័យ!');
         }
 
         function applyBannerToDOM() {
@@ -2122,7 +2236,6 @@
             }
         }
 
-        // Group consecutive customer messages into a single conversation block until an admin reply exists
         function getCustomerMessageGroups() {
             if (!Array.isArray(state.messages) || state.messages.length === 0) return [];
             const groups = [];
@@ -3054,6 +3167,75 @@
             switchAdminTab(state.adminTab || 'products');
         }
 
+        // ==================== ADMIN PRODUCT DUPLICATE & DRAG-AND-DROP ====================
+        async function duplicateAdminProduct(productId) {
+            const sourceIdx = state.products.findIndex((p) => String(p.id) === String(productId));
+            if (sourceIdx === -1) return;
+            const src = state.products[sourceIdx];
+
+            const copiedProduct = {
+                id: 'prod-' + Date.now(),
+                sku: `${src.sku || 'AD'}-COPY`,
+                name: `${src.name} (Copy)`,
+                category: src.category || 'ហុងស៊ុយ',
+                price: Number(src.price || 0),
+                stock: Number(src.stock ?? 10),
+                description: src.description || '',
+                images: Array.isArray(src.images) && src.images.length > 0
+                    ? [...src.images]
+                    : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
+            };
+
+            state.products.splice(sourceIdx + 1, 0, copiedProduct);
+            saveState(STORAGE_KEYS.PRODUCTS, state.products);
+            await upsertProductCloud(copiedProduct);
+            renderProductsGrid();
+            renderAdminProductsList();
+            showToast(`បាន Duplicate «${src.name}» រួចរាល់`);
+        }
+
+        function handleProductDragStart(e, idx) {
+            draggedProductIdx = idx;
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', String(idx));
+            }
+            if (e.currentTarget) e.currentTarget.classList.add('drag-item-active');
+        }
+
+        function handleProductDragOver(e) {
+            e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+            if (e.currentTarget) e.currentTarget.classList.add('drag-item-over');
+        }
+
+        function handleProductDragLeave(e) {
+            if (e.currentTarget) e.currentTarget.classList.remove('drag-item-over');
+        }
+
+        function handleProductDrop(e, targetIdx) {
+            e.preventDefault();
+            if (e.currentTarget) e.currentTarget.classList.remove('drag-item-over');
+            const fromIdx = draggedProductIdx;
+            draggedProductIdx = null;
+            if (fromIdx === null || fromIdx === undefined || fromIdx === targetIdx) return;
+            if (fromIdx < 0 || fromIdx >= state.products.length || targetIdx < 0 || targetIdx >= state.products.length) return;
+
+            const [moved] = state.products.splice(fromIdx, 1);
+            state.products.splice(targetIdx, 0, moved);
+            saveState(STORAGE_KEYS.PRODUCTS, state.products);
+            renderProductsGrid();
+            renderAdminProductsList();
+            showToast('បានរៀបលំដាប់ទំនិញរួចរាល់');
+        }
+
+        function handleProductDragEnd() {
+            draggedProductIdx = null;
+            document.querySelectorAll('#adminSectionProducts .drag-item-active, #adminSectionProducts .drag-item-over').forEach((el) => {
+                el.classList.remove('drag-item-active', 'drag-item-over');
+            });
+        }
+
         function renderAdminProductsList() {
             const container = document.getElementById('adminSectionProducts');
             if (state.products.length === 0) {
@@ -3061,14 +3243,30 @@
                 return;
             }
 
-            container.innerHTML = state.products.map((p) => {
+            const dragHint = `
+                <div class="px-3.5 py-2 rounded-2xl bg-surface/70 border border-gold-500/20 text-[11px] text-zinc-300 flex items-center justify-between">
+                    <span><i class="fa-solid fa-arrows-up-down text-gold-400 mr-1.5"></i> ចាប់ទាញ (Drag &amp; Drop) មុខទំនិញដើម្បីរៀបលំដាប់បង្ហាញ</span>
+                    <span class="text-gold-300 font-bold">${state.products.length} មុខ</span>
+                </div>
+            `;
+
+            const listHtml = state.products.map((p, idx) => {
                 const img = (p.images && p.images[0]) || 'https://placehold.co/200x200/1c1c24/e5be52?text=Aura';
                 return `
-                    <div class="p-4 rounded-2xl bg-charcoal border border-zinc-800 flex flex-wrap items-center justify-between gap-3">
+                    <div draggable="true"
+                         ondragstart="handleProductDragStart(event, ${idx})"
+                         ondragover="handleProductDragOver(event)"
+                         ondragleave="handleProductDragLeave(event)"
+                         ondrop="handleProductDrop(event, ${idx})"
+                         ondragend="handleProductDragEnd()"
+                         class="p-4 rounded-2xl bg-charcoal border border-zinc-800 hover:border-gold-500/35 flex flex-wrap items-center justify-between gap-3 transition">
                         <div class="flex items-center gap-3 min-w-0">
+                            <span title="ចាប់ទាញដើម្បីរៀបលំដាប់" class="cursor-grab active:cursor-grabbing text-zinc-500 hover:text-gold-400 px-1 text-sm shrink-0">
+                                <i class="fa-solid fa-grip-vertical"></i>
+                            </span>
                             <img src="${escapeAttr(img)}" class="w-14 h-14 rounded-xl object-cover bg-surface shrink-0">
                             <div class="min-w-0">
-                                <p class="text-[11px] font-bold text-gold-300">${escapeHtml(p.sku)} • ${escapeHtml(p.category)}</p>
+                                <p class="text-[11px] font-bold text-gold-300">#${idx + 1} • ${escapeHtml(p.sku)} • ${escapeHtml(p.category)}</p>
                                 <h4 class="text-sm font-bold text-white truncate">${escapeHtml(p.name)}</h4>
                                 <p class="text-xs text-zinc-400">
                                     តម្លៃ៖ <strong class="text-gold-400">$${Number(p.price).toFixed(2)}</strong> •
@@ -3077,19 +3275,25 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1.5 sm:gap-2">
+                            <button type="button" onclick="duplicateAdminProduct('${escapeAttr(p.id)}')"
+                                    class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-sky-500/30 text-sky-300 text-xs font-bold transition">
+                                <i class="fa-solid fa-copy mr-1"></i> Duplicate
+                            </button>
                             <button type="button" onclick="openProductModal('${escapeAttr(p.id)}')"
-                                    class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-gold-300 text-xs font-bold">
+                                    class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-gold-300 text-xs font-bold transition">
                                 <i class="fa-solid fa-pen mr-1"></i> កែប្រែ
                             </button>
                             <button type="button" onclick="deleteAdminProduct('${escapeAttr(p.id)}')"
-                                    class="px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 text-rose-400 text-xs font-bold">
+                                    class="px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 text-rose-400 text-xs font-bold transition">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
                     </div>
                 `;
             }).join('');
+
+            container.innerHTML = dragHint + listHtml;
         }
 
         function openProductModal(productId = null) {
@@ -3150,17 +3354,74 @@
             renderFormImagesPreview();
         }
 
+        // ==================== DRAG IMAGE TO SET AS THUMBNAIL ====================
+        function handleFormImageDragStart(e, idx) {
+            draggedFormImageIdx = idx;
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', String(idx));
+            }
+            if (e.currentTarget) e.currentTarget.classList.add('drag-item-active');
+        }
+
+        function handleFormImageDragOver(e) {
+            e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+            if (e.currentTarget) e.currentTarget.classList.add('drag-item-over');
+        }
+
+        function handleFormImageDragLeave(e) {
+            if (e.currentTarget) e.currentTarget.classList.remove('drag-item-over');
+        }
+
+        function handleFormImageDrop(e, targetIdx) {
+            e.preventDefault();
+            if (e.currentTarget) e.currentTarget.classList.remove('drag-item-over');
+            const fromIdx = draggedFormImageIdx;
+            draggedFormImageIdx = null;
+            if (fromIdx === null || fromIdx === undefined || fromIdx === targetIdx) return;
+            if (fromIdx < 0 || fromIdx >= state.formImages.length || targetIdx < 0 || targetIdx >= state.formImages.length) return;
+
+            const [movedImg] = state.formImages.splice(fromIdx, 1);
+            state.formImages.splice(targetIdx, 0, movedImg);
+            renderFormImagesPreview();
+            if (targetIdx === 0) {
+                showToast('បានទាញរូបភាពដាក់ធ្វើជា Thumbnail រួចរាល់!');
+            }
+        }
+
+        function handleFormImageDragEnd() {
+            draggedFormImageIdx = null;
+            document.querySelectorAll('#prodFormImagesPreview .drag-item-active, #prodFormImagesPreview .drag-item-over').forEach((el) => {
+                el.classList.remove('drag-item-active', 'drag-item-over');
+            });
+        }
+
         function renderFormImagesPreview() {
             const box = document.getElementById('prodFormImagesPreview');
-            box.innerHTML = state.formImages.map((src, idx) => `
-                <div class="relative w-16 h-16 rounded-xl overflow-hidden border border-zinc-700">
-                    <img src="${escapeAttr(src)}" class="w-full h-full object-cover">
-                    <button type="button" onclick="removeFormImage(${idx})"
-                            class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            `).join('');
+            if (!box) return;
+            box.innerHTML = state.formImages.map((src, idx) => {
+                const isThumb = idx === 0;
+                return `
+                    <div draggable="true"
+                         ondragstart="handleFormImageDragStart(event, ${idx})"
+                         ondragover="handleFormImageDragOver(event)"
+                         ondragleave="handleFormImageDragLeave(event)"
+                         ondrop="handleFormImageDrop(event, ${idx})"
+                         ondragend="handleFormImageDragEnd()"
+                         title="${isThumb ? 'Thumbnail ចម្បង (#1)' : 'ចាប់ទាញដាក់ទីតាំង #1 ដើម្បីធ្វើជា Thumbnail'}"
+                         class="relative w-20 h-20 rounded-xl overflow-hidden border-2 ${isThumb ? 'border-gold-400 shadow-md shadow-gold-500/20' : 'border-zinc-700 hover:border-gold-400/60'} cursor-grab active:cursor-grabbing transition">
+                        <img src="${escapeAttr(src)}" class="w-full h-full object-cover pointer-events-none">
+                        <span class="absolute bottom-0 inset-x-0 px-1 py-0.5 text-[9px] font-extrabold text-center ${isThumb ? 'bg-gold-500 text-obsidian' : 'bg-black/75 text-zinc-200'}">
+                            ${isThumb ? '★ THUMBNAIL' : `#${idx + 1}`}
+                        </span>
+                        <button type="button" onclick="event.stopPropagation(); removeFormImage(${idx})"
+                                class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
         }
 
         function saveProductFromForm(e) {
@@ -3291,6 +3552,10 @@
         }
 
         function populateBannerForm() {
+            const iconUrlInput = document.getElementById('storeIconUrlInput');
+            if (iconUrlInput) iconUrlInput.value = state.storeIcon || '';
+            previewStoreIconUrl(state.storeIcon || DEFAULT_STORE_ICON);
+
             document.getElementById('bannerBadgeInput').value = state.banner.badge || '';
             document.getElementById('bannerTitleInput').value = state.banner.title || '';
             document.getElementById('bannerSubtitleInput').value = state.banner.subtitle || '';
@@ -3322,11 +3587,15 @@
         }
 
         function resetBannerSettings() {
+            state.storeIcon = DEFAULT_STORE_ICON;
+            saveState(STORAGE_KEYS.STORE_ICON, state.storeIcon);
+            applyStoreIconToDOM();
+
             state.banner = { ...DEFAULT_BANNER };
             saveState(STORAGE_KEYS.BANNER, state.banner);
             populateBannerForm();
             applyBannerToDOM();
-            showToast('បានត្រឡប់ក្របមុខទៅដើមវិញ');
+            showToast('បានត្រឡប់ក្របមុខ និង Icon ទៅដើមវិញ');
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
