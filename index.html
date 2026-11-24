@@ -214,7 +214,7 @@
                     </div>
                 </div>
 
-                <!-- Live Website Chat Box (Expanded Height & Larger Text) -->
+                <!-- Live Website Chat Box -->
                 <div class="rounded-2xl bg-surface/90 border border-zinc-800 p-4 sm:p-5 space-y-4">
                     <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
                         <span class="text-xs sm:text-sm font-extrabold text-gold-300">
@@ -841,14 +841,14 @@
     </nav>
 
     <script>
-        // ==================== SUPABASE CONFIGURATION ====================
+        // ==================== SUPABASE & TELEGRAM CONFIGURATION ====================
         const SUPABASE_URL = 'https://ajrygpheedcmeswzvbsw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqcnlncGhlZWRjbWVzd3p2YnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNTc5ODUsImV4cCI6MjExMDgzMzk4NX0.pa5pauFJ0BtJiiUj8I6Iw6vtR-_X50VAA7q_fF7F7LU';
         const SUPABASE_BUCKET = 'aura-media';
         const MY_ORDER_IDS_KEY = 'aura_my_order_ids';
-
-        const TELEGRAM_BOT_TOKEN = '9246578991:AAEer6ak8XZTOoXZqAjOP088fQkI0DXUUSs';
-        const TELEGRAM_CHAT_ID = '-4856530869';
+        const TELEGRAM_WORKER_URL = 'https://aura-decor-notify.khytheary11.workers.dev';
+        const TELEGRAM_DIRECT_BOT_TOKEN = '9246578991:AAEer6ak8XZTOoXZqAjOP088fQkI0DXUUSs';
+        const TELEGRAM_DIRECT_CHAT_ID = '-4856530869';
 
         let supabaseClient = null;
         try {
@@ -2025,6 +2025,25 @@
             if (fileInput) fileInput.value = '';
         }
 
+        async function sendTelegramDirectFallback(text) {
+            if (!text || !TELEGRAM_DIRECT_BOT_TOKEN || !TELEGRAM_DIRECT_CHAT_ID) return false;
+            try {
+                const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_DIRECT_BOT_TOKEN)}/sendMessage`;
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: String(TELEGRAM_DIRECT_CHAT_ID).trim(),
+                        text
+                    })
+                });
+                const data = await res.json().catch(() => null);
+                return Boolean(res.ok && data && data.ok);
+            } catch (_) {
+                return false;
+            }
+        }
+
         async function sendWebsiteMessage(e) {
             e.preventDefault();
             const msgInput = document.getElementById('chatMessageInput');
@@ -2071,23 +2090,35 @@
             ].filter(Boolean).join('\n');
 
             try {
-                const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_BOT_TOKEN)}/sendMessage`;
-                const res = await fetch(endpoint, {
+                const res = await fetch(TELEGRAM_WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: String(TELEGRAM_CHAT_ID).trim(),
-                        text: tgLines
-                    })
+                    body: JSON.stringify({ text: tgLines })
                 });
-                const data = await res.json().catch(() => null);
-                if (res.ok && data && data.ok) {
+                const rawText = await res.text().catch(() => '');
+                let data = null;
+                try {
+                    data = rawText ? JSON.parse(rawText) : null;
+                } catch (_) {
+                    data = null;
+                }
+                const sentOk = res.ok && (
+                    (data && (data.ok === true || data.success === true || (data.result && data.result.message_id))) ||
+                    (!data && rawText.trim().length > 0)
+                );
+                if (sentOk) {
                     showToast('បានផ្ញើសារចូល Telegram ហាងរួចរាល់!');
                 } else {
-                    showToast('បានរក្សាសារលើឧបករណ៍ (មិនអាចផ្ញើទៅ Telegram បាន)');
+                    const reason = (data && (data.description || data.error || data.message)) || rawText || `HTTP ${res.status}`;
+                    showToast(`បានរក្សាសារលើឧបករណ៍ (ផ្ញើទៅ Telegram មិនបាន៖ ${String(reason).slice(0, 90)})`);
                 }
-            } catch (_) {
-                showToast('បានរក្សាសារលើឧបករណ៍ (ពិនិត្យអ៊ីនធឺណិតសម្រាប់ Telegram)');
+            } catch (err) {
+                const fallbackOk = await sendTelegramDirectFallback(tgLines);
+                if (fallbackOk) {
+                    showToast('បានផ្ញើសារចូល Telegram ហាងរួចរាល់!');
+                } else {
+                    showToast(`បានរក្សាសារលើឧបករណ៍ (${(err && err.message) || 'បញ្ហាការតភ្ជាប់ / CORS'})`);
+                }
             }
         }
 
@@ -2325,9 +2356,6 @@
 
         async function sendOrderToTelegramBot(order) {
             if (!order) return { ok: false, reason: 'គ្មានទិន្នន័យ Order' };
-            if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-                return { ok: false, reason: 'មិនបានកំណត់ Bot Token ឬ Chat ID' };
-            }
 
             const itemLines = (order.items || []).map((it) => {
                 const prodMatch = state.products.find((p) => String(p.id) === String(it.productId));
@@ -2357,22 +2385,33 @@
             ].join('\n');
 
             try {
-                const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_BOT_TOKEN)}/sendMessage`;
-                const res = await fetch(endpoint, {
+                const res = await fetch(TELEGRAM_WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: String(TELEGRAM_CHAT_ID).trim(),
-                        text: textLines
-                    })
+                    body: JSON.stringify({ text: textLines })
                 });
-                const data = await res.json().catch(() => null);
-                if (res.ok && data && data.ok) {
+                const rawText = await res.text().catch(() => '');
+                let data = null;
+                try {
+                    data = rawText ? JSON.parse(rawText) : null;
+                } catch (_) {
+                    data = null;
+                }
+                const sentOk = res.ok && (
+                    (data && (data.ok === true || data.success === true || (data.result && data.result.message_id))) ||
+                    (!data && rawText.trim().length > 0)
+                );
+                if (sentOk) {
                     return { ok: true };
                 }
-                return { ok: false, reason: (data && data.description) || `HTTP ${res.status}` };
+                const reason = (data && (data.description || data.error || data.message)) || rawText || `HTTP ${res.status}`;
+                return { ok: false, reason: String(reason).slice(0, 110) };
             } catch (err) {
-                return { ok: false, reason: (err && err.message) || 'បញ្ហាបណ្តាញអ៊ីនធឺណិត' };
+                const fallbackOk = await sendTelegramDirectFallback(textLines);
+                if (fallbackOk) {
+                    return { ok: true };
+                }
+                return { ok: false, reason: (err && err.message) || 'បញ្ហាបណ្តាញអ៊ីនធឺណិត / CORS' };
             }
         }
 
