@@ -2078,25 +2078,10 @@
       body: JSON.stringify({ text: tglines }),
     });
 
- const data = await res.json().catch(() => null);
-    if (res.ok && data && data.ok) {
-      showToast("បានផ្ញើសារចូល Telegram ដោយជោគជ័យ!");
-    } else {
-      showToast("មានបញ្ហាពេលផ្ញើទៅ Telegram (មិនអាចផ្ញើទៅ Telegram បាន)");
-    }
-  } catch (_) {
-    showToast("មានបញ្ហាការតភ្ជាប់ (ពិនិត្យអ៊ីនធឺណិត ឬ Proxy Telegram)");
-  }
-
-        function updateMessageBadges() {
-            const groups = getCustomerMessageGroups();
-            const unansweredCount = groups.filter((g) => !g.reply).length;
-            const adminBadge = document.getElementById('adminMsgBadge');
-            const adminTabBadge = document.getElementById('adminTabMsgBadge');
-            if (adminBadge) {
-                adminBadge.textContent = String(unansweredCount);
-                adminBadge.classList.toggle('hidden', unansweredCount === 0);
-            }
+ const TELEGRAM_PROXY_URL = "https://aura-decor-notify.khytheary11.workers.dev";
+const tglines = [ "📩 សារថ្មីពីវេបសាយ AURA DECOR", 👤 អ្នកផ្ញើ៖ ${sender}${phone ?  (${phone}) : ""}, 🕒 ម៉ោង៖ ${timeStr}, text ? 💬 សារ៖ ${text} : "", finalImageUrl ? "🖼️ រូបភាព៖ មានផ្ញើរូបភាពលើវេបសាយ" : "", ] .filter(Boolean) .join("\n");
+try { const res = await fetch(TELEGRAM_PROXY_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: tglines }), });
+const data = await res.json().catch(() => null); if (res.ok && data && data.ok) { showToast("បានផ្ញើសារចូល Telegram ដោយជោគជ័យ!"); } else { showToast("មានបញ្ហាពេលផ្ញើទៅ Telegram (មិនអាចផ្ញើទៅ Telegram បាន)"); } } catch (_) { showToast("មានបញ្ហាការតភ្ជាប់ (ពិនិត្យអ៊ីនធឺណិត ឬ Proxy Telegram)"); }
             if (adminTabBadge) {
                 adminTabBadge.textContent = String(unansweredCount);
                 adminTabBadge.classList.toggle('hidden', unansweredCount === 0);
