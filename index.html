@@ -2078,7 +2078,7 @@
       body: JSON.stringify({ text: tglines }),
     });
 
-    const data = await res.json().catch(() => null);
+ const data = await res.json().catch(() => null);
     if (res.ok && data && data.ok) {
       showToast("បានផ្ញើសារចូល Telegram ដោយជោគជ័យ!");
     } else {
@@ -2087,16 +2087,6 @@
   } catch (_) {
     showToast("មានបញ្ហាការតភ្ជាប់ (ពិនិត្យអ៊ីនធឺណិត ឬ Proxy Telegram)");
   }
-                const data = await res.json().catch(() => null);
-                if (res.ok && data && data.ok) {
-                    showToast('បានផ្ញើសារចូល Telegram ហាងរួចរាល់!');
-                } else {
-                    showToast('បានរក្សាសារលើឧបករណ៍ (មិនអាចផ្ញើទៅ Telegram បាន)');
-                }
-            } catch (_) {
-                showToast('បានរក្សាសារលើឧបករណ៍ (ពិនិត្យអ៊ីនធឺណិតសម្រាប់ Telegram)');
-            }
-        }
 
         function updateMessageBadges() {
             const groups = getCustomerMessageGroups();
