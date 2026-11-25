@@ -271,22 +271,44 @@
             </div>
 
             <!-- 5. Mini Footer & FAQ -->
-            <div class="rounded-3xl bg-charcoal border border-zinc-800/90 p-4 sm:p-6 space-y-4">
+            <footer class="rounded-3xl bg-charcoal border border-zinc-800/90 p-4 sm:p-6 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                    <div class="p-3.5 rounded-2xl bg-surface/70 border border-zinc-800 space-y-1">
-                        <p class="font-extrabold text-gold-300"><i class="fa-solid fa-clock mr-1.5"></i>រយៈពេលដឹកជញ្ជូន</p>
-                        <p class="text-zinc-300 leading-relaxed">ភ្នំពេញ៖ ១–២ ថ្ងៃ • តាមខេត្តទាំង ២៥៖ ២–៣ ថ្ងៃ។ ដឹកជញ្ជូនហ្វ្រី ១០០%។</p>
+                    <div class="space-y-1.5">
+                        <h3 class="font-extrabold text-gold-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock"></i> រយៈពេលដឹកជញ្ជូន &amp; ម៉ោងធ្វើការ
+                        </h3>
+                        <p class="text-zinc-300 leading-relaxed">• ភ្នំពេញ៖ ដឹកជញ្ជូនហ្វ្រី ១–២ ថ្ងៃ</p>
+                        <p class="text-zinc-300 leading-relaxed">• តាមខេត្តទាំង ២៤៖ ដឹកជញ្ជូនហ្វ្រី ២–៣ ថ្ងៃ</p>
+                        <p class="text-zinc-400">• បើកបម្រើសេវាកម្មរៀងរាល់ថ្ងៃ៖ 8:00 AM – 8:00 PM</p>
                     </div>
-                    <div class="p-3.5 rounded-2xl bg-surface/70 border border-zinc-800 space-y-1">
-                        <p class="font-extrabold text-gold-300"><i class="fa-solid fa-circle-question mr-1.5"></i>សំណួរញឹកញាប់ (FAQ)</p>
+                    <div class="space-y-1.5">
+                        <h3 class="font-extrabold text-gold-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-question"></i> សំណួរញឹកញាប់ (FAQ)
+                        </h3>
                         <p class="text-zinc-300 leading-relaxed">អាចបង់ប្រាក់ពេលទទួល (COD) ឬស្កេន ABA/KHQR បាន ហើយអាចពិនិត្យទំនិញមុនទូទាត់។</p>
                     </div>
-                    <div class="p-3.5 rounded-2xl bg-surface/70 border border-zinc-800 space-y-1">
-                        <p class="font-extrabold text-gold-300"><i class="fa-solid fa-phone-volume mr-1.5"></i>ទំនាក់ទំនងហាង Aura Decor</p>
-                        <p class="text-zinc-300 leading-relaxed">បើករៀងរាល់ថ្ងៃ• ទូរស័ព្ទ/តេលេក្រាម៖ <strong class="text-white">096 221 3223</strong></p>
+                    <div class="space-y-1.5">
+                        <h3 class="font-extrabold text-gold-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-phone-volume"></i> ទំនាក់ទំនងហាង Aura Decor
+                        </h3>
+                        <p class="text-zinc-200 font-bold">ទូរស័ព្ទ / Telegram៖ 096 221 3223</p>
+                        <div class="flex items-center gap-2 pt-1">
+                            <a href="https://t.me/+855962213223" target="_blank" rel="noopener noreferrer"
+                               class="px-3 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 font-bold transition">
+                                <i class="fa-brands fa-telegram mr-1"></i> Telegram
+                            </a>
+                            <button type="button" onclick="switchTab('message')"
+                                    class="px-3 py-1.5 rounded-xl bg-gold-500/15 hover:bg-gold-500/25 border border-gold-500/30 text-gold-300 font-bold transition">
+                                <i class="fa-solid fa-comment-dots mr-1"></i> ឆាតលើវេបសាយ
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+                <div class="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
+                    <span>© <span id="footerYear">2026</span> AURA DECOR — វត្ថុតុបតែង &amp; ហុងស៊ុយ</span>
+                    <div class="flex items-center gap-3">
+                        <span>ដឹកជញ្ជូនហ្វ្រី ២៥ រាជធានី-ខេត្ត និងភ្នំពេញ</span>
+
         </section>
 
         <!-- 4. Floating Quick Contact Button -->
