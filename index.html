@@ -139,7 +139,6 @@
 
             <!-- Right Actions: Admin Button & Cart Quick Button -->
             <div class="flex items-center gap-2">
-                <!-- Hidden from regular guests; Admin login is accessed via /admin, #/admin, #admin, ?admin, or double-clicking logo -->
                 <button type="button" id="headerAdminBtn" onclick="openAdminGate()"
                         class="hidden relative px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/30 text-gold-300 text-xs font-bold items-center gap-1.5 transition">
                     <i class="fa-solid fa-user-shield"></i>
@@ -204,7 +203,7 @@
                 </div>
             </div>
 
-            <!-- 1. Trust & Guarantee Bar -->
+            <!-- Trust & Guarantee Bar -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
                 <div class="p-3 rounded-2xl bg-charcoal/90 border border-zinc-800 flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
@@ -244,7 +243,7 @@
                 </div>
             </div>
 
-            <!-- Category Pills + 2. Sort Dropdown -->
+            <!-- Category Pills + Sort Dropdown -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <div id="categoryPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 flex-1"></div>
                 <div class="flex items-center gap-2 shrink-0">
@@ -260,7 +259,7 @@
                 </div>
             </div>
 
-            <!-- Product Grid (Compact spacing so cards & photos look larger on mobile) -->
+            <!-- Product Grid -->
             <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-5"></div>
 
             <!-- Empty Storefront State -->
@@ -270,7 +269,7 @@
                 <p class="text-xs text-zinc-500 mt-1">សូមសាកល្បងស្វែងរកពាក្យផ្សេង ឬជ្រើសរើសប្រភេទទំនិញផ្សេង។</p>
             </div>
 
-            <!-- 5. Mini Footer & FAQ -->
+            <!-- Mini Footer & FAQ -->
             <footer class="rounded-3xl bg-charcoal border border-zinc-800/90 p-4 sm:p-6 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                     <div class="space-y-1.5">
@@ -306,12 +305,17 @@
                 </div>
                 <div class="pt-3 border-t border-zinc-800/80 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
                     <span>© <span id="footerYear">2026</span> AURA DECOR — វត្ថុតុបតែង &amp; ហុងស៊ុយ</span>
-                    <span>ដឹកជញ្ជូនហ្វ្រី ២៥ រាជធានី-ខេត្ត និងភ្នំពេញ</span>
+                    <div class="flex items-center gap-3">
+                        <span>ដឹកជញ្ជូនហ្វ្រី ២៥ រាជធានី-ខេត្ត និងភ្នំពេញ</span>
+                        <button type="button" onclick="openAdminGate()" class="text-zinc-500 hover:text-gold-300 font-bold transition">
+                            <i class="fa-solid fa-shield-halved mr-1"></i>Admin
+                        </button>
+                    </div>
                 </div>
             </footer>
         </section>
 
-        <!-- 4. Floating Quick Contact Button -->
+        <!-- Floating Quick Contact Button -->
         <button type="button"
                 onclick="switchTab('message')"
                 title="ឆាតសួរព័ត៌មានជាមួយហាង"
@@ -332,7 +336,7 @@
                     </div>
                 </div>
 
-                <!-- Live Website Chat Box (Expanded Height & Larger Text) -->
+                <!-- Live Website Chat Box -->
                 <div class="rounded-2xl bg-surface/90 border border-zinc-800 p-4 sm:p-5 space-y-4">
                     <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
                         <span class="text-xs sm:text-sm font-extrabold text-gold-300">
@@ -647,22 +651,6 @@
         </section>
     </main>
 
-    <!-- CUSTOMER ORDER HISTORY MODAL (ADMIN) -->
-    <div id="customerHistoryModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
-        <div class="bg-charcoal border border-gold-500/30 rounded-3xl max-w-xl w-full p-5 sm:p-6 space-y-4 my-auto shadow-2xl">
-            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <div>
-                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-gold-300">ប្រវត្តិទិញរបស់ភ្ញៀវ</span>
-                    <h3 id="customerHistoryModalTitle" class="text-base font-extrabold text-white mt-0.5"></h3>
-                </div>
-                <button type="button" onclick="closeCustomerHistoryModal()" class="w-8 h-8 rounded-full bg-surface hover:bg-zinc-700 flex items-center justify-center text-zinc-300">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div id="customerHistoryModalBody" class="space-y-3 max-h-[68vh] overflow-y-auto pr-1"></div>
-        </div>
-    </div>
-
     <!-- PRODUCT DETAIL / DIGITAL MENU MODAL -->
     <div id="productDetailModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
         <div class="bg-charcoal border border-gold-500/30 rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl my-auto">
@@ -695,7 +683,7 @@
                             <span id="detailSkuBadge" class="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-gold-500/15 text-gold-300 border border-gold-500/25">SKU</span>
                             <div class="flex items-center gap-1.5">
                                 <span class="px-2 py-0.5 rounded-full bg-rose-600/25 border border-rose-400/40 text-rose-300 text-[10px] font-extrabold animate-pulse">🔥 2+ -$1/មុខ</span>
-                                <span class="text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">In stock</span>
+                                <span id="detailStatusBadge" class="text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">In Stock</span>
                             </div>
                         </div>
                         <p class="text-[11px] text-emerald-300 font-semibold flex items-center gap-1.5">
@@ -841,8 +829,11 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-zinc-300 mb-1">លេខកូដ SKU *</label>
-                        <input id="prodSkuInput" type="text" required placeholder="AD-001"
+                        <input id="prodSkuInput" type="text" required oninput="validateSkuUniqueness()" placeholder="AD-001"
                                class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
+                        <p id="prodSkuError" class="hidden text-[11px] text-rose-400 font-bold mt-1">
+                            SKU នេះមានរួចហើយ! សូមប្រើលេខកូដផ្សេង។
+                        </p>
                     </div>
                 </div>
 
@@ -863,6 +854,7 @@
                                class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
                     </div>
                 </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-zinc-300 mb-1">ប្រភេទ *</label>
@@ -872,6 +864,15 @@
                             <option value="តុបតែងគេហដ្ឋាន">តុបតែងគេហដ្ឋាន</option>
                             <option value="អំណោយពិសេស">អំណោយពិសេស</option>
                             <option value="ពន្លឺ &amp; ចង្កៀង">ពន្លឺ &amp; ចង្កៀង</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-300 mb-1">ស្ថានភាពទំនិញ *</label>
+                        <select id="prodStatusInput"
+                                class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
+                            <option value="In Stock">In Stock</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                            <option value="Pre-Order">Pre-Order</option>
                         </select>
                     </div>
                 </div>
@@ -907,12 +908,28 @@
                             class="px-4 py-2 rounded-xl bg-surface hover:bg-zinc-800 text-zinc-300 text-xs font-bold">
                         បោះបង់
                     </button>
-                    <button type="submit"
+                    <button id="saveProductSubmitBtn" type="submit"
                             class="px-5 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 text-obsidian text-xs font-extrabold">
                         រក្សាទុកទំនិញ
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- CUSTOMER ORDER HISTORY MODAL (ADMIN) -->
+    <div id="customerHistoryModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+        <div class="bg-charcoal border border-gold-500/30 rounded-3xl max-w-xl w-full p-5 sm:p-6 space-y-4 my-auto shadow-2xl">
+            <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div>
+                    <h3 id="customerHistoryModalTitle" class="text-base font-extrabold text-gold-300">ប្រវត្តិទិញរបស់ភ្ញៀវ</h3>
+                    <p id="customerHistoryModalSubtitle" class="text-xs text-zinc-400"></p>
+                </div>
+                <button type="button" onclick="closeCustomerHistoryModal()" class="w-8 h-8 rounded-full bg-surface hover:bg-zinc-700 flex items-center justify-center text-zinc-300">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="customerHistoryModalBody" class="space-y-2.5 max-h-[65vh] overflow-y-auto pr-1"></div>
         </div>
     </div>
 
@@ -1073,6 +1090,7 @@
                 sku: 'AD-101',
                 name: 'រូបសេះហុងស៊ុយមាស នាំជោគជ័យ',
                 category: 'ហុងស៊ុយ',
+                status: 'In Stock',
                 price: 19.00,
                 crossPrice: 23.00,
                 stock: 15,
@@ -1084,6 +1102,7 @@
                 sku: 'AD-102',
                 name: 'ថូផ្កាសេរ៉ាមិចបែបទំនើប Minimalist',
                 category: 'តុបតែងគេហដ្ឋាន',
+                status: 'In Stock',
                 price: 18.50,
                 crossPrice: 22.00,
                 stock: 22,
@@ -1095,6 +1114,7 @@
                 sku: 'AD-103',
                 name: 'ចង្កៀងពន្លឺមាសតាំងតុបន្ទប់គេង',
                 category: 'ពន្លឺ & ចង្កៀង',
+                status: 'In Stock',
                 price: 24.00,
                 crossPrice: 29.00,
                 stock: 10,
@@ -1106,6 +1126,7 @@
                 sku: 'AD-104',
                 name: 'ឈុតអំណោយបើកហាងថ្មី នាំលាភសំណាង',
                 category: 'អំណោយពិសេស',
+                status: 'In Stock',
                 price: 35.00,
                 crossPrice: 42.00,
                 stock: 8,
@@ -1128,9 +1149,9 @@
             activeTab: 'home',
             adminAuthenticated: false,
             adminTab: 'products',
-            orderStatusFilter: 'All',
             adminOrderSearch: '',
             adminOrderStatusFilter: 'All',
+            orderStatusFilter: 'All',
             detailProductId: null,
             detailQty: 1,
             formImages: []
@@ -1141,6 +1162,25 @@
         let activeReceiptOrder = null;
         let draggedProductIdx = null;
         let draggedFormImageIdx = null;
+
+        function normalizeProductStatus(statusVal, stockVal = 1) {
+            const raw = String(statusVal || '').trim().toLowerCase();
+            if (raw === 'pre-order' || raw === 'preorder' || raw === 'pre_order') return 'Pre-Order';
+            if (raw === 'out of stock' || raw === 'out_of_stock' || raw === 'outofstock') return 'Out of Stock';
+            if (raw === 'in stock' || raw === 'in_stock' || raw === 'instock') return 'In Stock';
+            return Number(stockVal ?? 1) <= 0 ? 'Out of Stock' : 'In Stock';
+        }
+
+        function getProductStatusBadgeClasses(statusVal) {
+            const st = normalizeProductStatus(statusVal);
+            if (st === 'Pre-Order') {
+                return 'bg-amber-950/90 border-amber-400/50 text-amber-300';
+            }
+            if (st === 'Out of Stock') {
+                return 'bg-rose-950/90 border-rose-500/50 text-rose-300';
+            }
+            return 'bg-emerald-950/90 border-emerald-500/40 text-emerald-300';
+        }
 
         function handleHeaderLogoError(imgEl) {
             if (!imgEl) return;
@@ -1206,9 +1246,6 @@
         }
 
         function initApp() {
-            const yearEl = document.getElementById('footerYear');
-            if (yearEl) yearEl.textContent = String(Math.max(2026, new Date().getFullYear()));
-
             try {
                 const savedProducts = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
                 if (savedProducts) {
@@ -1265,9 +1302,22 @@
 
             syncFromSupabase().finally(() => {
                 checkAdminRouteFromLocation();
+                checkSharedProductFromUrl();
             });
             window.addEventListener('hashchange', checkAdminRouteFromLocation);
             window.addEventListener('popstate', checkAdminRouteFromLocation);
+        }
+
+        function checkSharedProductFromUrl() {
+            try {
+                const params = new URLSearchParams(window.location.search || '');
+                const sharedId = params.get('product');
+                if (!sharedId) return;
+                const match = state.products.find((p) => String(p.id) === String(sharedId));
+                if (match) {
+                    openProductDetail(match.id);
+                }
+            } catch (_) {}
         }
 
         function saveState(key, data) {
@@ -1352,6 +1402,7 @@
                 for (let i = 0; i < state.products.length; i++) {
                     const prod = state.products[i];
                     if (!prod || prod.id === STORE_CONFIG_ROW_ID) continue;
+                    const normalizedStatus = normalizeProductStatus(prod.status, prod.stock);
                     const payload = {
                         id: String(prod.id),
                         sku: prod.sku || '',
@@ -1363,6 +1414,7 @@
                             desc: prod.description || '',
                             images: prod.images || [],
                             crossPrice: Number(prod.crossPrice || 0),
+                            status: normalizedStatus,
                             [PRODUCT_SORT_META_KEY]: i
                         }),
                         image_url: (prod.images && prod.images[0]) || ''
@@ -1453,6 +1505,7 @@
             if (!supabaseClient || !product) return;
             try {
                 const sortIdx = state.products.findIndex((p) => String(p.id) === String(product.id));
+                const normalizedStatus = normalizeProductStatus(product.status, product.stock);
                 const payload = {
                     id: String(product.id),
                     sku: product.sku || '',
@@ -1464,6 +1517,7 @@
                         desc: product.description || '',
                         images: product.images || [],
                         crossPrice: Number(product.crossPrice || 0),
+                        status: normalizedStatus,
                         [PRODUCT_SORT_META_KEY]: sortIdx >= 0 ? sortIdx : 0
                     }),
                     image_url: (product.images && product.images[0]) || ''
@@ -1553,6 +1607,7 @@
                         let imgs = row.image_url ? [row.image_url] : [];
                         let sortOrder = null;
                         let crossPriceVal = 0;
+                        let statusVal = '';
                         try {
                             const parsed = JSON.parse(row.description);
                             if (parsed && typeof parsed === 'object') {
@@ -1566,14 +1621,24 @@
                                 if (Number(parsed.crossPrice || 0) > 0) {
                                     crossPriceVal = Number(parsed.crossPrice);
                                 }
+                                if (parsed.status) {
+                                    statusVal = parsed.status;
+                                }
                             }
                         } catch (_) {}
+
+                        const existingLocal = state.products.find((lp) => String(lp.id) === String(row.id));
+                        const resolvedStatus = normalizeProductStatus(
+                            statusVal || (existingLocal && existingLocal.status),
+                            row.stock
+                        );
 
                         mappedProducts.push({
                             id: row.id,
                             sku: row.sku || '',
                             name: row.name || '',
                             category: row.category || 'ហុងស៊ុយ',
+                            status: resolvedStatus,
                             price: Number(row.price || 0),
                             crossPrice: crossPriceVal,
                             stock: Number(row.stock || 0),
@@ -1825,6 +1890,8 @@
                 const crossPrice = Number(p.crossPrice || 0);
                 const hasCross = crossPrice > unitPrice;
                 const bundleUnitPrice = Math.max(0, unitPrice - 1.0);
+                const statusLabel = normalizeProductStatus(p.status, p.stock);
+                const statusBadgeCls = getProductStatusBadgeClasses(statusLabel);
                 const isHot = index === 0 || Number(p.stock || 0) <= 8;
                 const isNew = index === 1;
                 return `
@@ -1835,8 +1902,8 @@
                                 <img src="${escapeAttr(mainImg)}" alt="${escapeAttr(p.name)}"
                                      onerror="this.src='https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'"
                                      class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                                <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">
-                                    In stock
+                                <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full border text-[10px] font-bold ${statusBadgeCls}">
+                                    ${escapeHtml(statusLabel)}
                                 </span>
                                 ${isHot ? `<span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-rose-600/90 text-white text-[9px] font-extrabold shadow">លក់ដាច់</span>` : (isNew ? `<span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-gold-500 text-obsidian text-[9px] font-extrabold shadow">ថ្មី</span>` : '')}
                                 <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-obsidian/85 border border-gold-500/25 text-gold-300 text-[10px] font-bold">
@@ -1891,6 +1958,13 @@
             state.detailQty = 1;
 
             document.getElementById('detailSkuBadge').textContent = `${prod.sku || 'SKU'} • ${prod.category || ''}`;
+            const detailStatusEl = document.getElementById('detailStatusBadge');
+            const prodStatus = normalizeProductStatus(prod.status, prod.stock);
+            if (detailStatusEl) {
+                detailStatusEl.textContent = prodStatus;
+                detailStatusEl.className = `text-xs font-bold border px-2.5 py-0.5 rounded-full ${getProductStatusBadgeClasses(prodStatus)}`;
+            }
+
             document.getElementById('detailTitle').textContent = prod.name;
             document.getElementById('detailPrice').textContent = `$${Number(prod.price || 0).toFixed(2)}`;
             const crossEl = document.getElementById('detailCrossPrice');
@@ -2551,7 +2625,6 @@
             }
         }
 
-        // Group consecutive customer messages into a single conversation block until an admin reply exists
         function getCustomerMessageGroups() {
             if (!Array.isArray(state.messages) || state.messages.length === 0) return [];
             const groups = [];
@@ -3373,7 +3446,7 @@
         }
 
         function openReceiptById(orderId) {
-            const ord = state.orders.find((o) => o.id === orderId);
+            const ord = state.orders.find((o) => String(o.id) === String(orderId));
             if (ord) openReceiptModal(ord);
         }
 
@@ -3512,6 +3585,7 @@
 
             const cardsHtml = state.products.map((p, idx) => {
                 const img = (p.images && p.images[0]) || 'https://placehold.co/200x200/1c1c24/e5be52?text=Aura';
+                const statusLabel = normalizeProductStatus(p.status, p.stock);
                 return `
                     <div draggable="true"
                          ondragstart="handleProductDragStart(event, ${idx})"
@@ -3528,6 +3602,7 @@
                                 <h4 class="text-sm font-bold text-white truncate">${escapeHtml(p.name)}</h4>
                                 <p class="text-xs text-zinc-400">
                                     តម្លៃ៖ <strong class="text-gold-400">$${Number(p.price).toFixed(2)}</strong> •
+                                    ស្ថានភាព៖ <strong class="text-gold-300">${escapeHtml(statusLabel)}</strong> •
                                     ស្តុកនៅសល់៖ <strong class="text-emerald-400">${Number(p.stock || 0)}</strong>
                                 </p>
                             </div>
@@ -3554,7 +3629,6 @@
             container.innerHTML = toolbarHtml + cardsHtml;
         }
 
-        // Export products and stock to UTF-8 CSV file for Excel editing
         function downloadProductsCsv() {
             if (!Array.isArray(state.products) || state.products.length === 0) {
                 showToast('មិនមានទិន្នន័យទំនិញសម្រាប់ Download ទេ');
@@ -3567,6 +3641,7 @@
                     'SKU',
                     'Name',
                     'Category',
+                    'Status',
                     'Price ($)',
                     'Cross Price ($)',
                     'Stock',
@@ -3581,6 +3656,7 @@
                         p.sku || '',
                         p.name || '',
                         p.category || '',
+                        normalizeProductStatus(p.status, p.stock),
                         Number(p.price || 0).toFixed(2),
                         Number(p.crossPrice || 0).toFixed(2),
                         Number(p.stock || 0),
@@ -3611,7 +3687,6 @@
             }
         }
 
-        // Parse CSV text into rows of cells while supporting quoted strings and escaped quotes
         function parseCsvRows(csvText) {
             const cleanText = String(csvText || '').replace(/^\uFEFF/, '');
             const rows = [];
@@ -3656,7 +3731,6 @@
             return rows;
         }
 
-        // Import products and stock updates from an uploaded CSV file
         async function handleProductsCsvUpload(e) {
             const file = e.target && e.target.files && e.target.files[0];
             if (!file) return;
@@ -3683,11 +3757,12 @@
                 const idxSku = colIdx(['sku', 'code'], 1);
                 const idxName = colIdx(['name', 'title', 'product name'], 2);
                 const idxCat = colIdx(['category', 'cat'], 3);
-                const idxPrice = colIdx(['price ($)', 'price'], 4);
-                const idxCross = colIdx(['cross price ($)', 'crossprice', 'cross_price'], 5);
-                const idxStock = colIdx(['stock', 'qty', 'quantity'], 6);
-                const idxDesc = colIdx(['description', 'desc'], 7);
-                const idxImages = colIdx(['images', 'image_url', 'image'], 8);
+                const idxStatus = colIdx(['status', 'state'], 4);
+                const idxPrice = colIdx(['price ($)', 'price'], 5);
+                const idxCross = colIdx(['cross price ($)', 'crossprice', 'cross_price'], 6);
+                const idxStock = colIdx(['stock', 'qty', 'quantity'], 7);
+                const idxDesc = colIdx(['description', 'desc'], 8);
+                const idxImages = colIdx(['images', 'image_url', 'image'], 9);
 
                 let updatedCount = 0;
                 let addedCount = 0;
@@ -3703,6 +3778,10 @@
                     const parsedCross = parseFloat(String(row[idxCross] ?? '0').replace(/[^0-9.-]/g, ''));
                     const parsedStock = parseInt(String(row[idxStock] ?? '0').replace(/[^0-9-]/g, ''), 10);
                     const rowCat = String(row[idxCat] || '').trim() || 'ហុងស៊ុយ';
+                    const rowStatus = normalizeProductStatus(
+                        String(row[idxStatus] || '').trim(),
+                        Number.isFinite(parsedStock) ? parsedStock : 1
+                    );
                     const rowDesc = String(row[idxDesc] || '').trim();
                     const rawImgs = String(row[idxImages] || '').trim();
                     const parsedImgs = rawImgs
@@ -3721,6 +3800,7 @@
                             sku: rowSku || existing.sku,
                             name: rowName || existing.name,
                             category: rowCat || existing.category,
+                            status: String(row[idxStatus] || '').trim() ? rowStatus : normalizeProductStatus(existing.status, existing.stock),
                             price: Number.isFinite(parsedPrice) ? parsedPrice : existing.price,
                             crossPrice: Number.isFinite(parsedCross) ? parsedCross : (existing.crossPrice || 0),
                             stock: Number.isFinite(parsedStock) ? parsedStock : (existing.stock || 0),
@@ -3734,6 +3814,7 @@
                             sku: rowSku || `AD-${100 + state.products.length + r}`,
                             name: rowName || `ទំនិញថ្មី ${r}`,
                             category: rowCat,
+                            status: rowStatus,
                             price: Number.isFinite(parsedPrice) ? parsedPrice : 0,
                             crossPrice: Number.isFinite(parsedCross) ? parsedCross : 0,
                             stock: Number.isFinite(parsedStock) ? parsedStock : 0,
@@ -3771,51 +3852,95 @@
             if (e && e.dataTransfer) e.dataTransfer.dropEffect = 'move';
         }
 
-        function handleProductDrop(e, targetIdx) {
+        async function handleProductDrop(e, targetIdx) {
             e.preventDefault();
-            let fromIdx = draggedProductIdx;
-            if (fromIdx === null && e && e.dataTransfer) {
-                const raw = parseInt(e.dataTransfer.getData('text/plain'), 10);
-                if (!Number.isNaN(raw)) fromIdx = raw;
-            }
+            const fromIdx = draggedProductIdx !== null ? draggedProductIdx : Number(e.dataTransfer?.getData('text/plain'));
             draggedProductIdx = null;
-            if (fromIdx === null || fromIdx < 0 || fromIdx >= state.products.length || fromIdx === targetIdx) return;
+            if (Number.isNaN(fromIdx) || fromIdx === targetIdx || fromIdx < 0 || targetIdx < 0) return;
+            if (fromIdx >= state.products.length || targetIdx >= state.products.length) return;
 
             const [moved] = state.products.splice(fromIdx, 1);
             state.products.splice(targetIdx, 0, moved);
-
             saveState(STORAGE_KEYS.PRODUCTS, state.products);
             renderProductsGrid();
             renderAdminProductsList();
-            persistProductOrderCloud();
-            showToast('បានរៀបលំដាប់ទំនិញថ្មីរួចរាល់');
+            await persistProductOrderCloud();
+            showToast('បានរៀបលំដាប់ទំនិញ និង Sync រួចរាល់');
         }
 
-        function duplicateAdminProduct(productId) {
+        function generateUniqueCopySku(baseSku) {
+            const cleanBase = String(baseSku || 'AD').trim() || 'AD';
+            const existingSkus = new Set(
+                state.products.map((p) => String(p.sku || '').trim().toLowerCase())
+            );
+            for (let i = 1; i <= 999; i++) {
+                const candidate = `${cleanBase}-COPY${i > 1 ? i : ''}`;
+                if (!existingSkus.has(candidate.toLowerCase())) {
+                    return candidate;
+                }
+            }
+            return `${cleanBase}-${Date.now().toString().slice(-4)}`;
+        }
+
+        async function duplicateAdminProduct(productId) {
             const source = state.products.find((p) => p.id === productId);
             if (!source) return;
-
             const srcIdx = state.products.findIndex((p) => p.id === productId);
-            const copySuffix = Math.floor(100 + Math.random() * 900);
-            const duplicated = {
+            const uniqueSku = generateUniqueCopySku(source.sku);
+            const cloned = {
                 ...source,
-                id: `prod-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-                sku: `${source.sku || 'AD'}-C${copySuffix}`,
-                name: `${source.name} (ច្បាប់ចម្លង)`,
-                images: Array.isArray(source.images) ? [...source.images] : []
+                id: 'prod-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+                sku: uniqueSku,
+                name: `${source.name} (Copy)`,
+                status: normalizeProductStatus(source.status, source.stock),
+                images: Array.isArray(source.images) && source.images.length > 0 ? [...source.images] : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
             };
-
             if (srcIdx >= 0) {
-                state.products.splice(srcIdx + 1, 0, duplicated);
+                state.products.splice(srcIdx + 1, 0, cloned);
             } else {
-                state.products.unshift(duplicated);
+                state.products.unshift(cloned);
             }
-
             saveState(STORAGE_KEYS.PRODUCTS, state.products);
+            await persistProductOrderCloud();
             renderProductsGrid();
             renderAdminProductsList();
-            persistProductOrderCloud();
-            showToast(`បាន Duplicate មុខទំនិញ «${source.name}» រួចរាល់`);
+            showToast(`បាន Duplicate «${source.name}» រួចរាល់`);
+        }
+
+        function validateSkuUniqueness() {
+            const skuInput = document.getElementById('prodSkuInput');
+            const errEl = document.getElementById('prodSkuError');
+            const submitBtn = document.getElementById('saveProductSubmitBtn');
+            const editId = document.getElementById('editProductId')?.value || '';
+            if (!skuInput || !errEl || !submitBtn) return true;
+
+            const candidateSku = skuInput.value.trim().toLowerCase();
+            if (!candidateSku) {
+                errEl.classList.add('hidden');
+                skuInput.classList.remove('border-rose-500');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return true;
+            }
+
+            const isDuplicate = state.products.some((p) => {
+                if (editId && String(p.id) === String(editId)) return false;
+                return String(p.sku || '').trim().toLowerCase() === candidateSku;
+            });
+
+            if (isDuplicate) {
+                errEl.classList.remove('hidden');
+                skuInput.classList.add('border-rose-500');
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                return false;
+            } else {
+                errEl.classList.add('hidden');
+                skuInput.classList.remove('border-rose-500');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                return true;
+            }
         }
 
         function openProductModal(productId = null) {
@@ -3833,6 +3958,7 @@
                 document.getElementById('prodCrossPriceInput').value = prod.crossPrice || '';
                 document.getElementById('prodStockInput').value = prod.stock ?? 10;
                 document.getElementById('prodCategoryInput').value = prod.category || 'ហុងស៊ុយ';
+                document.getElementById('prodStatusInput').value = normalizeProductStatus(prod.status, prod.stock);
                 document.getElementById('prodDescInput').value = prod.description || '';
                 state.formImages = [...(prod.images || [])];
             } else {
@@ -3841,9 +3967,11 @@
                 document.getElementById('productForm').reset();
                 document.getElementById('prodCrossPriceInput').value = '';
                 document.getElementById('prodStockInput').value = 10;
+                document.getElementById('prodStatusInput').value = 'In Stock';
                 state.formImages = [];
             }
 
+            validateSkuUniqueness();
             renderFormImagesPreview();
             document.getElementById('productFormModal').classList.remove('hidden');
         }
@@ -3878,6 +4006,13 @@
             renderFormImagesPreview();
         }
 
+        function setFormImageAsThumbnail(idx) {
+            if (idx <= 0 || idx >= state.formImages.length) return;
+            const [picked] = state.formImages.splice(idx, 1);
+            state.formImages.unshift(picked);
+            renderFormImagesPreview();
+        }
+
         function handleFormImageDragStart(e, idx) {
             draggedFormImageIdx = idx;
             if (e && e.dataTransfer) {
@@ -3893,46 +4028,46 @@
 
         function handleFormImageDrop(e, targetIdx) {
             e.preventDefault();
-            let fromIdx = draggedFormImageIdx;
-            if (fromIdx === null && e && e.dataTransfer) {
-                const raw = parseInt(e.dataTransfer.getData('text/plain'), 10);
-                if (!Number.isNaN(raw)) fromIdx = raw;
-            }
+            const fromIdx = draggedFormImageIdx !== null ? draggedFormImageIdx : Number(e.dataTransfer?.getData('text/plain'));
             draggedFormImageIdx = null;
-            if (fromIdx === null || fromIdx < 0 || fromIdx >= state.formImages.length || fromIdx === targetIdx) return;
+            if (Number.isNaN(fromIdx) || fromIdx === targetIdx || fromIdx < 0 || targetIdx < 0) return;
+            if (fromIdx >= state.formImages.length || targetIdx >= state.formImages.length) return;
 
-            const [movedImg] = state.formImages.splice(fromIdx, 1);
-            state.formImages.splice(targetIdx, 0, movedImg);
+            const [moved] = state.formImages.splice(fromIdx, 1);
+            state.formImages.splice(targetIdx, 0, moved);
             renderFormImagesPreview();
-            if (targetIdx === 0) {
-                showToast('បានកំណត់រូបភាពធ្វើជា Thumbnail រូបទី ១');
-            }
         }
 
         function renderFormImagesPreview() {
             const box = document.getElementById('prodFormImagesPreview');
-            box.innerHTML = state.formImages.map((src, idx) => {
-                const isThumb = idx === 0;
-                return `
-                    <div draggable="true"
-                         ondragstart="handleFormImageDragStart(event, ${idx})"
-                         ondragover="handleFormImageDragOver(event)"
-                         ondrop="handleFormImageDrop(event, ${idx})"
-                         title="Drag រូបភាពដើម្បីដាក់ជា Thumbnail"
-                         class="relative w-20 h-20 rounded-xl overflow-hidden border-2 ${isThumb ? 'border-gold-400 ring-2 ring-gold-400/30' : 'border-zinc-700'} cursor-grab active:cursor-grabbing">
-                        <img src="${escapeAttr(src)}" class="w-full h-full object-cover">
-                        ${isThumb ? `<span class="absolute bottom-0 inset-x-0 bg-gold-500 text-obsidian text-[9px] font-extrabold text-center py-0.5">THUMBNAIL</span>` : ''}
-                        <button type="button" onclick="removeFormImage(${idx})"
-                                class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                `;
-            }).join('');
+            box.innerHTML = state.formImages.map((src, idx) => `
+                <div draggable="true"
+                     ondragstart="handleFormImageDragStart(event, ${idx})"
+                     ondragover="handleFormImageDragOver(event)"
+                     ondrop="handleFormImageDrop(event, ${idx})"
+                     class="relative w-20 h-20 rounded-xl overflow-hidden border-2 ${idx === 0 ? 'border-gold-400 shadow-md shadow-gold-500/20' : 'border-zinc-700'} cursor-grab active:cursor-grabbing group">
+                    <img src="${escapeAttr(src)}" class="w-full h-full object-cover">
+                    ${idx === 0
+                        ? `<span class="absolute bottom-0 inset-x-0 bg-gold-500 text-obsidian text-[9px] font-extrabold text-center py-0.5">Thumbnail</span>`
+                        : `<button type="button" onclick="setFormImageAsThumbnail(${idx})" title="ដាក់ជា Thumbnail"
+                                   class="absolute bottom-0 inset-x-0 bg-obsidian/85 hover:bg-gold-500 text-gold-300 hover:text-obsidian text-[9px] font-bold text-center py-0.5 transition">
+                               ដាក់ជា Thumb
+                           </button>`}
+                    <button type="button" onclick="removeFormImage(${idx})"
+                            class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
         }
 
         function saveProductFromForm(e) {
             e.preventDefault();
+            if (!validateSkuUniqueness()) {
+                showToast('SKU ជាន់គ្នា! សូមប្តូរលេខកូដ SKU មុនពេលរក្សាទុក។');
+                return;
+            }
+
             const editId = document.getElementById('editProductId').value;
             const name = document.getElementById('prodNameInput').value.trim();
             const sku = document.getElementById('prodSkuInput').value.trim();
@@ -3940,7 +4075,9 @@
             const crossPrice = parseFloat(document.getElementById('prodCrossPriceInput').value) || 0;
             const stock = parseInt(document.getElementById('prodStockInput').value, 10) || 0;
             const category = document.getElementById('prodCategoryInput').value;
+            const status = normalizeProductStatus(document.getElementById('prodStatusInput').value, stock);
             const description = document.getElementById('prodDescInput').value.trim();
+
             const images = state.formImages.length > 0
                 ? [...state.formImages]
                 : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'];
@@ -3948,10 +4085,10 @@
             if (editId) {
                 const idx = state.products.findIndex((p) => p.id === editId);
                 if (idx !== -1) {
-                    state.products[idx] = { ...state.products[idx], name, sku, price, crossPrice, stock, category, description, images };
+                    state.products[idx] = { ...state.products[idx], name, sku, price, crossPrice, stock, category, status, description, images };
                     upsertProductCloud(state.products[idx]);
                 }
-                showToast('បានកែប្រែទំនិញជោគជ័យ');
+                showToast('បានកែប្រែទំនិញជោគជ័យ (រក្សាទីតាំងលើក្របមុខដដែល)');
             } else {
                 const created = {
                     id: 'prod-' + Date.now(),
@@ -3961,6 +4098,7 @@
                     crossPrice,
                     stock,
                     category,
+                    status,
                     description,
                     images
                 };
@@ -3986,16 +4124,289 @@
             showToast('បានលុបទំនិញរួចរាល់');
         }
 
-        // Format a single value safely for CSV export
-        function escapeCsvCell(val) {
-            const str = String(val ?? '');
-            if (/[",\n\r]/.test(str)) {
-                return `"${str.replace(/"/g, '""')}"`;
-            }
-            return str;
+        function handleAdminOrderSearch(val) {
+            state.adminOrderSearch = String(val || '').trim().toLowerCase();
+            renderAdminOrdersList();
         }
 
-        // Export current orders to a UTF-8 CSV file that opens cleanly in Microsoft Excel
+        function handleAdminOrderStatusFilter(val) {
+            state.adminOrderStatusFilter = val || 'All';
+            renderAdminOrdersList();
+        }
+
+        function renderAdminOrdersList() {
+            const container = document.getElementById('adminSectionOrders');
+            if (!container) return;
+
+            const phoneCounts = {};
+            state.orders.forEach((o) => {
+                const norm = String(o.customerPhone || '').replace(/\s+/g, '');
+                if (norm) {
+                    phoneCounts[norm] = (phoneCounts[norm] || 0) + 1;
+                }
+            });
+
+            const totalOrdersCount = state.orders.length;
+            const toShipCount = state.orders.filter((o) => o.status === 'To Ship').length;
+            const revenueTotal = state.orders
+                .filter((o) => !['Cancelled', 'Refund'].includes(String(o.status || '')))
+                .reduce((sum, o) => sum + Number(o.total || 0), 0);
+            const repeatCustomersCount = Object.values(phoneCounts).filter((cnt) => cnt > 1).length;
+
+            const kpiHtml = `
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800">
+                        <p class="text-[11px] text-zinc-400">Order ទាំងអស់</p>
+                        <p class="text-lg font-extrabold text-white mt-0.5">${totalOrdersCount}</p>
+                        <p class="text-[10px] text-gold-300 mt-0.5">To Ship: ${toShipCount}</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-charcoal border border-emerald-500/25">
+                        <p class="text-[11px] text-zinc-400">ចំណូលសរុប (Active)</p>
+                        <p class="text-lg font-extrabold text-emerald-400 mt-0.5">$${revenueTotal.toFixed(2)}</p>
+                        <p class="text-[10px] text-zinc-500 mt-0.5">មិនរាប់បញ្ចូល Cancel/Refund</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-charcoal border border-gold-500/25">
+                        <p class="text-[11px] text-zinc-400">ភ្ញៀវទិញម្តងទៀត</p>
+                        <p class="text-lg font-extrabold text-gold-300 mt-0.5">${repeatCustomersCount}</p>
+                        <p class="text-[10px] text-zinc-500 mt-0.5">ទិញចាប់ពី ២ ដងឡើង</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800 flex flex-col justify-between">
+                        <p class="text-[11px] text-zinc-400">នាំចេញទិន្នន័យ</p>
+                        <button type="button" onclick="downloadOrdersExcel()"
+                                class="mt-1.5 w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition">
+                            <i class="fa-solid fa-file-excel"></i>
+                            <span>Download Excel</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const filterStatuses = ['All', 'To Pay', 'To Ship', 'To Receive', 'Completed', 'To Review', 'Refund', 'Cancelled'];
+            const filterBarHtml = `
+                <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800 flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+                        <input id="adminOrderSearchInput" type="text"
+                               value="${escapeAttr(state.adminOrderSearch)}"
+                               oninput="handleAdminOrderSearch(this.value)"
+                               placeholder="ស្វែងរកលេខ ORD-..., ឈ្មោះភ្ញៀវ ឬលេខទូរស័ព្ទ..."
+                               class="w-full pl-9 pr-3 py-2 rounded-xl bg-surface border border-zinc-700 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-gold-400">
+                    </div>
+                    <select id="adminOrderStatusFilterSelect"
+                            onchange="handleAdminOrderStatusFilter(this.value)"
+                            class="px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-xs font-bold text-gold-300 focus:outline-none focus:border-gold-400">
+                        ${filterStatuses.map((st) => `<option value="${st}" ${state.adminOrderStatusFilter === st ? 'selected' : ''}>ស្ថានភាព៖ ${st}</option>`).join('')}
+                    </select>
+                </div>
+            `;
+
+            const filteredOrders = state.orders.filter((o) => {
+                const matchesStatus = state.adminOrderStatusFilter === 'All' || String(o.status) === state.adminOrderStatusFilter;
+                const q = state.adminOrderSearch;
+                const matchesQuery = !q ||
+                    String(o.id || '').toLowerCase().includes(q) ||
+                    String(o.customerName || '').toLowerCase().includes(q) ||
+                    String(o.customerPhone || '').toLowerCase().includes(q);
+                return matchesStatus && matchesQuery;
+            });
+
+            if (filteredOrders.length === 0) {
+                container.innerHTML = `${kpiHtml}${filterBarHtml}<p class="text-xs text-zinc-400 text-center py-8">រកមិនឃើញវិក្កយបត្រដែលត្រូវនឹងលក្ខខណ្ឌទេ</p>`;
+                return;
+            }
+
+            const statuses = ['To Pay', 'To Ship', 'To Receive', 'Completed', 'To Review', 'Refund', 'Cancelled'];
+
+            const cardsHtml = filteredOrders.map((order) => {
+                const normPhone = String(order.customerPhone || '').replace(/\s+/g, '');
+                const orderCountForPhone = normPhone ? (phoneCounts[normPhone] || 1) : 1;
+                const customerBadge = orderCountForPhone > 1
+                    ? `<button type="button" onclick="openCustomerHistoryModal('${escapeAttr(order.customerPhone)}')" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/30 transition">ភ្ញៀវទិញ ${orderCountForPhone} ដង</button>`
+                    : `<button type="button" onclick="openCustomerHistoryModal('${escapeAttr(order.customerPhone)}')" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition">ភ្ញៀវថ្មី</button>`;
+
+                const isCancelled = String(order.status || '') === 'Cancelled';
+                const statusBadgeStyle = isCancelled
+                    ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
+                    : 'bg-surface text-gold-300 border-zinc-700';
+
+                const itemsText = (order.items || []).map((i) => {
+                    const prodMatch = state.products.find((p) => String(p.id) === String(i.productId));
+                    const skuLabel = i.sku || (prodMatch && prodMatch.sku) || '';
+                    const skuTag = skuLabel ? `[${escapeHtml(skuLabel)}] ` : '';
+                    return `${skuTag}${escapeHtml(i.name)} (x${i.qty})`;
+                }).join(', ');
+
+                return `
+                    <div class="p-4 sm:p-5 rounded-2xl bg-charcoal border ${isCancelled ? 'border-rose-500/30 opacity-90' : 'border-zinc-800'} space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="text-xs font-extrabold text-gold-300">${escapeHtml(order.id)}</span>
+                                ${customerBadge}
+                                <span class="text-[11px] text-zinc-400">${escapeHtml(order.createdAt)}</span>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <button type="button" onclick="openReceiptById('${escapeAttr(order.id)}')"
+                                        class="px-2.5 py-1.5 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/30 text-gold-300 text-xs font-bold transition">
+                                    <i class="fa-solid fa-file-invoice mr-1"></i> វិក្កយបត្រ
+                                </button>
+                                <select onchange="updateAdminOrderStatus('${escapeAttr(order.id)}', this.value)"
+                                        class="px-3 py-1.5 rounded-xl border text-xs font-bold focus:outline-none ${statusBadgeStyle}">
+                                    ${statuses.map((st) => `<option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                                </select>
+                                ${!isCancelled ? `
+                                    <button type="button" onclick="cancelAdminOrder('${escapeAttr(order.id)}')"
+                                            class="px-2.5 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-500/30 text-amber-300 text-xs font-bold transition">
+                                        <i class="fa-solid fa-ban mr-1"></i> Cancel
+                                    </button>
+                                ` : ''}
+                                <button type="button" onclick="deleteAdminOrder('${escapeAttr(order.id)}')"
+                                        title="លុប Order ចោល"
+                                        class="px-2.5 py-1.5 rounded-xl bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-500/30 text-xs font-bold transition">
+                                    <i class="fa-solid fa-trash mr-1"></i> លុប
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-zinc-300">
+                            <p>
+                                <span class="text-zinc-500">អតិថិជន៖</span>
+                                <button type="button" onclick="openCustomerHistoryModal('${escapeAttr(order.customerPhone)}')" class="font-bold text-white hover:text-gold-300 underline decoration-dotted">
+                                    ${escapeHtml(order.customerName)}
+                                </button>
+                                (${escapeHtml(order.customerPhone)})
+                            </p>
+                            <p><span class="text-zinc-500">ទីតាំងដឹក៖</span> ${escapeHtml(order.customerAddress)}</p>
+                        </div>
+
+                        <p class="text-xs text-zinc-200 bg-surface/70 p-2.5 rounded-xl">${itemsText}</p>
+
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
+                            <input id="adminOrderNote-${escapeAttr(order.id)}" type="text"
+                                   value="${escapeAttr(order.adminNote || '')}"
+                                   placeholder="កំណត់ចំណាំផ្ទៃក្នុង (ឧ. ផ្ញើវីរះប៊ុនថាំ សាខា... / បង់រួច ABA)..."
+                                   class="flex-1 px-3 py-1.5 rounded-xl bg-surface border border-zinc-700/80 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-gold-400">
+                            <button type="button" onclick="saveAdminOrderNote('${escapeAttr(order.id)}')"
+                                    class="px-3 py-1.5 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-xs font-bold text-gold-300 shrink-0 transition">
+                                <i class="fa-solid fa-floppy-disk mr-1"></i> រក្សា Note
+                            </button>
+                        </div>
+
+                        <div class="flex items-center justify-between text-xs pt-1">
+                            <span class="text-zinc-400">ទូទាត់៖ <strong>${escapeHtml(order.paymentMethod)}</strong> • ដឹកហ្វ្រី</span>
+                            <span class="text-sm font-extrabold text-gold-400">សរុប៖ $${Number(order.total).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = kpiHtml + filterBarHtml + cardsHtml;
+        }
+
+        function saveAdminOrderNote(orderId) {
+            const inputEl = document.getElementById(`adminOrderNote-${orderId}`);
+            if (!inputEl) return;
+            const ord = state.orders.find((o) => String(o.id) === String(orderId));
+            if (!ord) return;
+            ord.adminNote = inputEl.value.trim();
+            saveState(STORAGE_KEYS.ORDERS, state.orders);
+            upsertOrderCloud(ord);
+            showToast(`បានរក្សា Note សម្រាប់ ${orderId} រួចរាល់`);
+        }
+
+        function openCustomerHistoryModal(phoneStr) {
+            const normTarget = String(phoneStr || '').replace(/\s+/g, '');
+            const matchingOrders = state.orders.filter((o) =>
+                String(o.customerPhone || '').replace(/\s+/g, '') === normTarget
+            );
+            if (matchingOrders.length === 0) return;
+
+            const latest = matchingOrders[0];
+            const totalSpent = matchingOrders
+                .filter((o) => !['Cancelled', 'Refund'].includes(String(o.status || '')))
+                .reduce((sum, o) => sum + Number(o.total || 0), 0);
+
+            document.getElementById('customerHistoryModalTitle').textContent =
+                `ប្រវត្តិទិញរបស់៖ ${latest.customerName || 'ភ្ញៀវ'}`;
+            document.getElementById('customerHistoryModalSubtitle').textContent =
+                `ទូរស័ព្ទ៖ ${latest.customerPhone || ''} • ទិញ ${matchingOrders.length} ដង • ចំណាយសរុប៖ $${totalSpent.toFixed(2)}`;
+
+            document.getElementById('customerHistoryModalBody').innerHTML = `
+                <div class="p-3 rounded-2xl bg-surface/80 border border-zinc-800 text-xs text-zinc-300">
+                    <span class="text-zinc-500">ទីតាំងដឹកចុងក្រោយ៖</span> <strong>${escapeHtml(latest.customerAddress || '')}</strong>
+                </div>
+                ${matchingOrders.map((o) => {
+                    const itemsStr = (o.items || []).map((i) => `${escapeHtml(i.name)} (x${i.qty})`).join(', ');
+                    return `
+                        <div class="p-3.5 rounded-2xl bg-surface/60 border border-zinc-800 space-y-1.5 text-xs">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-extrabold text-gold-300">${escapeHtml(o.id)}</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-charcoal text-gold-300 border border-zinc-700">${escapeHtml(o.status)}</span>
+                            </div>
+                            <p class="text-[11px] text-zinc-400">${escapeHtml(o.createdAt)}</p>
+                            <p class="text-zinc-200">${itemsStr}</p>
+                            ${o.adminNote ? `<p class="text-[11px] text-amber-300">Note: ${escapeHtml(o.adminNote)}</p>` : ''}
+                            <p class="text-right font-extrabold text-emerald-400">$${Number(o.total || 0).toFixed(2)}</p>
+                        </div>
+                    `;
+                }).join('')}
+            `;
+
+            document.getElementById('customerHistoryModal').classList.remove('hidden');
+        }
+
+        function closeCustomerHistoryModal() {
+            document.getElementById('customerHistoryModal').classList.add('hidden');
+        }
+
+        function updateAdminOrderStatus(orderId, newStatus) {
+            const ord = state.orders.find((o) => String(o.id) === String(orderId));
+            if (!ord) return;
+            ord.status = newStatus;
+            saveState(STORAGE_KEYS.ORDERS, state.orders);
+            upsertOrderCloud(ord);
+            renderAdminOrdersList();
+            renderOrderStatusTabs();
+            updateMeOrderBadge();
+            showToast(`បានប្តូរស្ថានភាព ${orderId} ទៅជា ${newStatus}`);
+        }
+
+        async function cancelAdminOrder(orderId) {
+            const ok = await openConfirmModal(
+                'Cancel Order',
+                `តើលោកអ្នកពិតជាចង់ Cancel វិក្កយបត្រ ${orderId} មែនទេ?`
+            );
+            if (!ok) return;
+            updateAdminOrderStatus(orderId, 'Cancelled');
+        }
+
+        async function deleteAdminOrder(orderId) {
+            const ok = await openConfirmModal(
+                'លុប Order ចោល',
+                `តើលោកអ្នកពិតជាចង់លុបវិក្កយបត្រ ${orderId} ចេញជាអចិន្ត្រៃយ៍មែនទេ?`
+            );
+            if (!ok) return;
+
+            state.orders = state.orders.filter((o) => String(o.id) !== String(orderId));
+            saveState(STORAGE_KEYS.ORDERS, state.orders);
+
+            try {
+                const updatedIds = getMyOrderIds().filter((id) => String(id) !== String(orderId));
+                localStorage.setItem(MY_ORDER_IDS_KEY, JSON.stringify(updatedIds));
+            } catch (_) {}
+
+            await deleteOrderCloud(orderId);
+            renderAdminOrdersList();
+            renderOrderStatusTabs();
+            updateMeOrderBadge();
+            showToast(`បានលុប Order ${orderId} រួចរាល់`);
+        }
+
+        function escapeCsvCell(val) {
+            const str = String(val ?? '').replace(/\r?\n/g, ' ');
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+
         function downloadOrdersExcel() {
             if (!Array.isArray(state.orders) || state.orders.length === 0) {
                 showToast('មិនមានទិន្នន័យ Order សម្រាប់ Download ទេ');
@@ -4015,29 +4426,30 @@
                     'Items',
                     'Subtotal ($)',
                     'Discount ($)',
-                    'Shipping ($)',
                     'Total ($)'
                 ];
 
-                const rows = state.orders.map((ord) => {
-                    const itemsSummary = (ord.items || [])
-                        .map((i) => `${i.sku ? `[${i.sku}] ` : ''}${i.name} (x${i.qty})`)
-                        .join(' | ');
+                const rows = state.orders.map((order) => {
+                    const itemsStr = (order.items || []).map((i) => {
+                        const prodMatch = state.products.find((p) => String(p.id) === String(i.productId));
+                        const skuLabel = i.sku || (prodMatch && prodMatch.sku) || '';
+                        const skuPrefix = skuLabel ? `[${skuLabel}] ` : '';
+                        return `${skuPrefix}${i.name} (x${i.qty})`;
+                    }).join('; ');
 
                     return [
-                        ord.id || '',
-                        ord.createdAt || '',
-                        ord.customerName || '',
-                        ord.customerPhone || '',
-                        ord.customerAddress || '',
-                        ord.paymentMethod || '',
-                        ord.status || '',
-                        ord.adminNote || '',
-                        itemsSummary,
-                        Number(ord.subtotal || 0).toFixed(2),
-                        Number(ord.discount || 0).toFixed(2),
-                        Number(ord.shippingFee || 0).toFixed(2),
-                        Number(ord.total || 0).toFixed(2)
+                        order.id || '',
+                        order.createdAt || '',
+                        order.customerName || '',
+                        order.customerPhone || '',
+                        order.customerAddress || '',
+                        order.paymentMethod || '',
+                        order.status || '',
+                        order.adminNote || '',
+                        itemsStr,
+                        Number(order.subtotal || 0).toFixed(2),
+                        Number(order.discount || 0).toFixed(2),
+                        Number(order.total || 0).toFixed(2)
                     ].map(escapeCsvCell).join(',');
                 });
 
@@ -4056,311 +4468,11 @@
                     URL.revokeObjectURL(url);
                 }, 800);
 
-                showToast('បាន Download ឯកសារ Order សម្រាប់ Excel រួចរាល់!');
+                showToast('បាន Download ឯកសារ Orders សម្រាប់ Excel រួចរាល់!');
             } catch (err) {
-                console.warn('Orders Excel export error:', err);
-                showToast('មិនអាច Download ឯកសារ Order បានទេ');
+                console.warn('Excel export error:', err);
+                showToast('មិនអាច Download ឯកសារ Excel បានទេ');
             }
-        }
-
-        async function cancelAdminOrder(orderId) {
-            const ok = await openConfirmModal('Cancel Order', `តើលោកអ្នកពិតជាចង់ Cancel វិក្កយបត្រ ${orderId} មែនទេ?`);
-            if (!ok) return;
-            updateAdminOrderStatus(orderId, 'Cancelled');
-        }
-
-        async function deleteAdminOrder(orderId) {
-            const ok = await openConfirmModal('លុប Order ចោល', `តើលោកអ្នកពិតជាចង់លុបវិក្កយបត្រ ${orderId} ចោលជារៀងរហូតមែនទេ?`);
-            if (!ok) return;
-            state.orders = state.orders.filter((o) => String(o.id) !== String(orderId));
-            saveState(STORAGE_KEYS.ORDERS, state.orders);
-            await deleteOrderCloud(orderId);
-            renderOrderStatusTabs();
-            updateMeOrderBadge();
-            renderAdminOrdersList();
-            showToast(`បានលុប Order ${orderId} ចោលរួចរាល់`);
-        }
-
-        function handleAdminOrderSearch(val) {
-            state.adminOrderSearch = String(val || '').trim().toLowerCase();
-            renderAdminOrdersList(false);
-        }
-
-        function handleAdminOrderStatusFilter(status) {
-            state.adminOrderStatusFilter = status || 'All';
-            renderAdminOrdersList(false);
-        }
-
-        function saveAdminOrderNote(orderId) {
-            const inputEl = document.getElementById(`adminOrderNoteInput-${orderId}`);
-            if (!inputEl) return;
-            const ord = state.orders.find((o) => String(o.id) === String(orderId));
-            if (!ord) return;
-            ord.adminNote = inputEl.value.trim();
-            saveState(STORAGE_KEYS.ORDERS, state.orders);
-            upsertOrderCloud(ord);
-            showToast(`បានរក្សាទុក Note សម្រាប់ ${orderId}`);
-        }
-
-        function openAdminReceiptById(orderId) {
-            const ord = state.orders.find((o) => String(o.id) === String(orderId));
-            if (ord) openReceiptModal(ord);
-        }
-
-        function openCustomerHistoryModal(phoneKey, fallbackName = '') {
-            const modalEl = document.getElementById('customerHistoryModal');
-            const titleEl = document.getElementById('customerHistoryModalTitle');
-            const bodyEl = document.getElementById('customerHistoryModalBody');
-            if (!modalEl || !titleEl || !bodyEl) return;
-
-            const normalizedTarget = String(phoneKey || '').replace(/\s+/g, '').toLowerCase();
-            const matchingOrders = state.orders.filter((o) => {
-                const pNorm = String(o.customerPhone || '').replace(/\s+/g, '').toLowerCase();
-                if (normalizedTarget) return pNorm === normalizedTarget;
-                return String(o.customerName || '').trim().toLowerCase() === String(fallbackName || '').trim().toLowerCase();
-            });
-
-            const displayName = (matchingOrders[0] && matchingOrders[0].customerName) || fallbackName || 'ភ្ញៀវ';
-            const displayPhone = (matchingOrders[0] && matchingOrders[0].customerPhone) || phoneKey || 'គ្មានលេខ';
-            const validOrders = matchingOrders.filter((o) => !['Cancelled', 'Refund'].includes(o.status));
-            const totalSpent = validOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
-            const latestAddress = (matchingOrders[0] && matchingOrders[0].customerAddress) || 'មិនមានទីតាំង';
-
-            titleEl.textContent = `${displayName} • ${displayPhone}`;
-            bodyEl.innerHTML = `
-                <div class="grid grid-cols-2 gap-2.5">
-                    <div class="p-3 rounded-2xl bg-surface border border-zinc-800">
-                        <p class="text-[10px] text-zinc-400">ចំនួន Order ទាំងអស់</p>
-                        <p class="text-base font-extrabold text-gold-300 mt-0.5">${matchingOrders.length} ដង</p>
-                    </div>
-                    <div class="p-3 rounded-2xl bg-surface border border-zinc-800">
-                        <p class="text-[10px] text-zinc-400">ចំណាយសរុប (មិនគិត Cancel/Refund)</p>
-                        <p class="text-base font-extrabold text-emerald-400 mt-0.5">$${totalSpent.toFixed(2)}</p>
-                    </div>
-                </div>
-                <div class="p-3 rounded-2xl bg-surface/70 border border-zinc-800 text-xs text-zinc-300">
-                    <span class="text-zinc-500">ទីតាំងដឹកចុងក្រោយ៖</span> <strong>${escapeHtml(latestAddress)}</strong>
-                </div>
-                <div class="space-y-2.5">
-                    ${matchingOrders.map((ord) => {
-                        const itemsLine = (ord.items || []).map((i) => `${escapeHtml(i.name)} (x${i.qty})`).join(', ');
-                        return `
-                            <div class="p-3.5 rounded-2xl bg-surface border border-zinc-800 space-y-1.5 text-xs">
-                                <div class="flex items-center justify-between gap-2">
-                                    <span class="font-extrabold text-gold-300">${escapeHtml(ord.id)}</span>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-charcoal text-zinc-200 border border-zinc-700">${escapeHtml(ord.status)}</span>
-                                </div>
-                                <p class="text-[11px] text-zinc-400">${escapeHtml(ord.createdAt)}</p>
-                                <p class="text-zinc-200">${itemsLine}</p>
-                                <div class="flex items-center justify-between pt-1 border-t border-zinc-800">
-                                    <span class="text-zinc-400">ទូទាត់៖ ${escapeHtml(ord.paymentMethod || '')}</span>
-                                    <span class="font-extrabold text-gold-400">$${Number(ord.total || 0).toFixed(2)}</span>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            `;
-
-            modalEl.classList.remove('hidden');
-        }
-
-        function closeCustomerHistoryModal() {
-            const modalEl = document.getElementById('customerHistoryModal');
-            if (modalEl) modalEl.classList.add('hidden');
-        }
-
-        function renderAdminOrdersList(rebuildShell = true) {
-            const container = document.getElementById('adminSectionOrders');
-            if (!container) return;
-
-            const phoneCounts = {};
-            state.orders.forEach((o) => {
-                const norm = String(o.customerPhone || '').replace(/\s+/g, '');
-                if (norm) {
-                    phoneCounts[norm] = (phoneCounts[norm] || 0) + 1;
-                }
-            });
-
-            const activeRevenueOrders = state.orders.filter((o) => !['Cancelled', 'Refund'].includes(o.status));
-            const totalRevenue = activeRevenueOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
-            const toShipCount = state.orders.filter((o) => o.status === 'To Ship').length;
-            const repeatCustomerCount = Object.values(phoneCounts).filter((cnt) => cnt > 1).length;
-
-            const filterStatuses = ['All', 'To Pay', 'To Ship', 'To Receive', 'Completed', 'To Review', 'Refund', 'Cancelled'];
-            const statuses = ['To Pay', 'To Ship', 'To Receive', 'Completed', 'To Review', 'Refund', 'Cancelled'];
-
-            const filteredOrders = state.orders.filter((order) => {
-                const matchesStatus = state.adminOrderStatusFilter === 'All' || order.status === state.adminOrderStatusFilter;
-                const q = state.adminOrderSearch;
-                const matchesSearch = !q ||
-                    String(order.id || '').toLowerCase().includes(q) ||
-                    String(order.customerName || '').toLowerCase().includes(q) ||
-                    String(order.customerPhone || '').toLowerCase().includes(q) ||
-                    String(order.customerAddress || '').toLowerCase().includes(q);
-                return matchesStatus && matchesSearch;
-            });
-
-            const cardsHtml = filteredOrders.length === 0
-                ? `<p class="text-xs text-zinc-400 text-center py-8 rounded-2xl bg-charcoal border border-zinc-800">រកមិនឃើញវិក្កយបត្រដែលត្រូវនឹងលក្ខខណ្ឌស្វែងរកទេ</p>`
-                : filteredOrders.map((order) => {
-                    const normPhone = String(order.customerPhone || '').replace(/\s+/g, '');
-                    const orderCountForPhone = normPhone ? (phoneCounts[normPhone] || 1) : 1;
-                    const customerBadge = orderCountForPhone > 1
-                        ? `<button type="button" onclick="openCustomerHistoryModal('${escapeAttr(normPhone)}', '${escapeAttr(order.customerName)}')"
-                                   class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/30 transition">
-                               ភ្ញៀវទិញ ${orderCountForPhone} ដង ↗
-                           </button>`
-                        : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-800 text-zinc-300">ភ្ញៀវថ្មី</span>`;
-
-                    const itemsText = order.items.map((i) => {
-                        const prodMatch = state.products.find((p) => String(p.id) === String(i.productId));
-                        const skuLabel = i.sku || (prodMatch && prodMatch.sku) || '';
-                        const skuTag = skuLabel ? `[${escapeHtml(skuLabel)}] ` : '';
-                        return `${skuTag}${escapeHtml(i.name)} (x${i.qty})`;
-                    }).join(', ');
-
-                    return `
-                        <div class="p-4 sm:p-5 rounded-2xl bg-charcoal border border-zinc-800 space-y-3">
-                            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <span class="text-xs font-extrabold text-gold-300">${escapeHtml(order.id)}</span>
-                                    ${customerBadge}
-                                    <span class="text-[11px] text-zinc-400">${escapeHtml(order.createdAt)}</span>
-                                </div>
-
-                                <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                                    <button type="button" onclick="openAdminReceiptById('${escapeAttr(order.id)}')"
-                                            title="មើលវិក្កយបត្រ / Save រូប A6"
-                                            class="px-2.5 py-1.5 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/35 text-gold-300 text-xs font-bold transition">
-                                        <i class="fa-solid fa-file-invoice mr-1"></i> វិក្កយបត្រ
-                                    </button>
-                                    <select onchange="updateAdminOrderStatus('${escapeAttr(order.id)}', this.value)"
-                                            class="px-3 py-1.5 rounded-xl bg-surface border border-zinc-700 text-xs font-bold text-gold-300 focus:outline-none">
-                                        ${statuses.map((st) => `<option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>`).join('')}
-                                    </select>
-                                    ${order.status !== 'Cancelled' ? `
-                                        <button type="button" onclick="cancelAdminOrder('${escapeAttr(order.id)}')"
-                                                class="px-2.5 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-500/35 text-amber-300 text-xs font-bold transition">
-                                            Cancel Order
-                                        </button>
-                                    ` : ''}
-                                    <button type="button" onclick="deleteAdminOrder('${escapeAttr(order.id)}')"
-                                            title="លុប Order ចោល"
-                                            class="px-2.5 py-1.5 rounded-xl bg-rose-950/70 hover:bg-rose-900/80 border border-rose-500/35 text-rose-300 text-xs font-bold transition">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-zinc-300">
-                                <p>
-                                    <span class="text-zinc-500">អតិថិជន៖</span>
-                                    <button type="button" onclick="openCustomerHistoryModal('${escapeAttr(normPhone)}', '${escapeAttr(order.customerName)}')"
-                                            class="font-bold text-white hover:text-gold-300 underline decoration-dotted underline-offset-2 transition">
-                                        ${escapeHtml(order.customerName)}
-                                    </button>
-                                    (${escapeHtml(order.customerPhone)})
-                                </p>
-                                <p><span class="text-zinc-500">ទីតាំងដឹក៖</span> ${escapeHtml(order.customerAddress)}</p>
-                            </div>
-
-                            <p class="text-xs text-zinc-200 bg-surface/70 p-2.5 rounded-xl">${itemsText}</p>
-
-                            <!-- Internal Admin Note -->
-                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1">
-                                <input id="adminOrderNoteInput-${escapeAttr(order.id)}" type="text"
-                                       value="${escapeAttr(order.adminNote || '')}"
-                                       placeholder="កំណត់ចំណាំផ្ទៃក្នុង (ឧ. ផ្ញើវីរះប៊ុនថាំ សាខា..., បង់រួច...)"
-                                       class="flex-1 px-3 py-1.5 rounded-xl bg-surface border border-zinc-800 focus:border-gold-500/50 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none">
-                                <button type="button" onclick="saveAdminOrderNote('${escapeAttr(order.id)}')"
-                                        class="px-3 py-1.5 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-gold-300 text-xs font-bold shrink-0 transition">
-                                    <i class="fa-solid fa-note-sticky mr-1"></i> រក្សា Note
-                                </button>
-                            </div>
-
-                            <div class="flex items-center justify-between text-xs pt-1 border-t border-zinc-800/70">
-                                <span class="text-zinc-400">ទូទាត់៖ <strong>${escapeHtml(order.paymentMethod)}</strong> • ដឹកហ្វ្រី</span>
-                                <span class="text-sm font-extrabold text-gold-400">សរុប៖ $${Number(order.total).toFixed(2)}</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-            const topBlockHtml = `
-                <!-- 2. Summary KPI Cards -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-                    <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800">
-                        <p class="text-[10px] font-bold text-zinc-400">Order ទាំងអស់</p>
-                        <p class="text-lg font-extrabold text-white mt-0.5">${state.orders.length}</p>
-                    </div>
-                    <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800">
-                        <p class="text-[10px] font-bold text-amber-300">រង់ចាំដឹក (To Ship)</p>
-                        <p class="text-lg font-extrabold text-amber-400 mt-0.5">${toShipCount}</p>
-                    </div>
-                    <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800">
-                        <p class="text-[10px] font-bold text-emerald-300">ចំណូលសរុប</p>
-                        <p class="text-lg font-extrabold text-emerald-400 mt-0.5">$${totalRevenue.toFixed(2)}</p>
-                    </div>
-                    <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800">
-                        <p class="text-[10px] font-bold text-gold-300">ភ្ញៀវទិញម្តងទៀត</p>
-                        <p class="text-lg font-extrabold text-gold-400 mt-0.5">${repeatCustomerCount}</p>
-                    </div>
-                </div>
-
-                <!-- 1. Search, Status Filter & Download Excel -->
-                <div class="rounded-2xl bg-charcoal/95 border border-zinc-800 p-3.5 sm:p-4 space-y-3">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                        <div class="relative flex-1">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
-                            <input id="adminOrderSearchInput" type="text"
-                                   value="${escapeAttr(state.adminOrderSearch)}"
-                                   oninput="handleAdminOrderSearch(this.value)"
-                                   placeholder="ស្វែងរកតាមលេខ ORD-..., ឈ្មោះ ឬលេខទូរស័ព្ទភ្ញៀវ..."
-                                   class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-gold-400">
-                        </div>
-                        <button type="button" onclick="downloadOrdersExcel()"
-                                class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-obsidian text-xs font-extrabold flex items-center justify-center gap-1.5 shadow shrink-0 transition">
-                            <i class="fa-solid fa-file-excel"></i>
-                            <span>Download Excel</span>
-                        </button>
-                    </div>
-                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-                        ${filterStatuses.map((st) => {
-                            const active = state.adminOrderStatusFilter === st;
-                            return `
-                                <button type="button" onclick="handleAdminOrderStatusFilter('${st}')"
-                                        class="px-3 py-1.5 rounded-full text-[11px] font-extrabold whitespace-nowrap transition ${
-                                            active
-                                                ? 'bg-gold-500 text-obsidian'
-                                                : 'bg-surface hover:bg-zinc-800 text-zinc-300 border border-zinc-800'
-                                        }">
-                                    ${st}
-                                </button>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            `;
-
-            if (!rebuildShell && document.getElementById('adminOrdersListCards')) {
-                document.getElementById('adminOrdersListCards').innerHTML = cardsHtml;
-                return;
-            }
-
-            container.innerHTML = `${topBlockHtml}<div id="adminOrdersListCards" class="space-y-3">${cardsHtml}</div>`;
-        }
-
-        function updateAdminOrderStatus(orderId, newStatus) {
-            const ord = state.orders.find((o) => o.id === orderId);
-            if (!ord) return;
-            ord.status = newStatus;
-            saveState(STORAGE_KEYS.ORDERS, state.orders);
-            upsertOrderCloud(ord);
-            renderOrderStatusTabs();
-            updateMeOrderBadge();
-            renderAdminOrdersList();
-            showToast(`បានប្តូរស្ថានភាព ${orderId} ទៅជា ${newStatus}`);
         }
 
         function populateBannerForm() {
@@ -4395,16 +4507,19 @@
             saveState(STORAGE_KEYS.BANNER, state.banner);
             applyBannerToDOM();
             await persistStoreBrandingCloud();
-            showToast('បានរក្សាទុកក្របមុខ & Banner និង Sync ទៅ Cloud រួចរាល់');
+            showToast('បានរក្សាទុកក្របមុខ & Banner និង Sync រួចរាល់');
         }
 
         async function resetBannerSettings() {
             state.banner = { ...DEFAULT_BANNER };
+            state.storeIcon = DEFAULT_STORE_ICON;
             saveState(STORAGE_KEYS.BANNER, state.banner);
+            saveState(STORAGE_KEYS.STORE_ICON, state.storeIcon);
             populateBannerForm();
             applyBannerToDOM();
+            applyStoreIconToDOM();
             await persistStoreBrandingCloud();
-            showToast('បានត្រឡប់ក្របមុខទៅដើមវិញ');
+            showToast('បានត្រឡប់ក្របមុខ និង Icon ទៅដើមវិញ');
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
