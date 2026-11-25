@@ -14,6 +14,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&family=Noto+Sans+Khmer:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
+        // Define fallback logo handler early so inline onerror never throws ReferenceError
+        window.FALLBACK_SVG_ICON = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%2314141A%27/%3E%3Cpath fill=%27%23E5BE52%27 d=%27M12 44l4-22 12 10 4-14 4 14 12-10 4 22H12zm0 5h40v5H12v-5z%27/%3E%3C/svg%3E';
+        window.handleHeaderLogoError = function (imgEl) {
+            if (!imgEl) return;
+            imgEl.onerror = null;
+            imgEl.src = window.FALLBACK_SVG_ICON;
+        };
+    </script>
+    <script>
         // Configure Tailwind theme tokens for dark obsidian and gold accents
         tailwind.config = {
             theme: {
@@ -97,28 +106,23 @@
             scroll-snap-align: start;
             flex: 0 0 100%;
         }
-        .drag-item-active {
-            opacity: 0.45;
-            border-color: #E5BE52 !important;
-        }
-        .drag-item-over {
-            border-color: #E5BE52 !important;
-            box-shadow: 0 0 0 2px rgba(229, 190, 82, 0.4);
-            transform: scale(1.01);
-        }
     </style>
 </head>
 <body class="min-h-screen bg-obsidian text-zinc-100 pb-24">
     <!-- Top Header -->
     <header class="sticky top-0 z-30 glass-panel border-b border-gold-500/20">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-            <!-- Brand Logo -->
-            <button type="button" onclick="switchTab('home')" class="flex items-center gap-3 text-left group">
+        <div class="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-3">
+            <!-- Brand Logo (Single click = Home, Double click = Admin Login) -->
+            <button type="button"
+                    onclick="switchTab('home')"
+                    ondblclick="openAdminGate()"
+                    title="ចុចទៅ Home • ចុច ២ ដងដើម្បីចូល Admin"
+                    class="flex items-center gap-3 text-left group">
                 <img id="headerBrandLogoImg"
                      src="https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png"
                      alt="Aura Decor Logo"
-                     onerror="this.onerror=null; this.src='https://placehold.co/120x120/14141a/e5be52?text=KP';"
-                     class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shrink-0 border border-gold-500/30">
+                     onerror="handleHeaderLogoError(this)"
+                     class="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shrink-0 group-hover:scale-105 transition">
                 <div>
                     <h1 class="text-base sm:text-lg font-extrabold tracking-wide text-gold-300 leading-tight group-hover:text-gold-400 transition">AURA DECOR</h1>
                     <p class="text-[11px] text-zinc-400">វត្ថុតុបតែង • ហុងស៊ុយ • ដឹកហ្វ្រី ២៥ ខេត្ត-ក្រុង</p>
@@ -135,7 +139,7 @@
 
             <!-- Right Actions: Admin Button & Cart Quick Button -->
             <div class="flex items-center gap-2">
-                <!-- Hidden from regular guests; Admin login is accessed via /admin, #/admin, #admin, or ?admin -->
+                <!-- Hidden from regular guests; Admin login is accessed via /admin, #/admin, #admin, ?admin, or double-clicking logo -->
                 <button type="button" id="headerAdminBtn" onclick="openAdminGate()"
                         class="hidden relative px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/30 text-gold-300 text-xs font-bold items-center gap-1.5 transition">
                     <i class="fa-solid fa-user-shield"></i>
@@ -145,14 +149,14 @@
                 <button type="button" onclick="switchTab('cart')"
                         class="relative px-3 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs font-extrabold flex items-center gap-1.5 shadow-md shadow-gold-500/20 transition">
                     <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="hidden sm:inline">កន្ត្រក</span>
+                    <span class="hidden sm:inline">រទេះ</span>
                     <span id="headerCartBadge" class="px-1.5 py-0.5 rounded-full bg-obsidian text-gold-300 text-[11px] font-extrabold">0</span>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Search Bar -->
-        <div class="md:hidden px-4 pb-3">
+        <div class="md:hidden px-3 pb-3">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-sm"></i>
                 <input id="mobileSearchInput" type="text" oninput="handleSearchInput(this.value)"
@@ -163,12 +167,12 @@
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-6xl mx-auto px-4 pt-5 space-y-6">
+    <main class="max-w-6xl mx-auto px-2.5 sm:px-4 pt-4 sm:pt-5 space-y-5 sm:space-y-6">
 
         <!-- HOME / STOREFRONT VIEW -->
-        <section id="view-home" class="space-y-6">
+        <section id="view-home" class="space-y-5 sm:space-y-6">
             <!-- Hero Banner -->
-            <div id="heroBannerCard" class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-charcoal via-[#1E1A11] to-obsidian border border-gold-500/30 p-6 sm:p-8 shadow-2xl">
+            <div id="heroBannerCard" class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-charcoal via-[#1E1A11] to-obsidian border border-gold-500/30 p-5 sm:p-8 shadow-2xl">
                 <img id="heroBannerBgImg" src="" alt="Banner"
                      class="hidden absolute inset-0 w-full h-full object-cover opacity-35 pointer-events-none">
                 <div id="heroBannerOverlay" class="hidden absolute inset-0 bg-gradient-to-r from-obsidian/90 via-obsidian/70 to-transparent pointer-events-none"></div>
@@ -200,11 +204,64 @@
                 </div>
             </div>
 
-            <!-- Category Pills -->
-            <div id="categoryPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
+            <!-- 1. Trust & Guarantee Bar -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+                <div class="p-3 rounded-2xl bg-charcoal/90 border border-zinc-800 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-truck-fast text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[11px] sm:text-xs font-extrabold text-white truncate">ដឹកហ្វ្រី ២៥ ខេត្ត-ក្រុង</p>
+                        <p class="text-[10px] text-zinc-400 truncate">ភ្នំពេញ &amp; គ្រប់ខេត្ត</p>
+                    </div>
+                </div>
+                <div class="p-3 rounded-2xl bg-charcoal/90 border border-zinc-800 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-gold-500/15 text-gold-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-box-open text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[11px] sm:text-xs font-extrabold text-white truncate">ពិនិត្យមុនទូទាត់</p>
+                        <p class="text-[10px] text-zinc-400 truncate">ធានាត្រឹមត្រូវតាមរូប</p>
+                    </div>
+                </div>
+                <div class="p-3 rounded-2xl bg-charcoal/90 border border-zinc-800 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-shield-halved text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[11px] sm:text-xs font-extrabold text-white truncate">ធានាប្តូរជូនវិញ</p>
+                        <p class="text-[10px] text-zinc-400 truncate">បើខូចខាតពេលដឹកជញ្ជូន</p>
+                    </div>
+                </div>
+                <div class="p-3 rounded-2xl bg-charcoal/90 border border-gold-500/25 flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-fire-flame-curved text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-[11px] sm:text-xs font-extrabold text-gold-300 truncate">ទិញ ២+ ថយ $1/មុខ</p>
+                        <p class="text-[10px] text-zinc-400 truncate">បញ្ចុះស្វ័យប្រវត្តិ</p>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Product Grid -->
-            <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 sm:gap-5"></div>
+            <!-- Category Pills + 2. Sort Dropdown -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div id="categoryPills" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 flex-1"></div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <label for="productSortSelect" class="text-[11px] font-bold text-zinc-400 whitespace-nowrap">
+                        <i class="fa-solid fa-arrow-down-wide-short text-gold-400 mr-1"></i>តម្រៀប៖
+                    </label>
+                    <select id="productSortSelect" onchange="handleSortChange(this.value)"
+                            class="px-3 py-1.5 rounded-xl bg-charcoal border border-zinc-800 text-xs font-bold text-zinc-200 focus:outline-none focus:border-gold-400">
+                        <option value="featured">លំដាប់ណែនាំ</option>
+                        <option value="price-asc">តម្លៃទាប ➔ ខ្ពស់</option>
+                        <option value="price-desc">តម្លៃខ្ពស់ ➔ ទាប</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Product Grid (Compact spacing so cards & photos look larger on mobile) -->
+            <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-5"></div>
 
             <!-- Empty Storefront State -->
             <div id="emptyProductsBox" class="hidden text-center py-16 px-4 rounded-3xl bg-charcoal border border-zinc-800">
@@ -212,7 +269,33 @@
                 <p class="text-zinc-300 font-bold">រកមិនឃើញទំនិញដែលលោកអ្នកស្វែងរកទេ</p>
                 <p class="text-xs text-zinc-500 mt-1">សូមសាកល្បងស្វែងរកពាក្យផ្សេង ឬជ្រើសរើសប្រភេទទំនិញផ្សេង។</p>
             </div>
+
+            <!-- 5. Mini Footer & FAQ -->
+            <div class="rounded-3xl bg-charcoal border border-zinc-800/90 p-4 sm:p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="p-3.5 rounded-2xl bg-surface/70 border border-zinc-800 space-y-1">
+                        <p class="font-extrabold text-gold-300"><i class="fa-solid fa-clock mr-1.5"></i>រយៈពេលដឹកជញ្ជូន</p>
+                        <p class="text-zinc-300 leading-relaxed">ភ្នំពេញ៖ ១–២ ថ្ងៃ • តាមខេត្តទាំង ២៥៖ ២–៣ ថ្ងៃ។ ដឹកជញ្ជូនហ្វ្រី ១០០%។</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-surface/70 border border-zinc-800 space-y-1">
+                        <p class="font-extrabold text-gold-300"><i class="fa-solid fa-circle-question mr-1.5"></i>សំណួរញឹកញាប់ (FAQ)</p>
+                        <p class="text-zinc-300 leading-relaxed">អាចបង់ប្រាក់ពេលទទួល (COD) ឬស្កេន ABA/KHQR បាន ហើយអាចពិនិត្យទំនិញមុនទូទាត់។</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-surface/70 border border-zinc-800 space-y-1">
+                        <p class="font-extrabold text-gold-300"><i class="fa-solid fa-phone-volume mr-1.5"></i>ទំនាក់ទំនងហាង Aura Decor</p>
+                        <p class="text-zinc-300 leading-relaxed">បើករៀងរាល់ថ្ងៃ ៨:០០ព្រឹក – ៨:០០យប់ • ទូរស័ព្ទ/Telegram៖ <strong class="text-white">096 221 3223</strong></p>
+                    </div>
+                </div>
+            </div>
         </section>
+
+        <!-- 4. Floating Quick Contact Button -->
+        <button type="button"
+                onclick="switchTab('message')"
+                title="ឆាតសួរព័ត៌មានជាមួយហាង"
+                class="fixed bottom-20 right-4 z-30 w-12 h-12 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 hover:from-gold-300 hover:to-gold-500 text-obsidian shadow-xl shadow-gold-500/30 flex items-center justify-center transition hover:scale-105 active:scale-95">
+            <i class="fa-solid fa-comment-dots text-lg"></i>
+        </button>
 
         <!-- MESSAGE / SUPPORT VIEW -->
         <section id="view-message" class="hidden space-y-5">
@@ -227,7 +310,7 @@
                     </div>
                 </div>
 
-                <!-- Live Website Chat Box -->
+                <!-- Live Website Chat Box (Expanded Height & Larger Text) -->
                 <div class="rounded-2xl bg-surface/90 border border-zinc-800 p-4 sm:p-5 space-y-4">
                     <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
                         <span class="text-xs sm:text-sm font-extrabold text-gold-300">
@@ -299,17 +382,17 @@
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
                     <i class="fa-solid fa-bag-shopping text-gold-400"></i>
-                    <span>កន្ត្រកទំនិញ និងការបញ្ជាទិញ</span>
+                    <span>រទេះទំនិញ និងការបញ្ជាទិញ</span>
                 </h2>
                 <button type="button" onclick="clearCart()" id="clearCartBtn" class="hidden text-xs font-bold text-rose-400 hover:text-rose-300">
-                    <i class="fa-solid fa-trash mr-1"></i> សម្អាតកន្ត្រក
+                    <i class="fa-solid fa-trash mr-1"></i> សម្អាតរទេះ
                 </button>
             </div>
 
             <div id="emptyCartBox" class="text-center py-14 px-4 rounded-3xl bg-charcoal border border-zinc-800 space-y-3">
                 <i class="fa-solid fa-cart-shopping text-4xl text-zinc-600"></i>
-                <p class="text-zinc-300 font-bold">កន្ត្រកទំនិញរបស់លោកអ្នកនៅទទេ</p>
-                <p class="text-xs text-zinc-500">សូមជ្រើសរើសទំនិញពីមុខហាង ឬ Digital Menu ដើម្បីដាក់ចូលកន្ត្រក។</p>
+                <p class="text-zinc-300 font-bold">រទេះទំនិញរបស់លោកអ្នកនៅទទេ</p>
+                <p class="text-xs text-zinc-500">សូមជ្រើសរើសទំនិញពីមុខហាង ឬ Digital Menu ដើម្បីដាក់ចូលរទេះ។</p>
                 <button type="button" onclick="switchTab('home')" class="mt-2 px-5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-obsidian text-xs font-extrabold transition">
                     ទៅមើលទំនិញ
                 </button>
@@ -345,9 +428,8 @@
                         <div>
                             <label class="block text-xs font-bold text-zinc-300 mb-1">វិធីទូទាត់ប្រាក់</label>
                             <select id="custPayment" class="w-full px-3.5 py-2.5 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
-                                <option value="COD ភ្នំពេញ (បង់ពេលទទួលទំនិញ)">COD ភ្នំពេញ (បង់ពេលទទួលទំនិញ)</option>
-                                <option value="COD តាមខេត្ត (បង់តាមវីរះប៊ុនថាំ)">COD តាមខេត្ត (បង់តាមវីរះប៊ុនថាំ)</option>
                                 <option value="ABA / KHQR">ABA / KHQR (ស្កេនផ្ទេរប្រាក់)</option>
+                                <option value="COD (បង់ពេលទទួលទំនិញ)">COD (បង់ពេលទទួលទំនិញ)</option>
                             </select>
                         </div>
 
@@ -464,45 +546,36 @@
             <div id="adminSectionOrders" class="hidden space-y-3"></div>
             <div id="adminSectionMessages" class="hidden space-y-4"></div>
             <div id="adminSectionBanner" class="hidden rounded-3xl bg-charcoal border border-zinc-800 p-5 sm:p-6 space-y-5">
-                <!-- Store Icon Upload / URL / Save Card -->
-                <div class="p-4 sm:p-5 rounded-2xl bg-surface/90 border border-gold-500/25 space-y-4">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <h3 class="text-sm sm:text-base font-extrabold text-gold-300">
-                            <i class="fa-solid fa-crown mr-1.5"></i> កែរូបភាព Icon / Logo ហាង (Upload ឬ URL + Save Image)
-                        </h3>
-                        <span class="text-[11px] text-zinc-400">ប្តូរទាំង Header &amp; Browser Icon</span>
-                    </div>
-
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <img id="adminIconPreviewImg"
-                                 src="https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png"
-                                 alt="Store Icon Preview"
-                                 onerror="this.onerror=null; this.src='https://placehold.co/120x120/14141a/e5be52?text=KP';"
-                                 class="w-14 h-14 rounded-full object-cover bg-charcoal border border-gold-400/50 shrink-0">
-                            <div class="text-xs text-zinc-300 space-y-0.5">
-                                <p class="font-bold text-white">រូបភាព Icon បច្ចុប្បន្ន</p>
-                                <p class="text-[11px] text-zinc-400">អាច Upload ពីឧបករណ៍ ឬដាក់ Link រូបភាព រួចចុច Save Image</p>
+                <!-- Store Icon Image Upload / URL & Save Image -->
+                <div class="p-4 rounded-2xl bg-surface/80 border border-gold-500/25 space-y-3">
+                    <h4 class="text-sm font-extrabold text-gold-300">
+                        <i class="fa-solid fa-crown mr-1.5"></i> រូប Icon ហាង (Header &amp; Browser Tab Icon)
+                    </h4>
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <img id="adminIconPreviewImg"
+                             src="https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png"
+                             alt="Store Icon Preview"
+                             onerror="this.src='https://placehold.co/120x120/1c1c24/e5be52?text=Icon'"
+                             class="w-16 h-16 rounded-full object-cover bg-charcoal border border-gold-400/50 shrink-0">
+                        <div class="flex-1 space-y-2.5">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-zinc-300 mb-1">Upload Icon Image ពីឧបករណ៍</label>
+                                    <input type="file" accept="image/*" onchange="handleStoreIconFileUpload(event)"
+                                           class="w-full text-xs text-zinc-300 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:bg-gold-500/20 file:text-gold-300 file:font-bold hover:file:bg-gold-500/30">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-zinc-300 mb-1">ឬបញ្ចូល URL Image</label>
+                                    <input id="storeIconUrlInput" type="text" oninput="previewStoreIconUrl(this.value)" placeholder="https://..."
+                                           class="w-full px-3.5 py-2 rounded-xl bg-charcoal border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
+                                </div>
                             </div>
-                        </div>
-
-                        <button type="button" onclick="saveStoreIconImage()"
-                                class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs font-extrabold flex items-center justify-center gap-1.5 shadow-md transition">
-                            <i class="fa-solid fa-floppy-disk"></i>
-                            <span>Save Image</span>
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-bold text-zinc-300 mb-1">Upload Icon Image ពីឧបករណ៍</label>
-                            <input id="storeIconFileInput" type="file" accept="image/*" onchange="handleStoreIconFileUpload(event)"
-                                   class="w-full text-xs text-zinc-300 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:bg-gold-500/20 file:text-gold-300 file:font-bold hover:file:bg-gold-500/30">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-zinc-300 mb-1">ឬបញ្ចូល URL Image សម្រាប់ Icon</label>
-                            <input id="storeIconUrlInput" type="text" oninput="previewStoreIconUrl(this.value)" placeholder="https://..."
-                                   class="w-full px-3.5 py-2.5 rounded-xl bg-charcoal border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="saveStoreIconImage()"
+                                        class="px-4 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs font-extrabold transition">
+                                    <i class="fa-solid fa-floppy-disk mr-1"></i> Save Image
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -593,6 +666,7 @@
                         <h3 id="detailTitle" class="text-lg sm:text-xl font-extrabold text-white leading-snug"></h3>
                         <div id="detailPriceBox" class="flex items-baseline gap-2.5 flex-wrap">
                             <p id="detailPrice" class="text-2xl font-extrabold text-gold-400"></p>
+                            <span id="detailCrossPrice" class="hidden text-sm text-zinc-500 line-through font-semibold"></span>
                             <span id="detailUnitOldPrice" class="hidden text-sm text-zinc-500 line-through font-semibold"></span>
                             <span id="detailUnitPromoNote" class="hidden text-[11px] font-bold text-emerald-400">(-$1.00 / មុខ)</span>
                         </div>
@@ -625,13 +699,19 @@
                         <div class="grid grid-cols-2 gap-2.5">
                             <button type="button" onclick="addDetailToCart()"
                                     class="py-3 px-3 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/40 text-gold-300 text-xs sm:text-sm font-extrabold transition">
-                                <i class="fa-solid fa-cart-plus mr-1"></i> ដាក់ចូលកន្ត្រក
+                                <i class="fa-solid fa-cart-plus mr-1"></i> ដាក់ចូលរទេះ
                             </button>
                             <button type="button" onclick="buyDetailNow()"
                                     class="py-3 px-3 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs sm:text-sm font-extrabold shadow-lg shadow-gold-500/20 transition">
                                 <i class="fa-solid fa-bolt mr-1"></i> ទិញឥឡូវនេះ
                             </button>
                         </div>
+
+                        <button type="button" onclick="chatAboutDetailProduct()"
+                                class="w-full py-2.5 px-3 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/40 text-sky-300 text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 transition">
+                            <i class="fa-solid fa-comment-dots"></i>
+                            <span>ឆាតសួរព័ត៌មានពីមុខទំនិញនេះ</span>
+                        </button>
 
                         <div class="grid grid-cols-3 gap-1.5 pt-1 text-center">
                             <div class="px-2 py-1.5 rounded-xl bg-surface/70 border border-zinc-800 text-[10px] text-zinc-300 font-semibold">
@@ -729,8 +809,13 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-zinc-300 mb-1">តម្លៃ ($ USD) *</label>
+                        <label class="block text-xs font-bold text-zinc-300 mb-1">តម្លៃបញ្ចុះរួច ($ USD) *</label>
                         <input id="prodPriceInput" type="number" step="0.01" min="0.01" required
+                               class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-300 mb-1">តម្លៃដើមមានឆ្នូត ($)</label>
+                        <input id="prodCrossPriceInput" type="number" step="0.01" min="0" placeholder="ឧ. 23.00"
                                class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
                     </div>
                     <div>
@@ -738,6 +823,8 @@
                         <input id="prodStockInput" type="number" min="0" required
                                class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
                     </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-zinc-300 mb-1">ប្រភេទ *</label>
                         <select id="prodCategoryInput"
@@ -757,7 +844,10 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="block text-xs font-bold text-zinc-300">រូបភាពទំនិញ (Drag រូបភាពដាក់ទីតាំង #1 ដើម្បីធ្វើជា Thumbnail)</label>
+                    <div class="flex items-center justify-between gap-2">
+                        <label class="block text-xs font-bold text-zinc-300">រូបភាពទំនិញ (Drag រូបដើម្បីដាក់ជា Thumbnail រូបទី ១)</label>
+                        <span class="text-[10px] text-gold-300 font-bold">រូបទី ១ = Thumbnail</span>
+                    </div>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <input type="file" accept="image/*" multiple onchange="handleProductFilesUpload(event)"
                                class="text-xs text-zinc-300 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:bg-gold-500/20 file:text-gold-300 file:font-bold">
@@ -826,7 +916,7 @@
             <div id="receiptBody" class="space-y-3 text-xs"></div>
 
             <div class="space-y-2 pt-2 border-t border-zinc-200">
-                <p class="text-[11px] font-bold text-zinc-600">វិក្កយបត្របានផ្ញើអូតូទៅហាងរួច (ត្រូវការរហ័ស ចុចផ្ញើបន្ថែមខាងក្រោម​​)៖</p>
+                <p class="text-[11px] font-bold text-zinc-600">ផ្ញើព័ត៌មានវិក្កយបត្រទៅហាង (Save រូប A6 + បើកឆាត)៖</p>
                 <div class="grid grid-cols-2 gap-2">
                     <a id="receiptTelegramLink" href="https://t.me/+855962213223" target="_blank" rel="noopener noreferrer"
                        onclick="prepareShareReceipt('telegram')"
@@ -898,13 +988,19 @@
     </nav>
 
     <script>
-        // ==================== SUPABASE & TELEGRAM CONFIGURATION ====================
+        // ==================== SUPABASE CONFIGURATION ====================
         const SUPABASE_URL = 'https://ajrygpheedcmeswzvbsw.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqcnlncGhlZWRjbWVzd3p2YnN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyNTc5ODUsImV4cCI6MjExMDgzMzk4NX0.pa5pauFJ0BtJiiUj8I6Iw6vtR-_X50VAA7q_fF7F7LU';
         const SUPABASE_BUCKET = 'aura-media';
         const MY_ORDER_IDS_KEY = 'aura_my_order_ids';
-        const TELEGRAM_WORKER_URL = 'https://aura-decor-notify.khytheary11.workers.dev';
+        const STORE_CONFIG_ROW_ID = 'aura-store-config';
+        const PRODUCT_SORT_META_KEY = 'sortOrder';
+
         const DEFAULT_STORE_ICON = 'https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png';
+        const FALLBACK_SVG_ICON = 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Ccircle cx=%2732%27 cy=%2732%27 r=%2732%27 fill=%27%2314141A%27/%3E%3Cpath fill=%27%23E5BE52%27 d=%27M12 44l4-22 12 10 4-14 4 14 12-10 4 22H12zm0 5h40v5H12v-5z%27/%3E%3C/svg%3E';
+
+        const TELEGRAM_BOT_TOKEN = '9246578991:AAEer6ak8XZTOoXZqAjOP088fQkI0DXUUSs';
+        const TELEGRAM_CHAT_ID = '-4856530869';
 
         let supabaseClient = null;
         try {
@@ -938,7 +1034,8 @@
                 sku: 'AD-101',
                 name: 'រូបសេះហុងស៊ុយមាស នាំជោគជ័យ',
                 category: 'ហុងស៊ុយ',
-                price: 28.00,
+                price: 19.00,
+                crossPrice: 23.00,
                 stock: 15,
                 description: 'រូបសេះហុងស៊ុយពណ៌មាសប្រណិត តំណាងឱ្យភាពរីកចម្រើន ជោគជ័យក្នុងមុខជំនួញ និងការងារ។ ដឹកជញ្ជូនហ្វ្រីគ្រប់ខេត្ត និងភ្នំពេញ។',
                 images: ['https://placehold.co/600x600/1c1c24/e5be52?text=Golden+Horse+Feng+Shui']
@@ -949,6 +1046,7 @@
                 name: 'ថូផ្កាសេរ៉ាមិចបែបទំនើប Minimalist',
                 category: 'តុបតែងគេហដ្ឋាន',
                 price: 18.50,
+                crossPrice: 22.00,
                 stock: 22,
                 description: 'ថូផ្កាសេរ៉ាមិចរលោងស្អាត ស័ក្តិសមសម្រាប់ដាក់តាំងលើតុទទួលភ្ញៀវ តុធ្វើការ ឬតុគិតលុយ។ ដឹកជញ្ជូនហ្វ្រីទូទាំងប្រទេស។',
                 images: ['https://placehold.co/600x600/1c1c24/f6d87e?text=Ceramic+Decor+Vase']
@@ -959,6 +1057,7 @@
                 name: 'ចង្កៀងពន្លឺមាសតាំងតុបន្ទប់គេង',
                 category: 'ពន្លឺ & ចង្កៀង',
                 price: 24.00,
+                crossPrice: 29.00,
                 stock: 10,
                 description: 'ចង្កៀងតុពន្លឺកក់ក្តៅ ជួយបង្កើតបរិយាកាសប្រណិត និងសម្រាកលំហែបានល្អ។ ដឹកជញ្ជូនហ្វ្រីគ្រប់ខេត្ត និងភ្នំពេញ។',
                 images: ['https://placehold.co/600x600/1c1c24/d4a42a?text=Luxury+Table+Lamp']
@@ -969,6 +1068,7 @@
                 name: 'ឈុតអំណោយបើកហាងថ្មី នាំលាភសំណាង',
                 category: 'អំណោយពិសេស',
                 price: 35.00,
+                crossPrice: 42.00,
                 stock: 8,
                 description: 'ឈុតអំណោយសម្រាប់ជូនមិត្តភក្តិ ឬដៃគូពាណិជ្ជកម្មក្នុងថ្ងៃបើកហាងថ្មី មានប្រអប់ស្អាតប្រណិត។ ដឹកជញ្ជូនហ្វ្រីទូទាំងប្រទេស។',
                 images: ['https://placehold.co/600x600/1c1c24/e5be52?text=Grand+Opening+Gift']
@@ -984,6 +1084,7 @@
             storeIcon: DEFAULT_STORE_ICON,
             customerProfile: { name: '', phone: '', address: '' },
             selectedCategory: 'ទាំងអស់',
+            sortBy: 'featured',
             searchQuery: '',
             activeTab: 'home',
             adminAuthenticated: false,
@@ -999,6 +1100,12 @@
         let activeReceiptOrder = null;
         let draggedProductIdx = null;
         let draggedFormImageIdx = null;
+
+        function handleHeaderLogoError(imgEl) {
+            if (!imgEl) return;
+            imgEl.onerror = null;
+            imgEl.src = FALLBACK_SVG_ICON;
+        }
 
         function getMyOrderIds() {
             try {
@@ -1081,10 +1188,7 @@
                 state.banner = savedBanner ? { ...DEFAULT_BANNER, ...JSON.parse(savedBanner) } : { ...DEFAULT_BANNER };
 
                 const savedIcon = localStorage.getItem(STORAGE_KEYS.STORE_ICON);
-                if (savedIcon) {
-                    const parsedIcon = JSON.parse(savedIcon);
-                    if (parsedIcon) state.storeIcon = parsedIcon;
-                }
+                state.storeIcon = savedIcon || DEFAULT_STORE_ICON;
 
                 const savedProfile = localStorage.getItem(STORAGE_KEYS.CUSTOMER_PROFILE);
                 state.customerProfile = savedProfile ? JSON.parse(savedProfile) : { name: '', phone: '', address: '' };
@@ -1126,6 +1230,102 @@
                 localStorage.setItem(key, JSON.stringify(data));
             } catch (err) {
                 console.warn('Error saving local storage:', err);
+            }
+        }
+
+        function applyStoreIconToDOM() {
+            const iconUrl = (state.storeIcon && state.storeIcon.trim()) || DEFAULT_STORE_ICON;
+            const headerImg = document.getElementById('headerBrandLogoImg');
+            const adminPreviewImg = document.getElementById('adminIconPreviewImg');
+            if (headerImg) {
+                headerImg.onerror = () => handleHeaderLogoError(headerImg);
+                headerImg.src = iconUrl;
+            }
+            if (adminPreviewImg) adminPreviewImg.src = iconUrl;
+
+            document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach((linkEl) => {
+                linkEl.href = iconUrl;
+            });
+        }
+
+        function previewStoreIconUrl(val) {
+            const trimmed = (val || '').trim();
+            const adminPreviewImg = document.getElementById('adminIconPreviewImg');
+            if (adminPreviewImg) {
+                adminPreviewImg.src = trimmed || DEFAULT_STORE_ICON;
+            }
+        }
+
+        async function handleStoreIconFileUpload(e) {
+            const file = e.target && e.target.files && e.target.files[0];
+            if (!file) return;
+            const url = await uploadImageToSupabase(file, 'branding');
+            if (url) {
+                const urlInput = document.getElementById('storeIconUrlInput');
+                if (urlInput) urlInput.value = url;
+                previewStoreIconUrl(url);
+                showToast('បាន Upload រូប Icon រួចរាល់ — ចុច Save Image ដើម្បីរក្សាទុក');
+            }
+            e.target.value = '';
+        }
+
+        async function saveStoreIconImage() {
+            const urlInput = document.getElementById('storeIconUrlInput');
+            const chosenUrl = (urlInput ? urlInput.value.trim() : '') || state.storeIcon || DEFAULT_STORE_ICON;
+            state.storeIcon = chosenUrl;
+            saveState(STORAGE_KEYS.STORE_ICON, state.storeIcon);
+            applyStoreIconToDOM();
+            await persistStoreBrandingCloud();
+            showToast('បាន Save រូប Icon និង Sync ទៅគ្រប់ Browser រួចរាល់!');
+        }
+
+        async function persistStoreBrandingCloud() {
+            if (!supabaseClient) return;
+            try {
+                const payload = {
+                    id: STORE_CONFIG_ROW_ID,
+                    sku: 'CONFIG-BRAND',
+                    name: 'Aura Decor Store Config',
+                    category: 'Config',
+                    price: 0,
+                    stock: 0,
+                    description: JSON.stringify({
+                        storeIcon: state.storeIcon || DEFAULT_STORE_ICON,
+                        banner: state.banner || DEFAULT_BANNER
+                    }),
+                    image_url: state.storeIcon || DEFAULT_STORE_ICON
+                };
+                await supabaseClient.from('products').upsert(payload, { onConflict: 'id' });
+            } catch (err) {
+                console.warn('persistStoreBrandingCloud error:', err);
+            }
+        }
+
+        async function persistProductOrderCloud() {
+            if (!supabaseClient) return;
+            try {
+                for (let i = 0; i < state.products.length; i++) {
+                    const prod = state.products[i];
+                    if (!prod || prod.id === STORE_CONFIG_ROW_ID) continue;
+                    const payload = {
+                        id: String(prod.id),
+                        sku: prod.sku || '',
+                        name: prod.name || '',
+                        category: prod.category || '',
+                        price: Number(prod.price || 0),
+                        stock: Number(prod.stock || 0),
+                        description: JSON.stringify({
+                            desc: prod.description || '',
+                            images: prod.images || [],
+                            crossPrice: Number(prod.crossPrice || 0),
+                            [PRODUCT_SORT_META_KEY]: i
+                        }),
+                        image_url: (prod.images && prod.images[0]) || ''
+                    };
+                    await supabaseClient.from('products').upsert(payload, { onConflict: 'id' });
+                }
+            } catch (err) {
+                console.warn('persistProductOrderCloud error:', err);
             }
         }
 
@@ -1207,6 +1407,7 @@
         async function upsertProductCloud(product) {
             if (!supabaseClient || !product) return;
             try {
+                const sortIdx = state.products.findIndex((p) => String(p.id) === String(product.id));
                 const payload = {
                     id: String(product.id),
                     sku: product.sku || '',
@@ -1216,7 +1417,9 @@
                     stock: Number(product.stock || 0),
                     description: JSON.stringify({
                         desc: product.description || '',
-                        images: product.images || []
+                        images: product.images || [],
+                        crossPrice: Number(product.crossPrice || 0),
+                        [PRODUCT_SORT_META_KEY]: sortIdx >= 0 ? sortIdx : 0
                     }),
                     image_url: (product.images && product.images[0]) || ''
                 };
@@ -1261,6 +1464,15 @@
             }
         }
 
+        async function deleteOrderCloud(orderId) {
+            if (!supabaseClient || !orderId) return;
+            try {
+                await supabaseClient.from('orders').delete().eq('id', String(orderId));
+            } catch (err) {
+                console.warn('deleteOrderCloud error:', err);
+            }
+        }
+
         async function syncFromSupabase() {
             if (!supabaseClient) return;
             try {
@@ -1270,10 +1482,31 @@
                     .order('created_at', { ascending: false });
 
                 if (!prodErr && Array.isArray(prodRows)) {
-                    const localOrderMap = new Map(state.products.map((p, idx) => [String(p.id), idx]));
-                    const mapped = prodRows.map((row) => {
+                    const mappedProducts = [];
+                    prodRows.forEach((row) => {
+                        if (String(row.id) === STORE_CONFIG_ROW_ID) {
+                            try {
+                                const cfg = JSON.parse(row.description);
+                                if (cfg && typeof cfg === 'object') {
+                                    if (cfg.storeIcon) {
+                                        state.storeIcon = cfg.storeIcon;
+                                        saveState(STORAGE_KEYS.STORE_ICON, state.storeIcon);
+                                        applyStoreIconToDOM();
+                                    }
+                                    if (cfg.banner && typeof cfg.banner === 'object') {
+                                        state.banner = { ...DEFAULT_BANNER, ...cfg.banner };
+                                        saveState(STORAGE_KEYS.BANNER, state.banner);
+                                        applyBannerToDOM();
+                                    }
+                                }
+                            } catch (_) {}
+                            return;
+                        }
+
                         let descText = row.description || '';
                         let imgs = row.image_url ? [row.image_url] : [];
+                        let sortOrder = null;
+                        let crossPriceVal = 0;
                         try {
                             const parsed = JSON.parse(row.description);
                             if (parsed && typeof parsed === 'object') {
@@ -1281,27 +1514,42 @@
                                 if (Array.isArray(parsed.images) && parsed.images.length > 0) {
                                     imgs = parsed.images;
                                 }
+                                if (typeof parsed[PRODUCT_SORT_META_KEY] === 'number') {
+                                    sortOrder = parsed[PRODUCT_SORT_META_KEY];
+                                }
+                                if (Number(parsed.crossPrice || 0) > 0) {
+                                    crossPriceVal = Number(parsed.crossPrice);
+                                }
                             }
                         } catch (_) {}
-                        return {
+
+                        mappedProducts.push({
                             id: row.id,
                             sku: row.sku || '',
                             name: row.name || '',
                             category: row.category || 'ហុងស៊ុយ',
                             price: Number(row.price || 0),
+                            crossPrice: crossPriceVal,
                             stock: Number(row.stock || 0),
                             description: descText,
-                            images: imgs.length > 0 ? imgs : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
-                        };
-                    });
-                    if (localOrderMap.size > 0) {
-                        mapped.sort((a, b) => {
-                            const ia = localOrderMap.has(String(a.id)) ? localOrderMap.get(String(a.id)) : 999999;
-                            const ib = localOrderMap.has(String(b.id)) ? localOrderMap.get(String(b.id)) : 999999;
-                            return ia - ib;
+                            images: imgs.length > 0 ? imgs : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'],
+                            _sortOrder: sortOrder
                         });
+                    });
+
+                    mappedProducts.sort((a, b) => {
+                        const aHas = typeof a._sortOrder === 'number';
+                        const bHas = typeof b._sortOrder === 'number';
+                        if (aHas && bHas) return a._sortOrder - b._sortOrder;
+                        if (aHas) return -1;
+                        if (bHas) return 1;
+                        return 0;
+                    });
+
+                    state.products = mappedProducts.map(({ _sortOrder, ...rest }) => rest);
+                    if (state.products.length === 0) {
+                        state.products = [...DEFAULT_PRODUCTS];
                     }
-                    state.products = mapped;
                     saveState(STORAGE_KEYS.PRODUCTS, state.products);
                     renderProductsGrid();
                     if (state.activeTab === 'admin' && state.adminTab === 'products') {
@@ -1437,46 +1685,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function applyStoreIconToDOM() {
-            const iconUrl = (state.storeIcon && state.storeIcon.trim()) || DEFAULT_STORE_ICON;
-            const headerImg = document.getElementById('headerBrandLogoImg');
-            const previewImg = document.getElementById('adminIconPreviewImg');
-            if (headerImg) headerImg.src = iconUrl;
-            if (previewImg) previewImg.src = iconUrl;
-            document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach((linkEl) => {
-                linkEl.href = iconUrl;
-            });
-        }
-
-        function previewStoreIconUrl(val) {
-            const clean = String(val || '').trim() || DEFAULT_STORE_ICON;
-            const previewImg = document.getElementById('adminIconPreviewImg');
-            if (previewImg) previewImg.src = clean;
-        }
-
-        async function handleStoreIconFileUpload(e) {
-            const file = e.target && e.target.files && e.target.files[0];
-            if (!file) return;
-            const url = await uploadImageToSupabase(file, 'banner');
-            if (url) {
-                const urlInput = document.getElementById('storeIconUrlInput');
-                if (urlInput) urlInput.value = url;
-                previewStoreIconUrl(url);
-                showToast('បាន Upload រូប Icon រួចរាល់ — ចុច Save Image ដើម្បីរក្សាទុក');
-            }
-            e.target.value = '';
-        }
-
-        function saveStoreIconImage() {
-            const urlInput = document.getElementById('storeIconUrlInput');
-            const previewImg = document.getElementById('adminIconPreviewImg');
-            const chosenUrl = (urlInput && urlInput.value.trim()) || (previewImg && previewImg.src) || DEFAULT_STORE_ICON;
-            state.storeIcon = chosenUrl;
-            saveState(STORAGE_KEYS.STORE_ICON, state.storeIcon);
-            applyStoreIconToDOM();
-            showToast('បានរក្សាទុករូបភាព Icon ហាងជោគជ័យ!');
-        }
-
         function applyBannerToDOM() {
             const badgeEl = document.getElementById('heroBadgeText');
             const titleEl = document.getElementById('heroTitleText');
@@ -1505,6 +1713,11 @@
             const mInput = document.getElementById('mobileSearchInput');
             if (dInput && dInput.value !== val) dInput.value = val;
             if (mInput && mInput.value !== val) mInput.value = val;
+            renderProductsGrid();
+        }
+
+        function handleSortChange(val) {
+            state.sortBy = val || 'featured';
             renderProductsGrid();
         }
 
@@ -1547,6 +1760,12 @@
                 return matchesCat && matchesSearch;
             });
 
+            if (state.sortBy === 'price-asc') {
+                filtered.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+            } else if (state.sortBy === 'price-desc') {
+                filtered.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+            }
+
             if (filtered.length === 0) {
                 grid.innerHTML = '';
                 emptyBox.classList.remove('hidden');
@@ -1554,41 +1773,54 @@
             }
 
             emptyBox.classList.add('hidden');
-            grid.innerHTML = filtered.map((p) => {
+            grid.innerHTML = filtered.map((p, index) => {
                 const mainImg = (p.images && p.images[0]) || 'https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor';
+                const unitPrice = Number(p.price || 0);
+                const crossPrice = Number(p.crossPrice || 0);
+                const hasCross = crossPrice > unitPrice;
+                const bundleUnitPrice = Math.max(0, unitPrice - 1.0);
+                const isHot = index === 0 || Number(p.stock || 0) <= 8;
+                const isNew = index === 1;
                 return `
                     <div onclick="openProductDetail('${escapeAttr(p.id)}')"
                          class="group cursor-pointer rounded-2xl bg-charcoal hover:bg-surface border border-zinc-800/90 hover:border-gold-500/40 overflow-hidden flex flex-col justify-between transition shadow-lg">
                         <div>
-                            <div class="relative aspect-square bg-surface overflow-hidden">
+                            <div class="relative aspect-[4/5] sm:aspect-square bg-surface overflow-hidden">
                                 <img src="${escapeAttr(mainImg)}" alt="${escapeAttr(p.name)}"
                                      onerror="this.src='https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'"
                                      class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                                <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">
+                                <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">
                                     In stock
                                 </span>
-                                <span class="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded-full bg-obsidian/85 border border-gold-500/25 text-gold-300 text-[10px] font-bold">
+                                ${isHot ? `<span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-rose-600/90 text-white text-[9px] font-extrabold shadow">លក់ដាច់</span>` : (isNew ? `<span class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-gold-500 text-obsidian text-[9px] font-extrabold shadow">ថ្មី</span>` : '')}
+                                <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-obsidian/85 border border-gold-500/25 text-gold-300 text-[10px] font-bold">
                                     ដឹកហ្វ្រី
                                 </span>
                             </div>
-                            <div class="p-3 sm:p-4 space-y-1.5">
-                                <p class="text-[10px] font-bold text-zinc-400">${escapeHtml(p.sku || '')} • ${escapeHtml(p.category || '')}</p>
+                            <div class="p-2.5 sm:p-4 space-y-1">
+                                <p class="text-[10px] font-bold text-zinc-400 truncate">${escapeHtml(p.sku || '')} • ${escapeHtml(p.category || '')}</p>
                                 <h3 class="text-xs sm:text-sm font-bold text-white line-clamp-2 leading-snug group-hover:text-gold-300 transition">
                                     ${escapeHtml(p.name)}
                                 </h3>
                             </div>
                         </div>
 
-                        <div class="px-3 sm:px-4 pb-3.5 pt-1 flex items-center justify-between gap-2">
-                            <span class="text-sm sm:text-base font-extrabold text-gold-400">$${Number(p.price || 0).toFixed(2)}</span>
-                            <div class="flex items-center gap-1.5">
+                        <div class="px-2.5 sm:px-4 pb-3 pt-1 space-y-1.5">
+                            <div class="flex items-baseline justify-between gap-1 flex-wrap">
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-sm sm:text-base font-extrabold text-gold-400">$${unitPrice.toFixed(2)}</span>
+                                    ${hasCross ? `<span class="text-[11px] sm:text-xs font-semibold text-zinc-500 line-through">$${crossPrice.toFixed(2)}</span>` : ''}
+                                </div>
+                                <span class="text-[10px] font-bold text-emerald-400 truncate">ទិញ 2+ $${bundleUnitPrice.toFixed(2)}</span>
+                            </div>
+                            <div class="flex items-center justify-end gap-1.5">
                                 <button type="button" onclick="event.stopPropagation(); quickAddToCart('${escapeAttr(p.id)}')"
-                                        title="ដាក់ចូលកន្ត្រក"
+                                        title="ដាក់ចូលរទេះ"
                                         class="px-2.5 py-1.5 rounded-xl bg-surface hover:bg-zinc-800 text-gold-300 border border-gold-500/30 text-xs font-extrabold transition">
                                     <i class="fa-solid fa-cart-plus"></i>
                                 </button>
                                 <button type="button" onclick="event.stopPropagation(); quickBuyNow('${escapeAttr(p.id)}')"
-                                        class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-[11px] font-extrabold transition">
+                                        class="flex-1 py-1.5 px-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-[11px] font-extrabold text-center transition">
                                     ទិញឥឡូវ
                                 </button>
                             </div>
@@ -1615,6 +1847,17 @@
             document.getElementById('detailSkuBadge').textContent = `${prod.sku || 'SKU'} • ${prod.category || ''}`;
             document.getElementById('detailTitle').textContent = prod.name;
             document.getElementById('detailPrice').textContent = `$${Number(prod.price || 0).toFixed(2)}`;
+            const crossEl = document.getElementById('detailCrossPrice');
+            const crossVal = Number(prod.crossPrice || 0);
+            if (crossEl) {
+                if (crossVal > Number(prod.price || 0)) {
+                    crossEl.textContent = `$${crossVal.toFixed(2)}`;
+                    crossEl.classList.remove('hidden');
+                } else {
+                    crossEl.textContent = '';
+                    crossEl.classList.add('hidden');
+                }
+            }
             document.getElementById('detailDescription').textContent = prod.description || 'ផលិតផលគុណភាពខ្ពស់ពី Aura Decor ដឹកជញ្ជូនហ្វ្រីគ្រប់ខេត្ត និងភ្នំពេញ។';
             document.getElementById('detailQtyValue').textContent = '1';
             updateDetailPriceSummary();
@@ -1944,6 +2187,39 @@
             }, 150);
         }
 
+        function buildProductShareLink(prod) {
+            if (!prod) return window.location.href;
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.set('product', String(prod.id || ''));
+                return url.toString();
+            } catch (_) {
+                return window.location.href;
+            }
+        }
+
+        function chatAboutDetailProduct() {
+            if (!state.detailProductId) return;
+            const prod = state.products.find((p) => String(p.id) === String(state.detailProductId));
+            if (!prod) return;
+
+            const productLink = buildProductShareLink(prod);
+            const skuText = prod.sku ? `[${prod.sku}] ` : '';
+            const priceText = `$${Number(prod.price || 0).toFixed(2)}`;
+            const draftMessage = `សួស្តីហាង Aura Decor! ខ្ញុំចង់សួរព័ត៌មានបន្ថែមពីមុខទំនិញ៖ ${skuText}${prod.name} (${priceText})\n🔗 លីងទំនិញ៖ ${productLink}`;
+
+            closeProductDetailModal();
+            switchTab('message');
+
+            setTimeout(() => {
+                const msgInput = document.getElementById('chatMessageInput');
+                if (msgInput) {
+                    msgInput.value = draftMessage;
+                    msgInput.focus();
+                }
+            }, 160);
+        }
+
         function quickAddToCart(productId) {
             addProductToCart(productId, 1);
         }
@@ -1978,7 +2254,7 @@
             saveState(STORAGE_KEYS.CART, state.cart);
             updateCartBadges();
             if (!silent) {
-                showToast(`បានដាក់ «${prod.name}» ចូលកន្ត្រក (${qty})`);
+                showToast(`បានដាក់ «${prod.name}» ចូលរទេះ (${qty})`);
             }
         }
 
@@ -2080,7 +2356,7 @@
         }
 
         async function clearCart() {
-            const ok = await openConfirmModal('សម្អាតកន្ត្រកទំនិញ', 'តើលោកអ្នកពិតជាចង់លុបទំនិញទាំងអស់ចេញពីកន្ត្រកមែនទេ?');
+            const ok = await openConfirmModal('សម្អាតរទេះទំនិញ', 'តើលោកអ្នកពិតជាចង់លុបទំនិញទាំងអស់ចេញពីរទេះមែនទេ?');
             if (!ok) return;
             state.cart = [];
             saveState(STORAGE_KEYS.CART, state.cart);
@@ -2187,30 +2463,23 @@
             ].filter(Boolean).join('\n');
 
             try {
-                const res = await fetch(TELEGRAM_WORKER_URL, {
+                const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_BOT_TOKEN)}/sendMessage`;
+                const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: tgLines })
+                    body: JSON.stringify({
+                        chat_id: String(TELEGRAM_CHAT_ID).trim(),
+                        text: tgLines
+                    })
                 });
-                const rawText = await res.text().catch(() => '');
-                let data = null;
-                try {
-                    data = rawText ? JSON.parse(rawText) : null;
-                } catch (_) {
-                    data = null;
-                }
-                const sentOk = res.ok && (
-                    (data && (data.ok === true || data.success === true || (data.result && data.result.message_id))) ||
-                    (!data && rawText.trim().length > 0)
-                );
-                if (sentOk) {
+                const data = await res.json().catch(() => null);
+                if (res.ok && data && data.ok) {
                     showToast('បានផ្ញើសារចូល Telegram ហាងរួចរាល់!');
                 } else {
-                    const reason = (data && (data.description || data.error || data.message)) || rawText || `HTTP ${res.status}`;
-                    showToast(`បានរក្សាសារលើឧបករណ៍ (ផ្ញើទៅ Telegram មិនបាន៖ ${String(reason).slice(0, 90)})`);
+                    showToast('បានរក្សាសារលើឧបករណ៍ (មិនអាចផ្ញើទៅ Telegram បាន)');
                 }
-            } catch (err) {
-                showToast(`បានរក្សាសារលើឧបករណ៍ (${(err && err.message) || 'បញ្ហាការតភ្ជាប់ / CORS'})`);
+            } catch (_) {
+                showToast('បានរក្សាសារលើឧបករណ៍ (ពិនិត្យអ៊ីនធឺណិតសម្រាប់ Telegram)');
             }
         }
 
@@ -2236,6 +2505,7 @@
             }
         }
 
+        // Group consecutive customer messages into a single conversation block until an admin reply exists
         function getCustomerMessageGroups() {
             if (!Array.isArray(state.messages) || state.messages.length === 0) return [];
             const groups = [];
@@ -2290,7 +2560,7 @@
             if (groups.length === 0) {
                 threadEl.innerHTML = `
                     <div class="p-4 rounded-2xl bg-charcoal/80 border border-zinc-800/80 text-sm text-zinc-300 leading-relaxed">
-                        សួស្តី! លោកអ្នកអាចផ្ញើសារសួរអំពីទំនិញ ហុងស៊ុយ ឬការដឹកជញ្ជូនហ្វ្រី ២៥ ខេត្ត-ក្រុងនៅទីនេះបាន។ ហាងនឹងតបសារជូនលើវេបសាយវិញ។
+                        សួស្តី! លោកអ្នកអាចផ្ញើសារសួរអំពីទំនិញ ហុងស៊ុយ ឬការដឹកជញ្ជូនហ្វ្រី ២៥ ខេត្ត-ក្រុងនៅទីនេះបាន។ Admin នឹងតបសារជូនលើវេបសាយវិញ។
                     </div>
                 `;
                 return;
@@ -2447,6 +2717,9 @@
 
         async function sendOrderToTelegramBot(order) {
             if (!order) return { ok: false, reason: 'គ្មានទិន្នន័យ Order' };
+            if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+                return { ok: false, reason: 'មិនបានកំណត់ Bot Token ឬ Chat ID' };
+            }
 
             const itemLines = (order.items || []).map((it) => {
                 const prodMatch = state.products.find((p) => String(p.id) === String(it.productId));
@@ -2476,29 +2749,22 @@
             ].join('\n');
 
             try {
-                const res = await fetch(TELEGRAM_WORKER_URL, {
+                const endpoint = `https://api.telegram.org/bot${encodeURIComponent(TELEGRAM_BOT_TOKEN)}/sendMessage`;
+                const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: textLines })
+                    body: JSON.stringify({
+                        chat_id: String(TELEGRAM_CHAT_ID).trim(),
+                        text: textLines
+                    })
                 });
-                const rawText = await res.text().catch(() => '');
-                let data = null;
-                try {
-                    data = rawText ? JSON.parse(rawText) : null;
-                } catch (_) {
-                    data = null;
-                }
-                const sentOk = res.ok && (
-                    (data && (data.ok === true || data.success === true || (data.result && data.result.message_id))) ||
-                    (!data && rawText.trim().length > 0)
-                );
-                if (sentOk) {
+                const data = await res.json().catch(() => null);
+                if (res.ok && data && data.ok) {
                     return { ok: true };
                 }
-                const reason = (data && (data.description || data.error || data.message)) || rawText || `HTTP ${res.status}`;
-                return { ok: false, reason: String(reason).slice(0, 110) };
+                return { ok: false, reason: (data && data.description) || `HTTP ${res.status}` };
             } catch (err) {
-                return { ok: false, reason: (err && err.message) || 'បញ្ហាបណ្តាញអ៊ីនធឺណិត / CORS' };
+                return { ok: false, reason: (err && err.message) || 'បញ្ហាបណ្តាញអ៊ីនធឺណិត' };
             }
         }
 
@@ -2720,7 +2986,7 @@
             lines.push(`💰 សរុបត្រូវបង់៖ $${Number(order.total).toFixed(2)}`);
             lines.push(`------------------------`);
             lines.push(`🙏 អរគុណសម្រាប់ការគាំទ្រ Aura Decor!`);
-            lines.push(`📞 ទំនាក់ទំនងហាង៖ 096 222 3220`);
+            lines.push(`📞 ទំនាក់ទំនងហាង៖ 096 221 3223`);
             return lines.join('\n');
         }
 
@@ -2873,7 +3139,7 @@
                 ctx.fillStyle = '#52525B';
                 ctx.font = '13px "Noto Sans Khmer", Inter, sans-serif';
                 ctx.fillText(
-                    'ទូរស័ព្ទហាង៖ 096 222 3220',
+                    'ទូរស័ព្ទហាង៖ 096 221 3223',
                     canvas.width / 2,
                     noteY + 22,
                     canvas.width - 80
@@ -3167,102 +3433,45 @@
             switchAdminTab(state.adminTab || 'products');
         }
 
-        // ==================== ADMIN PRODUCT DUPLICATE & DRAG-AND-DROP ====================
-        async function duplicateAdminProduct(productId) {
-            const sourceIdx = state.products.findIndex((p) => String(p.id) === String(productId));
-            if (sourceIdx === -1) return;
-            const src = state.products[sourceIdx];
-
-            const copiedProduct = {
-                id: 'prod-' + Date.now(),
-                sku: `${src.sku || 'AD'}-COPY`,
-                name: `${src.name} (Copy)`,
-                category: src.category || 'ហុងស៊ុយ',
-                price: Number(src.price || 0),
-                stock: Number(src.stock ?? 10),
-                description: src.description || '',
-                images: Array.isArray(src.images) && src.images.length > 0
-                    ? [...src.images]
-                    : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
-            };
-
-            state.products.splice(sourceIdx + 1, 0, copiedProduct);
-            saveState(STORAGE_KEYS.PRODUCTS, state.products);
-            await upsertProductCloud(copiedProduct);
-            renderProductsGrid();
-            renderAdminProductsList();
-            showToast(`បាន Duplicate «${src.name}» រួចរាល់`);
-        }
-
-        function handleProductDragStart(e, idx) {
-            draggedProductIdx = idx;
-            if (e.dataTransfer) {
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/plain', String(idx));
-            }
-            if (e.currentTarget) e.currentTarget.classList.add('drag-item-active');
-        }
-
-        function handleProductDragOver(e) {
-            e.preventDefault();
-            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
-            if (e.currentTarget) e.currentTarget.classList.add('drag-item-over');
-        }
-
-        function handleProductDragLeave(e) {
-            if (e.currentTarget) e.currentTarget.classList.remove('drag-item-over');
-        }
-
-        function handleProductDrop(e, targetIdx) {
-            e.preventDefault();
-            if (e.currentTarget) e.currentTarget.classList.remove('drag-item-over');
-            const fromIdx = draggedProductIdx;
-            draggedProductIdx = null;
-            if (fromIdx === null || fromIdx === undefined || fromIdx === targetIdx) return;
-            if (fromIdx < 0 || fromIdx >= state.products.length || targetIdx < 0 || targetIdx >= state.products.length) return;
-
-            const [moved] = state.products.splice(fromIdx, 1);
-            state.products.splice(targetIdx, 0, moved);
-            saveState(STORAGE_KEYS.PRODUCTS, state.products);
-            renderProductsGrid();
-            renderAdminProductsList();
-            showToast('បានរៀបលំដាប់ទំនិញរួចរាល់');
-        }
-
-        function handleProductDragEnd() {
-            draggedProductIdx = null;
-            document.querySelectorAll('#adminSectionProducts .drag-item-active, #adminSectionProducts .drag-item-over').forEach((el) => {
-                el.classList.remove('drag-item-active', 'drag-item-over');
-            });
-        }
-
         function renderAdminProductsList() {
             const container = document.getElementById('adminSectionProducts');
-            if (state.products.length === 0) {
-                container.innerHTML = `<p class="text-xs text-zinc-400 text-center py-8">មិនទាន់មានទំនិញនៅឡើយទេ</p>`;
-                return;
-            }
-
-            const dragHint = `
-                <div class="px-3.5 py-2 rounded-2xl bg-surface/70 border border-gold-500/20 text-[11px] text-zinc-300 flex items-center justify-between">
-                    <span><i class="fa-solid fa-arrows-up-down text-gold-400 mr-1.5"></i> ចាប់ទាញ (Drag &amp; Drop) មុខទំនិញដើម្បីរៀបលំដាប់បង្ហាញ</span>
-                    <span class="text-gold-300 font-bold">${state.products.length} មុខ</span>
+            const toolbarHtml = `
+                <div class="p-3.5 sm:p-4 rounded-2xl bg-charcoal border border-gold-500/25 flex flex-wrap items-center justify-between gap-2.5">
+                    <div class="text-xs text-zinc-300">
+                        ទំនិញសរុប៖ <strong class="text-gold-300">${state.products.length}</strong> មុខ • អាច Export/Import ជា CSV (Excel)
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <input id="adminProductsCsvInput" type="file" accept=".csv,text/csv" onchange="handleProductsCsvUpload(event)" class="hidden">
+                        <button type="button" onclick="document.getElementById('adminProductsCsvInput').click()"
+                                class="px-3.5 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/35 text-gold-300 text-xs font-extrabold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-file-arrow-up"></i>
+                            <span>Upload File</span>
+                        </button>
+                        <button type="button" onclick="downloadProductsCsv()"
+                                class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition">
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                            <span>Download File</span>
+                        </button>
+                    </div>
                 </div>
             `;
 
-            const listHtml = state.products.map((p, idx) => {
+            if (state.products.length === 0) {
+                container.innerHTML = `${toolbarHtml}<p class="text-xs text-zinc-400 text-center py-8">មិនទាន់មានទំនិញនៅឡើយទេ</p>`;
+                return;
+            }
+
+            const cardsHtml = state.products.map((p, idx) => {
                 const img = (p.images && p.images[0]) || 'https://placehold.co/200x200/1c1c24/e5be52?text=Aura';
                 return `
                     <div draggable="true"
                          ondragstart="handleProductDragStart(event, ${idx})"
                          ondragover="handleProductDragOver(event)"
-                         ondragleave="handleProductDragLeave(event)"
                          ondrop="handleProductDrop(event, ${idx})"
-                         ondragend="handleProductDragEnd()"
-                         class="p-4 rounded-2xl bg-charcoal border border-zinc-800 hover:border-gold-500/35 flex flex-wrap items-center justify-between gap-3 transition">
+                         class="p-4 rounded-2xl bg-charcoal border border-zinc-800 hover:border-gold-500/35 flex flex-wrap items-center justify-between gap-3 cursor-grab active:cursor-grabbing transition">
                         <div class="flex items-center gap-3 min-w-0">
-                            <span title="ចាប់ទាញដើម្បីរៀបលំដាប់" class="cursor-grab active:cursor-grabbing text-zinc-500 hover:text-gold-400 px-1 text-sm shrink-0">
-                                <i class="fa-solid fa-grip-vertical"></i>
+                            <span title="អូសទម្លាក់ដើម្បីរៀបលំដាប់" class="text-zinc-500 hover:text-gold-300 px-1 shrink-0">
+                                <i class="fa-solid fa-grip-vertical text-base"></i>
                             </span>
                             <img src="${escapeAttr(img)}" class="w-14 h-14 rounded-xl object-cover bg-surface shrink-0">
                             <div class="min-w-0">
@@ -3275,17 +3484,17 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-1.5 sm:gap-2">
+                        <div class="flex items-center gap-2">
                             <button type="button" onclick="duplicateAdminProduct('${escapeAttr(p.id)}')"
-                                    class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-sky-500/30 text-sky-300 text-xs font-bold transition">
+                                    class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-emerald-300 text-xs font-bold">
                                 <i class="fa-solid fa-copy mr-1"></i> Duplicate
                             </button>
                             <button type="button" onclick="openProductModal('${escapeAttr(p.id)}')"
-                                    class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-gold-300 text-xs font-bold transition">
+                                    class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-gold-300 text-xs font-bold">
                                 <i class="fa-solid fa-pen mr-1"></i> កែប្រែ
                             </button>
                             <button type="button" onclick="deleteAdminProduct('${escapeAttr(p.id)}')"
-                                    class="px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 text-rose-400 text-xs font-bold transition">
+                                    class="px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 text-rose-400 text-xs font-bold">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -3293,7 +3502,258 @@
                 `;
             }).join('');
 
-            container.innerHTML = dragHint + listHtml;
+            container.innerHTML = toolbarHtml + cardsHtml;
+        }
+
+        // Export products and stock to UTF-8 CSV file for Excel editing
+        function downloadProductsCsv() {
+            if (!Array.isArray(state.products) || state.products.length === 0) {
+                showToast('មិនមានទិន្នន័យទំនិញសម្រាប់ Download ទេ');
+                return;
+            }
+
+            try {
+                const headers = [
+                    'ID',
+                    'SKU',
+                    'Name',
+                    'Category',
+                    'Price ($)',
+                    'Cross Price ($)',
+                    'Stock',
+                    'Description',
+                    'Images'
+                ];
+
+                const rows = state.products.map((p) => {
+                    const imgsStr = Array.isArray(p.images) ? p.images.join(' | ') : '';
+                    return [
+                        p.id || '',
+                        p.sku || '',
+                        p.name || '',
+                        p.category || '',
+                        Number(p.price || 0).toFixed(2),
+                        Number(p.crossPrice || 0).toFixed(2),
+                        Number(p.stock || 0),
+                        p.description || '',
+                        imgsStr
+                    ].map(escapeCsvCell).join(',');
+                });
+
+                const csvContent = '\uFEFF' + [headers.map(escapeCsvCell).join(','), ...rows].join('\r\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const stamp = new Date().toISOString().slice(0, 10);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `AuraDecor-Products-Stock-${stamp}.csv`;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 800);
+
+                showToast('បាន Download ឯកសារទំនិញ & ស្តុករួចរាល់!');
+            } catch (err) {
+                console.warn('Products CSV export error:', err);
+                showToast('មិនអាច Download ឯកសារទំនិញបានទេ');
+            }
+        }
+
+        // Parse CSV text into rows of cells while supporting quoted strings and escaped quotes
+        function parseCsvRows(csvText) {
+            const cleanText = String(csvText || '').replace(/^\uFEFF/, '');
+            const rows = [];
+            let currentRow = [];
+            let currentCell = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < cleanText.length; i++) {
+                const ch = cleanText[i];
+                const next = cleanText[i + 1];
+
+                if (ch === '"') {
+                    if (inQuotes && next === '"') {
+                        currentCell += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (ch === ',' && !inQuotes) {
+                    currentRow.push(currentCell);
+                    currentCell = '';
+                } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+                    if (ch === '\r' && next === '\n') i++;
+                    currentRow.push(currentCell);
+                    if (currentRow.some((c) => c.trim() !== '')) {
+                        rows.push(currentRow);
+                    }
+                    currentRow = [];
+                    currentCell = '';
+                } else {
+                    currentCell += ch;
+                }
+            }
+
+            if (currentCell.length > 0 || currentRow.length > 0) {
+                currentRow.push(currentCell);
+                if (currentRow.some((c) => c.trim() !== '')) {
+                    rows.push(currentRow);
+                }
+            }
+
+            return rows;
+        }
+
+        // Import products and stock updates from an uploaded CSV file
+        async function handleProductsCsvUpload(e) {
+            const file = e.target && e.target.files && e.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const parsedRows = parseCsvRows(text);
+                if (parsedRows.length < 2) {
+                    showToast('ឯកសារ CSV មិនមានទិន្នន័យគ្រប់គ្រាន់ទេ');
+                    e.target.value = '';
+                    return;
+                }
+
+                const headerRow = parsedRows[0].map((h) => h.trim().toLowerCase());
+                const colIdx = (names, fallback) => {
+                    for (const n of names) {
+                        const found = headerRow.indexOf(n);
+                        if (found !== -1) return found;
+                    }
+                    return fallback;
+                };
+
+                const idxId = colIdx(['id'], 0);
+                const idxSku = colIdx(['sku', 'code'], 1);
+                const idxName = colIdx(['name', 'title', 'product name'], 2);
+                const idxCat = colIdx(['category', 'cat'], 3);
+                const idxPrice = colIdx(['price ($)', 'price'], 4);
+                const idxCross = colIdx(['cross price ($)', 'crossprice', 'cross_price'], 5);
+                const idxStock = colIdx(['stock', 'qty', 'quantity'], 6);
+                const idxDesc = colIdx(['description', 'desc'], 7);
+                const idxImages = colIdx(['images', 'image_url', 'image'], 8);
+
+                let updatedCount = 0;
+                let addedCount = 0;
+
+                for (let r = 1; r < parsedRows.length; r++) {
+                    const row = parsedRows[r];
+                    const rowId = String(row[idxId] || '').trim();
+                    const rowSku = String(row[idxSku] || '').trim();
+                    const rowName = String(row[idxName] || '').trim();
+                    if (!rowName && !rowSku && !rowId) continue;
+
+                    const parsedPrice = parseFloat(String(row[idxPrice] ?? '0').replace(/[^0-9.-]/g, ''));
+                    const parsedCross = parseFloat(String(row[idxCross] ?? '0').replace(/[^0-9.-]/g, ''));
+                    const parsedStock = parseInt(String(row[idxStock] ?? '0').replace(/[^0-9-]/g, ''), 10);
+                    const rowCat = String(row[idxCat] || '').trim() || 'ហុងស៊ុយ';
+                    const rowDesc = String(row[idxDesc] || '').trim();
+                    const rawImgs = String(row[idxImages] || '').trim();
+                    const parsedImgs = rawImgs
+                        ? rawImgs.split('|').map((s) => s.trim()).filter(Boolean)
+                        : [];
+
+                    const existingIdx = state.products.findIndex((p) =>
+                        (rowId && String(p.id) === rowId) ||
+                        (rowSku && String(p.sku || '').trim().toLowerCase() === rowSku.toLowerCase())
+                    );
+
+                    if (existingIdx !== -1) {
+                        const existing = state.products[existingIdx];
+                        state.products[existingIdx] = {
+                            ...existing,
+                            sku: rowSku || existing.sku,
+                            name: rowName || existing.name,
+                            category: rowCat || existing.category,
+                            price: Number.isFinite(parsedPrice) ? parsedPrice : existing.price,
+                            crossPrice: Number.isFinite(parsedCross) ? parsedCross : (existing.crossPrice || 0),
+                            stock: Number.isFinite(parsedStock) ? parsedStock : (existing.stock || 0),
+                            description: rowDesc || existing.description,
+                            images: parsedImgs.length > 0 ? parsedImgs : existing.images
+                        };
+                        updatedCount++;
+                    } else {
+                        const newProd = {
+                            id: rowId || ('prod-' + Date.now() + '-' + r),
+                            sku: rowSku || `AD-${100 + state.products.length + r}`,
+                            name: rowName || `ទំនិញថ្មី ${r}`,
+                            category: rowCat,
+                            price: Number.isFinite(parsedPrice) ? parsedPrice : 0,
+                            crossPrice: Number.isFinite(parsedCross) ? parsedCross : 0,
+                            stock: Number.isFinite(parsedStock) ? parsedStock : 0,
+                            description: rowDesc,
+                            images: parsedImgs.length > 0 ? parsedImgs : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
+                        };
+                        state.products.unshift(newProd);
+                        addedCount++;
+                    }
+                }
+
+                saveState(STORAGE_KEYS.PRODUCTS, state.products);
+                await persistProductOrderCloud();
+                renderProductsGrid();
+                renderAdminProductsList();
+                showToast(`បាន Upload រួចរាល់៖ កែប្រែ ${updatedCount} មុខ និងបន្ថែមថ្មី ${addedCount} មុខ`);
+            } catch (err) {
+                console.warn('Products CSV upload error:', err);
+                showToast('មិនអាចអានឯកសារ CSV បានទេ');
+            }
+
+            e.target.value = '';
+        }
+
+        function handleProductDragStart(e, idx) {
+            draggedProductIdx = idx;
+            if (e && e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                try { e.dataTransfer.setData('text/plain', String(idx)); } catch (_) {}
+            }
+        }
+
+        function handleProductDragOver(e) {
+            e.preventDefault();
+            if (e && e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+        }
+
+        async function handleProductDrop(e, targetIdx) {
+            e.preventDefault();
+            const fromIdx = draggedProductIdx !== null ? draggedProductIdx : Number(e.dataTransfer?.getData('text/plain'));
+            draggedProductIdx = null;
+            if (Number.isNaN(fromIdx) || fromIdx === targetIdx || fromIdx < 0 || targetIdx < 0) return;
+            if (fromIdx >= state.products.length || targetIdx >= state.products.length) return;
+
+            const [moved] = state.products.splice(fromIdx, 1);
+            state.products.splice(targetIdx, 0, moved);
+            saveState(STORAGE_KEYS.PRODUCTS, state.products);
+            renderProductsGrid();
+            renderAdminProductsList();
+            await persistProductOrderCloud();
+            showToast('បានរៀបលំដាប់ទំនិញ និង Sync រួចរាល់');
+        }
+
+        async function duplicateAdminProduct(productId) {
+            const source = state.products.find((p) => p.id === productId);
+            if (!source) return;
+            const cloned = {
+                ...source,
+                id: 'prod-' + Date.now(),
+                sku: `${source.sku || 'AD'}-COPY`,
+                name: `${source.name} (Copy)`,
+                images: Array.isArray(source.images) && source.images.length > 0 ? [...source.images] : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
+            };
+            state.products.unshift(cloned);
+            saveState(STORAGE_KEYS.PRODUCTS, state.products);
+            await persistProductOrderCloud();
+            renderProductsGrid();
+            renderAdminProductsList();
+            showToast(`បាន Duplicate «${source.name}» រួចរាល់`);
         }
 
         function openProductModal(productId = null) {
@@ -3308,6 +3768,7 @@
                 document.getElementById('prodNameInput').value = prod.name || '';
                 document.getElementById('prodSkuInput').value = prod.sku || '';
                 document.getElementById('prodPriceInput').value = prod.price || 0;
+                document.getElementById('prodCrossPriceInput').value = prod.crossPrice || '';
                 document.getElementById('prodStockInput').value = prod.stock ?? 10;
                 document.getElementById('prodCategoryInput').value = prod.category || 'ហុងស៊ុយ';
                 document.getElementById('prodDescInput').value = prod.description || '';
@@ -3316,6 +3777,7 @@
                 titleEl.textContent = 'បន្ថែមទំនិញថ្មី';
                 idInput.value = '';
                 document.getElementById('productForm').reset();
+                document.getElementById('prodCrossPriceInput').value = '';
                 document.getElementById('prodStockInput').value = 10;
                 state.formImages = [];
             }
@@ -3354,74 +3816,59 @@
             renderFormImagesPreview();
         }
 
-        // ==================== DRAG IMAGE TO SET AS THUMBNAIL ====================
+        function setFormImageAsThumbnail(idx) {
+            if (idx <= 0 || idx >= state.formImages.length) return;
+            const [picked] = state.formImages.splice(idx, 1);
+            state.formImages.unshift(picked);
+            renderFormImagesPreview();
+        }
+
         function handleFormImageDragStart(e, idx) {
             draggedFormImageIdx = idx;
-            if (e.dataTransfer) {
+            if (e && e.dataTransfer) {
                 e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/plain', String(idx));
+                try { e.dataTransfer.setData('text/plain', String(idx)); } catch (_) {}
             }
-            if (e.currentTarget) e.currentTarget.classList.add('drag-item-active');
         }
 
         function handleFormImageDragOver(e) {
             e.preventDefault();
-            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
-            if (e.currentTarget) e.currentTarget.classList.add('drag-item-over');
-        }
-
-        function handleFormImageDragLeave(e) {
-            if (e.currentTarget) e.currentTarget.classList.remove('drag-item-over');
+            if (e && e.dataTransfer) e.dataTransfer.dropEffect = 'move';
         }
 
         function handleFormImageDrop(e, targetIdx) {
             e.preventDefault();
-            if (e.currentTarget) e.currentTarget.classList.remove('drag-item-over');
-            const fromIdx = draggedFormImageIdx;
+            const fromIdx = draggedFormImageIdx !== null ? draggedFormImageIdx : Number(e.dataTransfer?.getData('text/plain'));
             draggedFormImageIdx = null;
-            if (fromIdx === null || fromIdx === undefined || fromIdx === targetIdx) return;
-            if (fromIdx < 0 || fromIdx >= state.formImages.length || targetIdx < 0 || targetIdx >= state.formImages.length) return;
+            if (Number.isNaN(fromIdx) || fromIdx === targetIdx || fromIdx < 0 || targetIdx < 0) return;
+            if (fromIdx >= state.formImages.length || targetIdx >= state.formImages.length) return;
 
-            const [movedImg] = state.formImages.splice(fromIdx, 1);
-            state.formImages.splice(targetIdx, 0, movedImg);
+            const [moved] = state.formImages.splice(fromIdx, 1);
+            state.formImages.splice(targetIdx, 0, moved);
             renderFormImagesPreview();
-            if (targetIdx === 0) {
-                showToast('បានទាញរូបភាពដាក់ធ្វើជា Thumbnail រួចរាល់!');
-            }
-        }
-
-        function handleFormImageDragEnd() {
-            draggedFormImageIdx = null;
-            document.querySelectorAll('#prodFormImagesPreview .drag-item-active, #prodFormImagesPreview .drag-item-over').forEach((el) => {
-                el.classList.remove('drag-item-active', 'drag-item-over');
-            });
         }
 
         function renderFormImagesPreview() {
             const box = document.getElementById('prodFormImagesPreview');
-            if (!box) return;
-            box.innerHTML = state.formImages.map((src, idx) => {
-                const isThumb = idx === 0;
-                return `
-                    <div draggable="true"
-                         ondragstart="handleFormImageDragStart(event, ${idx})"
-                         ondragover="handleFormImageDragOver(event)"
-                         ondragleave="handleFormImageDragLeave(event)"
-                         ondrop="handleFormImageDrop(event, ${idx})"
-                         ondragend="handleFormImageDragEnd()"
-                         title="${isThumb ? 'Thumbnail ចម្បង (#1)' : 'ចាប់ទាញដាក់ទីតាំង #1 ដើម្បីធ្វើជា Thumbnail'}"
-                         class="relative w-20 h-20 rounded-xl overflow-hidden border-2 ${isThumb ? 'border-gold-400 shadow-md shadow-gold-500/20' : 'border-zinc-700 hover:border-gold-400/60'} cursor-grab active:cursor-grabbing transition">
-                        <img src="${escapeAttr(src)}" class="w-full h-full object-cover pointer-events-none">
-                        <span class="absolute bottom-0 inset-x-0 px-1 py-0.5 text-[9px] font-extrabold text-center ${isThumb ? 'bg-gold-500 text-obsidian' : 'bg-black/75 text-zinc-200'}">
-                            ${isThumb ? '★ THUMBNAIL' : `#${idx + 1}`}
-                        </span>
-                        <button type="button" onclick="event.stopPropagation(); removeFormImage(${idx})"
-                                class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                `;
-            }).join('');
+            box.innerHTML = state.formImages.map((src, idx) => `
+                <div draggable="true"
+                     ondragstart="handleFormImageDragStart(event, ${idx})"
+                     ondragover="handleFormImageDragOver(event)"
+                     ondrop="handleFormImageDrop(event, ${idx})"
+                     class="relative w-20 h-20 rounded-xl overflow-hidden border-2 ${idx === 0 ? 'border-gold-400 shadow-md shadow-gold-500/20' : 'border-zinc-700'} cursor-grab active:cursor-grabbing group">
+                    <img src="${escapeAttr(src)}" class="w-full h-full object-cover">
+                    ${idx === 0
+                        ? `<span class="absolute bottom-0 inset-x-0 bg-gold-500 text-obsidian text-[9px] font-extrabold text-center py-0.5">Thumbnail</span>`
+                        : `<button type="button" onclick="setFormImageAsThumbnail(${idx})" title="ដាក់ជា Thumbnail"
+                                   class="absolute bottom-0 inset-x-0 bg-obsidian/85 hover:bg-gold-500 text-gold-300 hover:text-obsidian text-[9px] font-bold text-center py-0.5 transition">
+                               ដាក់ជា Thumb
+                           </button>`}
+                    <button type="button" onclick="removeFormImage(${idx})"
+                            class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
         }
 
         function saveProductFromForm(e) {
@@ -3430,6 +3877,7 @@
             const name = document.getElementById('prodNameInput').value.trim();
             const sku = document.getElementById('prodSkuInput').value.trim();
             const price = parseFloat(document.getElementById('prodPriceInput').value) || 0;
+            const crossPrice = parseFloat(document.getElementById('prodCrossPriceInput').value) || 0;
             const stock = parseInt(document.getElementById('prodStockInput').value, 10) || 0;
             const category = document.getElementById('prodCategoryInput').value;
             const description = document.getElementById('prodDescInput').value.trim();
@@ -3441,7 +3889,7 @@
             if (editId) {
                 const idx = state.products.findIndex((p) => p.id === editId);
                 if (idx !== -1) {
-                    state.products[idx] = { ...state.products[idx], name, sku, price, stock, category, description, images };
+                    state.products[idx] = { ...state.products[idx], name, sku, price, crossPrice, stock, category, description, images };
                     upsertProductCloud(state.products[idx]);
                 }
                 showToast('បានកែប្រែទំនិញជោគជ័យ');
@@ -3451,6 +3899,7 @@
                     name,
                     sku,
                     price,
+                    crossPrice,
                     stock,
                     category,
                     description,
@@ -3480,8 +3929,23 @@
 
         function renderAdminOrdersList() {
             const container = document.getElementById('adminSectionOrders');
+            if (!container) return;
+
+            const toolbarHtml = `
+                <div class="p-3.5 sm:p-4 rounded-2xl bg-charcoal border border-gold-500/25 flex flex-wrap items-center justify-between gap-2.5">
+                    <div class="text-xs text-zinc-300">
+                        បញ្ជីការបញ្ជាទិញសរុប៖ <strong class="text-gold-300">${state.orders.length}</strong> Order
+                    </div>
+                    <button type="button" onclick="downloadOrdersExcel()"
+                            class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Download Excel</span>
+                    </button>
+                </div>
+            `;
+
             if (state.orders.length === 0) {
-                container.innerHTML = `<p class="text-xs text-zinc-400 text-center py-8">មិនទាន់មានវិក្កយបត្របញ្ជាទិញនៅឡើយទេ</p>`;
+                container.innerHTML = `${toolbarHtml}<p class="text-xs text-zinc-400 text-center py-8">មិនទាន់មានវិក្កយបត្របញ្ជាទិញនៅឡើយទេ</p>`;
                 return;
             }
 
@@ -3493,16 +3957,21 @@
                 }
             });
 
-            const statuses = ['To Pay', 'To Ship', 'To Receive', 'Completed', 'To Review', 'Refund'];
+            const statuses = ['To Pay', 'To Ship', 'To Receive', 'Completed', 'To Review', 'Refund', 'Cancelled'];
 
-            container.innerHTML = state.orders.map((order) => {
+            const cardsHtml = state.orders.map((order) => {
                 const normPhone = String(order.customerPhone || '').replace(/\s+/g, '');
                 const orderCountForPhone = normPhone ? (phoneCounts[normPhone] || 1) : 1;
                 const customerBadge = orderCountForPhone > 1
                     ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-950 text-emerald-300 border border-emerald-500/30">ភ្ញៀវទិញ ${orderCountForPhone} ដង</span>`
                     : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-800 text-zinc-300">ភ្ញៀវថ្មី</span>`;
 
-                const itemsText = order.items.map((i) => {
+                const isCancelled = String(order.status || '') === 'Cancelled';
+                const statusBadgeStyle = isCancelled
+                    ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
+                    : 'bg-surface text-gold-300 border-zinc-700';
+
+                const itemsText = (order.items || []).map((i) => {
                     const prodMatch = state.products.find((p) => String(p.id) === String(i.productId));
                     const skuLabel = i.sku || (prodMatch && prodMatch.sku) || '';
                     const skuTag = skuLabel ? `[${escapeHtml(skuLabel)}] ` : '';
@@ -3510,7 +3979,7 @@
                 }).join(', ');
 
                 return `
-                    <div class="p-4 sm:p-5 rounded-2xl bg-charcoal border border-zinc-800 space-y-3">
+                    <div class="p-4 sm:p-5 rounded-2xl bg-charcoal border ${isCancelled ? 'border-rose-500/30 opacity-90' : 'border-zinc-800'} space-y-3">
                         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="text-xs font-extrabold text-gold-300">${escapeHtml(order.id)}</span>
@@ -3518,10 +3987,23 @@
                                 <span class="text-[11px] text-zinc-400">${escapeHtml(order.createdAt)}</span>
                             </div>
 
-                            <select onchange="updateAdminOrderStatus('${escapeAttr(order.id)}', this.value)"
-                                    class="px-3 py-1.5 rounded-xl bg-surface border border-zinc-700 text-xs font-bold text-gold-300 focus:outline-none">
-                                ${statuses.map((st) => `<option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>`).join('')}
-                            </select>
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <select onchange="updateAdminOrderStatus('${escapeAttr(order.id)}', this.value)"
+                                        class="px-3 py-1.5 rounded-xl border text-xs font-bold focus:outline-none ${statusBadgeStyle}">
+                                    ${statuses.map((st) => `<option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                                </select>
+                                ${!isCancelled ? `
+                                    <button type="button" onclick="cancelAdminOrder('${escapeAttr(order.id)}')"
+                                            class="px-2.5 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-500/30 text-amber-300 text-xs font-bold transition">
+                                        <i class="fa-solid fa-ban mr-1"></i> Cancel
+                                    </button>
+                                ` : ''}
+                                <button type="button" onclick="deleteAdminOrder('${escapeAttr(order.id)}')"
+                                        title="លុប Order ចោល"
+                                        class="px-2.5 py-1.5 rounded-xl bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-500/30 text-xs font-bold transition">
+                                    <i class="fa-solid fa-trash mr-1"></i> លុប
+                                </button>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-zinc-300">
@@ -3538,28 +4020,133 @@
                     </div>
                 `;
             }).join('');
+
+            container.innerHTML = toolbarHtml + cardsHtml;
         }
 
         function updateAdminOrderStatus(orderId, newStatus) {
-            const ord = state.orders.find((o) => o.id === orderId);
+            const ord = state.orders.find((o) => String(o.id) === String(orderId));
             if (!ord) return;
             ord.status = newStatus;
             saveState(STORAGE_KEYS.ORDERS, state.orders);
             upsertOrderCloud(ord);
+            renderAdminOrdersList();
             renderOrderStatusTabs();
             updateMeOrderBadge();
             showToast(`បានប្តូរស្ថានភាព ${orderId} ទៅជា ${newStatus}`);
         }
 
-        function populateBannerForm() {
-            const iconUrlInput = document.getElementById('storeIconUrlInput');
-            if (iconUrlInput) iconUrlInput.value = state.storeIcon || '';
-            previewStoreIconUrl(state.storeIcon || DEFAULT_STORE_ICON);
+        async function cancelAdminOrder(orderId) {
+            const ok = await openConfirmModal(
+                'Cancel Order',
+                `តើលោកអ្នកពិតជាចង់ Cancel វិក្កយបត្រ ${orderId} មែនទេ?`
+            );
+            if (!ok) return;
+            updateAdminOrderStatus(orderId, 'Cancelled');
+        }
 
+        async function deleteAdminOrder(orderId) {
+            const ok = await openConfirmModal(
+                'លុប Order ចោល',
+                `តើលោកអ្នកពិតជាចង់លុបវិក្កយបត្រ ${orderId} ចេញជាអចិន្ត្រៃយ៍មែនទេ?`
+            );
+            if (!ok) return;
+
+            state.orders = state.orders.filter((o) => String(o.id) !== String(orderId));
+            saveState(STORAGE_KEYS.ORDERS, state.orders);
+
+            try {
+                const updatedIds = getMyOrderIds().filter((id) => String(id) !== String(orderId));
+                localStorage.setItem(MY_ORDER_IDS_KEY, JSON.stringify(updatedIds));
+            } catch (_) {}
+
+            await deleteOrderCloud(orderId);
+            renderAdminOrdersList();
+            renderOrderStatusTabs();
+            updateMeOrderBadge();
+            showToast(`បានលុប Order ${orderId} រួចរាល់`);
+        }
+
+        function escapeCsvCell(val) {
+            const str = String(val ?? '').replace(/\r?\n/g, ' ');
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+
+        function downloadOrdersExcel() {
+            if (!Array.isArray(state.orders) || state.orders.length === 0) {
+                showToast('មិនមានទិន្នន័យ Order សម្រាប់ Download ទេ');
+                return;
+            }
+
+            try {
+                const headers = [
+                    'Order ID',
+                    'Date',
+                    'Customer Name',
+                    'Phone',
+                    'Address',
+                    'Payment Method',
+                    'Status',
+                    'Items',
+                    'Subtotal ($)',
+                    'Discount ($)',
+                    'Total ($)'
+                ];
+
+                const rows = state.orders.map((order) => {
+                    const itemsStr = (order.items || []).map((i) => {
+                        const prodMatch = state.products.find((p) => String(p.id) === String(i.productId));
+                        const skuLabel = i.sku || (prodMatch && prodMatch.sku) || '';
+                        const skuPrefix = skuLabel ? `[${skuLabel}] ` : '';
+                        return `${skuPrefix}${i.name} (x${i.qty})`;
+                    }).join('; ');
+
+                    return [
+                        order.id || '',
+                        order.createdAt || '',
+                        order.customerName || '',
+                        order.customerPhone || '',
+                        order.customerAddress || '',
+                        order.paymentMethod || '',
+                        order.status || '',
+                        itemsStr,
+                        Number(order.subtotal || 0).toFixed(2),
+                        Number(order.discount || 0).toFixed(2),
+                        Number(order.total || 0).toFixed(2)
+                    ].map(escapeCsvCell).join(',');
+                });
+
+                // Add UTF-8 BOM (\uFEFF) so Khmer characters open cleanly in Microsoft Excel
+                const csvContent = '\uFEFF' + [headers.map(escapeCsvCell).join(','), ...rows].join('\r\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const stamp = new Date().toISOString().slice(0, 10);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `AuraDecor-Orders-${stamp}.csv`;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 800);
+
+                showToast('បាន Download ឯកសារ Orders សម្រាប់ Excel រួចរាល់!');
+            } catch (err) {
+                console.warn('Excel export error:', err);
+                showToast('មិនអាច Download ឯកសារ Excel បានទេ');
+            }
+        }
+
+        function populateBannerForm() {
             document.getElementById('bannerBadgeInput').value = state.banner.badge || '';
             document.getElementById('bannerTitleInput').value = state.banner.title || '';
             document.getElementById('bannerSubtitleInput').value = state.banner.subtitle || '';
             document.getElementById('bannerImageUrlInput').value = state.banner.image || '';
+            const iconInput = document.getElementById('storeIconUrlInput');
+            if (iconInput) iconInput.value = state.storeIcon || DEFAULT_STORE_ICON;
+            previewStoreIconUrl(state.storeIcon || DEFAULT_STORE_ICON);
         }
 
         async function handleBannerFileUpload(e) {
@@ -3573,7 +4160,7 @@
             e.target.value = '';
         }
 
-        function saveBannerSettings(e) {
+        async function saveBannerSettings(e) {
             e.preventDefault();
             state.banner = {
                 badge: document.getElementById('bannerBadgeInput').value.trim() || DEFAULT_BANNER.badge,
@@ -3583,18 +4170,19 @@
             };
             saveState(STORAGE_KEYS.BANNER, state.banner);
             applyBannerToDOM();
-            showToast('បានរក្សាទុកក្របមុខ & Banner ជោគជ័យ');
+            await persistStoreBrandingCloud();
+            showToast('បានរក្សាទុកក្របមុខ & Banner និង Sync រួចរាល់');
         }
 
-        function resetBannerSettings() {
-            state.storeIcon = DEFAULT_STORE_ICON;
-            saveState(STORAGE_KEYS.STORE_ICON, state.storeIcon);
-            applyStoreIconToDOM();
-
+        async function resetBannerSettings() {
             state.banner = { ...DEFAULT_BANNER };
+            state.storeIcon = DEFAULT_STORE_ICON;
             saveState(STORAGE_KEYS.BANNER, state.banner);
+            saveState(STORAGE_KEYS.STORE_ICON, state.storeIcon);
             populateBannerForm();
             applyBannerToDOM();
+            applyStoreIconToDOM();
+            await persistStoreBrandingCloud();
             showToast('បានត្រឡប់ក្របមុខ និង Icon ទៅដើមវិញ');
         }
 
