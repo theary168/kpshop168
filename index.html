@@ -179,7 +179,7 @@
                 <button type="button" onclick="switchTab('cart')"
                         class="relative px-3 py-2 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs font-extrabold flex items-center gap-1.5 shadow-md shadow-gold-500/20 transition">
                     <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="hidden sm:inline">រទេះ</span>
+                    <span class="hidden sm:inline">កន្ត្រក</span>
                     <span id="headerCartBadge" class="px-1.5 py-0.5 rounded-full bg-obsidian text-gold-300 text-[11px] font-extrabold">0</span>
                 </button>
             </div>
@@ -436,17 +436,17 @@
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
                     <i class="fa-solid fa-bag-shopping text-gold-400"></i>
-                    <span>រទេះទំនិញ និងការបញ្ជាទិញ</span>
+                    <span>កន្ត្រកទំនិញ និងការបញ្ជាទិញ</span>
                 </h2>
                 <button type="button" onclick="clearCart()" id="clearCartBtn" class="hidden text-xs font-bold text-rose-400 hover:text-rose-300">
-                    <i class="fa-solid fa-trash mr-1"></i> សម្អាតរទេះ
+                    <i class="fa-solid fa-trash mr-1"></i> សម្អាតកន្ត្រក
                 </button>
             </div>
 
             <div id="emptyCartBox" class="text-center py-14 px-4 rounded-3xl bg-charcoal border border-zinc-800 space-y-3">
                 <i class="fa-solid fa-cart-shopping text-4xl text-zinc-600"></i>
-                <p class="text-zinc-300 font-bold">រទេះទំនិញរបស់លោកអ្នកនៅទទេ</p>
-                <p class="text-xs text-zinc-500">សូមជ្រើសរើសទំនិញពីមុខហាង ឬ Digital Menu ដើម្បីដាក់ចូលរទេះ។</p>
+                <p class="text-zinc-300 font-bold">កន្ត្រកទំនិញរបស់លោកអ្នកនៅទទេ</p>
+                <p class="text-xs text-zinc-500">សូមជ្រើសរើសទំនិញពីមុខហាង ឬ Digital Menu ដើម្បីដាក់ចូលកន្ត្រក។</p>
                 <button type="button" onclick="switchTab('home')" class="mt-2 px-5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-obsidian text-xs font-extrabold transition">
                     ទៅមើលទំនិញ
                 </button>
@@ -509,7 +509,7 @@
                                 </button>
                             </div>
                             <p id="promoCodeStatus" class="text-[11px] text-zinc-400">
-                                វាយកូដប្រូម៉ូសិន នឹងបញ្ចុះតម្លៃអូតូភ្លាមៗ (អាចប្រើរួមជាមួយប្រូម៉ូសិនចំនួនទិញបាន)។
+                                វាយកូដប្រូម៉ូសិន វានឹងបញ្ចុះតម្លៃអូតូភ្លាមៗ (អាចប្រើរួមជាមួយប្រូម៉ូសិនចំនួនទិញបាន)។
                             </p>
                         </div>
 
@@ -788,7 +788,7 @@
                         <div class="grid grid-cols-2 gap-2.5">
                             <button type="button" onclick="addDetailToCart()"
                                     class="py-3 px-3 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/40 text-gold-300 text-xs sm:text-sm font-extrabold transition">
-                                <i class="fa-solid fa-cart-plus mr-1"></i> ដាក់ចូលរទេះ
+                                <i class="fa-solid fa-cart-plus mr-1"></i> ដាក់ចូលកន្ត្រក
                             </button>
                             <button type="button" onclick="buyDetailNow()"
                                     class="py-3 px-3 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-obsidian text-xs sm:text-sm font-extrabold shadow-lg shadow-gold-500/20 transition">
@@ -2246,7 +2246,7 @@
                             </div>
                             <div class="flex items-center justify-end gap-1.5">
                                 <button type="button" onclick="event.stopPropagation(); quickAddToCart('${escapeAttr(p.id)}')"
-                                        title="ដាក់ចូលរទេះ"
+                                        title="ដាក់ចូលកន្ត្រក"
                                         class="px-2.5 py-1.5 rounded-xl bg-surface hover:bg-zinc-800 text-gold-300 border border-gold-500/30 text-xs font-extrabold transition">
                                     <i class="fa-solid fa-cart-plus"></i>
                                 </button>
@@ -2694,7 +2694,7 @@
             saveState(STORAGE_KEYS.CART, state.cart);
             updateCartBadges();
             if (!silent) {
-                showToast(`បានដាក់ «${prod.name}» ចូលរទេះ (${qty})`);
+                showToast(`បានដាក់ «${prod.name}» ចូលកន្ត្រក (${qty})`);
             }
         }
 
@@ -2846,7 +2846,7 @@
         }
 
         async function clearCart() {
-            const ok = await openConfirmModal('សម្អាតរទេះទំនិញ', 'តើលោកអ្នកពិតជាចង់លុបទំនិញទាំងអស់ចេញពីរទេះមែនទេ?');
+            const ok = await openConfirmModal('សម្អាតកន្ត្រកទំនិញ', 'តើលោកអ្នកពិតជាចង់លុបទំនិញទាំងអស់ចេញពីកន្ត្រកមែនទេ?');
             if (!ok) return;
             state.cart = [];
             saveState(STORAGE_KEYS.CART, state.cart);
