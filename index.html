@@ -13,6 +13,8 @@
     <meta name="keywords" content="Aura Decor, kpauradecor, ហាងលក់វត្ថុតុបតែង, ហុងស៊ុយ, តុបតែងគេហដ្ឋាន, តុបតែងហាង, អំណោយបើកហាង, Feng Shui Cambodia, Home Decor Phnom Penh">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Aura Decor">
+    <meta name="date" content="2026-11-27">
+    <meta name="logo" content="https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png">
 
     <!-- Open Graph / Social Sharing Tags -->
     <meta property="og:type" content="website">
@@ -22,6 +24,11 @@
     <meta property="og:title" content="Aura Decor — ហាងលក់វត្ថុតុបតែង &amp; ហុងស៊ុយ">
     <meta property="og:description" content="តុបតែងគេហដ្ឋាន និងហាងឱ្យប្រណិត និងមានហុងស៊ុយ។ ទិញ ២ បញ្ចុះ $1.50/មុខ • ទិញ ៣+ បញ្ចុះ $2.00/មុខ និងដឹកជញ្ជូនហ្វ្រី ២៥ ខេត្ត-ក្រុង។">
     <meta property="og:image" content="https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png">
+    <meta property="og:image:secure_url" content="https://ajrygpheedcmeswzvbsw.supabase.co/storage/v1/object/public/aura-media/banner/59ce3dd1-0b5b-4440-80e5-801ba33bd5a0.jpg-output.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Aura Decor — ហាងលក់វត្ថុតុបតែង &amp; ហុងស៊ុយ">
 
     <!-- Structured Data (JSON-LD) for Store SEO -->
     <script type="application/ld+json">
@@ -1181,7 +1188,7 @@
         const TELEGRAM_BOT_TOKEN = '9246578991:AAEer6ak8XZTOoXZqAjOP088fQkI0DXUUSs';
         const TELEGRAM_CHAT_ID = '-4856530869';
 
-        // Default Promotion Codes (អាចគ្រប់គ្រង បង្កើត បិទ/បើក និងកំណត់ចំនួនដងផ្ទាល់ក្នុង Admin Dashboard ហើយ Sync ជាមួយ Supabase)
+        // Default Promotion Codes
         const DEFAULT_PROMO_CODES = {
             'AURA2': { active: true, type: 'fixed', value: 2.0, label: 'បញ្ចុះ $2.00', maxUses: null, minItems: 1, usedCount: 0 },
             'AURA5': { active: true, type: 'fixed', value: 5.0, label: 'បញ្ចុះ $5.00', maxUses: 50, minItems: 2, usedCount: 0 },
@@ -4363,45 +4370,50 @@
             const type = document.getElementById('adminPromoCodeType').value === 'percent' ? 'percent' : 'fixed';
             const value = parseFloat(document.getElementById('adminPromoCodeValue').value) || 0;
             const maxUsesRaw = document.getElementById('adminPromoCodeMaxUses').value.trim();
+            const maxUses = maxUsesRaw ? Math.max(1, parseInt(maxUsesRaw, 10)) : null;
             const minItems = Math.max(1, parseInt(document.getElementById('adminPromoCodeMinItems').value, 10) || 1);
 
             if (!codeKey || value <= 0) {
-                showToast('សូមបញ្ចូលឈ្មោះកូដ និងតម្លៃបញ្ចុះឱ្យបានត្រឹមត្រូវ');
+                showToast('សូមបញ្ចូលឈ្មោះកូដ និងតម្លៃបញ្ចុះឱ្យត្រឹមត្រូវ');
                 return;
             }
 
-            const existing = state.promoCodes[codeKey];
+            const existing = state.promoCodes && state.promoCodes[codeKey];
             const label = type === 'percent' ? `បញ្ចុះ ${value}%` : `បញ្ចុះ $${value.toFixed(2)}`;
-            state.promoCodes[codeKey] = normalizePromoCodeEntry(codeKey, {
-                active: existing ? existing.active : true,
+            state.promoCodes[codeKey] = {
+                active: existing ? existing.active !== false : true,
                 type,
                 value,
                 label,
-                maxUses: maxUsesRaw === '' ? null : Math.max(1, parseInt(maxUsesRaw, 10)),
+                maxUses,
                 minItems,
                 usedCount: existing ? getPromoUsedCount(codeKey) : 0
-            });
+            };
 
             saveState(STORAGE_KEYS.PROMO_CODES_CONFIG, state.promoCodes);
             await persistStoreBrandingCloud();
             renderAdminPromosSection();
-            showToast(`បានរក្សាទុកកូដ ${codeKey} និង Sync ជាមួយ Supabase រួចរាល់!`);
+            showToast(`បានរក្សាទុកកូដ ${codeKey} និង Sync ទៅ Supabase រួចរាល់!`);
         }
 
         async function toggleAdminPromoCode(codeKey) {
             if (!state.promoCodes || !state.promoCodes[codeKey]) return;
-            state.promoCodes[codeKey].active = !(state.promoCodes[codeKey].active !== false);
+            state.promoCodes[codeKey].active = state.promoCodes[codeKey].active === false;
             saveState(STORAGE_KEYS.PROMO_CODES_CONFIG, state.promoCodes);
             await persistStoreBrandingCloud();
             renderAdminPromosSection();
-            const statusText = state.promoCodes[codeKey].active ? 'បានបើកកូដ' : 'បានបិទកូដ';
-            showToast(`${statusText} ${codeKey} និង Sync រួចរាល់!`);
+            showToast(`កូដ ${codeKey} ត្រូវបាន ${state.promoCodes[codeKey].active ? 'បើកឱ្យប្រើ' : 'បិទ'} រួចរាល់`);
         }
 
         async function deleteAdminPromoCode(codeKey) {
-            const ok = await openConfirmModal('លុប Promotion Code', `តើលោកអ្នកពិតជាចង់លុបកូដ «${codeKey}» មែនទេ?`);
+            if (!state.promoCodes || !state.promoCodes[codeKey]) return;
+            const ok = await openConfirmModal('លុបកូដប្រូម៉ូសិន', `តើអ្នកពិតជាចង់លុបកូដ «${codeKey}» ចេញមែនទេ?`);
             if (!ok) return;
             delete state.promoCodes[codeKey];
+            if (state.appliedPromoCode === codeKey) {
+                state.appliedPromoCode = '';
+                saveState(STORAGE_KEYS.PROMO_CODE, '');
+            }
             saveState(STORAGE_KEYS.PROMO_CODES_CONFIG, state.promoCodes);
             await persistStoreBrandingCloud();
             renderAdminPromosSection();
@@ -4410,543 +4422,218 @@
 
         function renderAdminProductsList() {
             const container = document.getElementById('adminSectionProducts');
-            const toolbarHtml = `
-                <div class="p-3.5 sm:p-4 rounded-2xl bg-charcoal border border-gold-500/25 flex flex-wrap items-center justify-between gap-2.5">
-                    <div class="text-xs text-zinc-300">
-                        ទំនិញសរុប៖ <strong class="text-gold-300">${state.products.length}</strong> មុខ • អាច Export/Import ជា CSV (Excel)
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <input id="adminProductsCsvInput" type="file" accept=".csv,text/csv" onchange="handleProductsCsvUpload(event)" class="hidden">
-                        <button type="button" onclick="document.getElementById('adminProductsCsvInput').click()"
-                                class="px-3.5 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/35 text-gold-300 text-xs font-extrabold flex items-center gap-1.5 transition">
-                            <i class="fa-solid fa-file-arrow-up"></i>
-                            <span>Upload File</span>
-                        </button>
-                        <button type="button" onclick="downloadProductsCsv()"
-                                class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition">
-                            <i class="fa-solid fa-file-arrow-down"></i>
-                            <span>Download File</span>
-                        </button>
-                    </div>
-                </div>
-            `;
+            if (!container) return;
 
             if (state.products.length === 0) {
-                container.innerHTML = `${toolbarHtml}<p class="text-xs text-zinc-400 text-center py-8">មិនទាន់មានទំនិញនៅឡើយទេ</p>`;
+                container.innerHTML = `<div class="text-center py-10 rounded-3xl bg-charcoal border border-zinc-800 text-xs text-zinc-400">មិនទាន់មានទំនិញទេ</div>`;
                 return;
             }
 
-            const cardsHtml = state.products.map((p, idx) => {
-                const img = (p.images && p.images[0]) || 'https://placehold.co/200x200/1c1c24/e5be52?text=Aura';
-                const statusLabel = normalizeProductStatus(p.status, p.stock);
-                const soldVal = getProductSoldCount(p);
-                const variantSummary = formatVariantDisplay(
-                    Array.isArray(p.colors) && p.colors.length ? p.colors.join(', ') : '',
-                    Array.isArray(p.sizes) && p.sizes.length ? p.sizes.join(', ') : ''
-                );
+            container.innerHTML = state.products.map((p, idx) => {
+                const thumb = (p.images && p.images[0]) || 'https://placehold.co/120x120/1c1c24/e5be52?text=Aura';
+                const stockNum = Number(p.stock || 0);
+                const soldNum = getProductSoldCount(p);
+                const statusLabel = normalizeProductStatus(p.status, stockNum);
+                const statusBadgeCls = getProductStatusBadgeClasses(statusLabel);
+                const variantTags = [
+                    ...(Array.isArray(p.colors) ? p.colors.map((c) => `ពណ៌: ${c}`) : []),
+                    ...(Array.isArray(p.sizes) ? p.sizes.map((s) => `ទំហំ: ${s}`) : [])
+                ];
                 return `
                     <div draggable="true"
-                         ondragstart="handleProductDragStart(event, ${idx})"
+                         ondragstart="handleProductDragStart(${idx})"
                          ondragover="handleProductDragOver(event)"
-                         ondrop="handleProductDrop(event, ${idx})"
-                         class="p-4 rounded-2xl bg-charcoal border border-zinc-800 hover:border-gold-500/35 flex flex-wrap items-center justify-between gap-3 cursor-grab active:cursor-grabbing transition">
+                         ondrop="handleProductDrop(${idx})"
+                         class="p-4 rounded-2xl bg-charcoal border border-zinc-800 hover:border-gold-500/30 flex flex-wrap items-center justify-between gap-3 transition">
                         <div class="flex items-center gap-3 min-w-0">
-                            <span title="អូសទម្លាក់ដើម្បីរៀបលំដាប់" class="text-zinc-500 hover:text-gold-300 px-1 shrink-0">
-                                <i class="fa-solid fa-grip-vertical text-base"></i>
-                            </span>
-                            <img src="${escapeAttr(img)}" class="w-14 h-14 rounded-xl object-cover bg-surface shrink-0">
+                            <div class="flex flex-col gap-0.5 shrink-0">
+                                <button type="button" onclick="moveProductOrder(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}
+                                        title="ផ្លាស់ទីឡើងលើ"
+                                        class="w-7 h-6 rounded-lg bg-surface hover:bg-zinc-700 disabled:opacity-30 text-gold-300 text-[10px] flex items-center justify-center transition">
+                                    <i class="fa-solid fa-chevron-up"></i>
+                                </button>
+                                <button type="button" onclick="moveProductOrder(${idx}, 1)" ${idx === state.products.length - 1 ? 'disabled' : ''}
+                                        title="ផ្លាស់ទីចុះក្រោម"
+                                        class="w-7 h-6 rounded-lg bg-surface hover:bg-zinc-700 disabled:opacity-30 text-gold-300 text-[10px] flex items-center justify-center transition">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <span class="w-6 text-center text-xs font-extrabold text-zinc-500 shrink-0">#${idx + 1}</span>
+                            <img src="${escapeAttr(thumb)}"
+                                 onerror="this.src='https://placehold.co/120x120/1c1c24/e5be52?text=Aura'"
+                                 class="w-14 h-14 rounded-xl object-cover bg-surface shrink-0">
                             <div class="min-w-0">
-                                <p class="text-[11px] font-bold text-gold-300">#${idx + 1} • ${escapeHtml(p.sku)} • ${escapeHtml(p.category)}</p>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-[11px] font-bold text-gold-300">${escapeHtml(p.sku || '')}</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-surface text-zinc-400">${escapeHtml(p.category || '')}</span>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full border font-bold ${statusBadgeCls}">${escapeHtml(statusLabel)}</span>
+                                </div>
                                 <h4 class="text-sm font-bold text-white truncate">${escapeHtml(p.name)}</h4>
                                 <p class="text-xs text-zinc-400">
-                                    តម្លៃ៖ <strong class="text-gold-400">$${Number(p.price).toFixed(2)}</strong> •
-                                    ស្ថានភាព៖ <strong class="text-gold-300">${escapeHtml(statusLabel)}</strong> •
-                                    ស្តុកនៅសល់៖ <strong class="text-emerald-400">${Number(p.stock || 0)}</strong> •
-                                    លក់បាន៖ <strong class="text-sky-300">${soldVal.toLocaleString('en-US')} Sold</strong>
+                                    តម្លៃ៖ <strong class="text-gold-400">$${Number(p.price || 0).toFixed(2)}</strong>
+                                    ${Number(p.crossPrice || 0) > Number(p.price || 0) ? `<span class="line-through text-zinc-500 ml-1">$${Number(p.crossPrice).toFixed(2)}</span>` : ''}
+                                    • ស្តុក៖ <strong class="${stockNum <= 5 ? 'text-rose-400' : 'text-emerald-400'}">${stockNum}</strong>
+                                    • លក់បាន៖ <strong class="text-gold-300">${soldNum}</strong>
                                 </p>
-                                ${variantSummary ? `<p class="text-[11px] text-amber-300/90 truncate mt-0.5">${escapeHtml(variantSummary)}</p>` : ''}
+                                ${variantTags.length > 0 ? `
+                                    <p class="text-[10px] text-zinc-400 truncate mt-0.5">
+                                        <i class="fa-solid fa-swatchbook text-gold-400/80 mr-1"></i>${escapeHtml(variantTags.join(' • '))}
+                                    </p>
+                                ` : ''}
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-2">
-                            <button type="button" onclick="duplicateAdminProduct('${escapeAttr(p.id)}')"
-                                    class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-emerald-300 text-xs font-bold">
-                                <i class="fa-solid fa-copy mr-1"></i> Duplicate
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <button type="button" onclick="adjustProductStock('${escapeAttr(p.id)}', -1)" class="w-8 h-8 rounded-xl bg-surface hover:bg-zinc-700 text-white text-xs font-bold">-1</button>
+                            <button type="button" onclick="adjustProductStock('${escapeAttr(p.id)}', 1)" class="w-8 h-8 rounded-xl bg-surface hover:bg-zinc-700 text-white text-xs font-bold">+1</button>
+                            <button type="button" onclick="openProductModal('${escapeAttr(p.id)}')" class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-700 text-gold-300 text-xs font-bold">
+                                <i class="fa-solid fa-pen mr-1"></i> កែ
                             </button>
-                            <button type="button" onclick="openProductModal('${escapeAttr(p.id)}')"
-                                    class="px-3 py-2 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-gold-300 text-xs font-bold">
-                                <i class="fa-solid fa-pen mr-1"></i> កែប្រែ
-                            </button>
-                            <button type="button" onclick="deleteAdminProduct('${escapeAttr(p.id)}')"
-                                    class="px-3 py-2 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 text-rose-400 text-xs font-bold">
+                            <button type="button" onclick="deleteProduct('${escapeAttr(p.id)}')" class="px-3 py-2 rounded-xl bg-rose-950/70 hover:bg-rose-900 text-rose-300 text-xs font-bold">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
                     </div>
                 `;
             }).join('');
-
-            container.innerHTML = toolbarHtml + cardsHtml;
         }
 
-        function downloadProductsCsv() {
-            if (!Array.isArray(state.products) || state.products.length === 0) {
-                showToast('មិនមានទិន្នន័យទំនិញសម្រាប់ Download ទេ');
-                return;
-            }
-
-            try {
-                const headers = [
-                    'ID',
-                    'SKU',
-                    'Name',
-                    'Category',
-                    'Status',
-                    'Price ($)',
-                    'Cross Price ($)',
-                    'Stock',
-                    'Sold Count',
-                    'Description',
-                    'Images'
-                ];
-
-                const rows = state.products.map((p) => {
-                    const imgsStr = Array.isArray(p.images) ? p.images.join(' | ') : '';
-                    return [
-                        p.id || '',
-                        p.sku || '',
-                        p.name || '',
-                        p.category || '',
-                        normalizeProductStatus(p.status, p.stock),
-                        Number(p.price || 0).toFixed(2),
-                        Number(p.crossPrice || 0).toFixed(2),
-                        Number(p.stock || 0),
-                        getProductSoldCount(p),
-                        p.description || '',
-                        imgsStr
-                    ].map(escapeCsvCell).join(',');
-                });
-
-                const csvContent = '\uFEFF' + [headers.map(escapeCsvCell).join(','), ...rows].join('\r\n');
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const stamp = new Date().toISOString().slice(0, 10);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `AuraDecor-Products-Stock-${stamp}.csv`;
-                link.style.display = 'none';
-                document.body.appendChild(link);
-                link.click();
-                setTimeout(() => {
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                }, 800);
-
-                showToast('បាន Download ឯកសារទំនិញ & ស្តុករួចរាល់!');
-            } catch (err) {
-                console.warn('Products CSV export error:', err);
-                showToast('មិនអាច Download ឯកសារទំនិញបានទេ');
-            }
-        }
-
-        function parseCsvRows(csvText) {
-            const cleanText = String(csvText || '').replace(/^\uFEFF/, '');
-            const rows = [];
-            let currentRow = [];
-            let currentCell = '';
-            let inQuotes = false;
-
-            for (let i = 0; i < cleanText.length; i++) {
-                const ch = cleanText[i];
-                const next = cleanText[i + 1];
-
-                if (ch === '"') {
-                    if (inQuotes && next === '"') {
-                        currentCell += '"';
-                        i++;
-                    } else {
-                        inQuotes = !inQuotes;
-                    }
-                } else if (ch === ',' && !inQuotes) {
-                    currentRow.push(currentCell);
-                    currentCell = '';
-                } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
-                    if (ch === '\r' && next === '\n') i++;
-                    currentRow.push(currentCell);
-                    if (currentRow.some((c) => c.trim() !== '')) {
-                        rows.push(currentRow);
-                    }
-                    currentRow = [];
-                    currentCell = '';
-                } else {
-                    currentCell += ch;
-                }
-            }
-
-            if (currentCell.length > 0 || currentRow.length > 0) {
-                currentRow.push(currentCell);
-                if (currentRow.some((c) => c.trim() !== '')) {
-                    rows.push(currentRow);
-                }
-            }
-
-            return rows;
-        }
-
-        async function handleProductsCsvUpload(e) {
-            const file = e.target && e.target.files && e.target.files[0];
-            if (!file) return;
-
-            try {
-                const text = await file.text();
-                const parsedRows = parseCsvRows(text);
-                if (parsedRows.length < 2) {
-                    showToast('ឯកសារ CSV មិនមានទិន្នន័យគ្រប់គ្រាន់ទេ');
-                    e.target.value = '';
-                    return;
-                }
-
-                const headerRow = parsedRows[0].map((h) => h.trim().toLowerCase());
-                const colIdx = (names, fallback) => {
-                    for (const n of names) {
-                        const found = headerRow.indexOf(n);
-                        if (found !== -1) return found;
-                    }
-                    return fallback;
-                };
-
-                const idxId = colIdx(['id'], 0);
-                const idxSku = colIdx(['sku', 'code'], 1);
-                const idxName = colIdx(['name', 'title', 'product name'], 2);
-                const idxCat = colIdx(['category', 'cat'], 3);
-                const idxStatus = colIdx(['status', 'state'], 4);
-                const idxPrice = colIdx(['price ($)', 'price'], 5);
-                const idxCross = colIdx(['cross price ($)', 'crossprice', 'cross_price'], 6);
-                const idxStock = colIdx(['stock', 'qty', 'quantity'], 7);
-                const idxSold = colIdx(['sold count', 'sold', 'soldcount'], 8);
-                const idxDesc = colIdx(['description', 'desc'], 9);
-                const idxImages = colIdx(['images', 'image_url', 'image'], 10);
-
-                let updatedCount = 0;
-                let addedCount = 0;
-
-                for (let r = 1; r < parsedRows.length; r++) {
-                    const row = parsedRows[r];
-                    const rowId = String(row[idxId] || '').trim();
-                    const rowSku = String(row[idxSku] || '').trim();
-                    const rowName = String(row[idxName] || '').trim();
-                    if (!rowName && !rowSku && !rowId) continue;
-
-                    const parsedPrice = parseFloat(String(row[idxPrice] ?? '0').replace(/[^0-9.-]/g, ''));
-                    const parsedCross = parseFloat(String(row[idxCross] ?? '0').replace(/[^0-9.-]/g, ''));
-                    const parsedStock = parseInt(String(row[idxStock] ?? '0').replace(/[^0-9-]/g, ''), 10);
-                    const parsedSold = parseInt(String(row[idxSold] ?? '0').replace(/[^0-9-]/g, ''), 10);
-                    const rowCat = String(row[idxCat] || '').trim() || 'ហុងស៊ុយ';
-                    const rowStatus = normalizeProductStatus(
-                        String(row[idxStatus] || '').trim(),
-                        Number.isFinite(parsedStock) ? parsedStock : 1
-                    );
-                    const rowDesc = String(row[idxDesc] || '').trim();
-                    const rawImgs = String(row[idxImages] || '').trim();
-                    const parsedImgs = rawImgs
-                        ? rawImgs.split('|').map((s) => s.trim()).filter(Boolean)
-                        : [];
-
-                    const existingIdx = state.products.findIndex((p) =>
-                        (rowId && String(p.id) === rowId) ||
-                        (rowSku && String(p.sku || '').trim().toLowerCase() === rowSku.toLowerCase())
-                    );
-
-                    if (existingIdx !== -1) {
-                        const existing = state.products[existingIdx];
-                        state.products[existingIdx] = {
-                            ...existing,
-                            sku: rowSku || existing.sku,
-                            name: rowName || existing.name,
-                            category: rowCat || existing.category,
-                            status: String(row[idxStatus] || '').trim() ? rowStatus : normalizeProductStatus(existing.status, existing.stock),
-                            price: Number.isFinite(parsedPrice) ? parsedPrice : existing.price,
-                            crossPrice: Number.isFinite(parsedCross) ? parsedCross : (existing.crossPrice || 0),
-                            stock: Number.isFinite(parsedStock) ? parsedStock : (existing.stock || 0),
-                            soldCount: Number.isFinite(parsedSold) && parsedSold >= 0 ? parsedSold : getProductSoldCount(existing),
-                            description: rowDesc || existing.description,
-                            images: parsedImgs.length > 0 ? parsedImgs : existing.images
-                        };
-                        updatedCount++;
-                    } else {
-                        const newProd = {
-                            id: rowId || ('prod-' + Date.now() + '-' + r),
-                            sku: rowSku || `AD-${100 + state.products.length + r}`,
-                            name: rowName || `ទំនិញថ្មី ${r}`,
-                            category: rowCat,
-                            status: rowStatus,
-                            price: Number.isFinite(parsedPrice) ? parsedPrice : 0,
-                            crossPrice: Number.isFinite(parsedCross) ? parsedCross : 0,
-                            stock: Number.isFinite(parsedStock) ? parsedStock : 0,
-                            soldCount: Number.isFinite(parsedSold) && parsedSold >= 0 ? parsedSold : 0,
-                            description: rowDesc,
-                            images: parsedImgs.length > 0 ? parsedImgs : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
-                        };
-                        state.products.unshift(newProd);
-                        addedCount++;
-                    }
-                }
-
-                saveState(STORAGE_KEYS.PRODUCTS, state.products);
-                await persistProductOrderCloud();
-                renderProductsGrid();
-                renderAdminProductsList();
-                showToast(`បាន Upload រួចរាល់៖ កែប្រែ ${updatedCount} មុខ និងបន្ថែមថ្មី ${addedCount} មុខ`);
-            } catch (err) {
-                console.warn('Products CSV upload error:', err);
-                showToast('មិនអាចអានឯកសារ CSV បានទេ');
-            }
-
-            e.target.value = '';
-        }
-
-        function handleProductDragStart(e, idx) {
+        function handleProductDragStart(idx) {
             draggedProductIdx = idx;
-            if (e && e.dataTransfer) {
-                e.dataTransfer.effectAllowed = 'move';
-                try { e.dataTransfer.setData('text/plain', String(idx)); } catch (_) {}
-            }
         }
 
         function handleProductDragOver(e) {
             e.preventDefault();
-            if (e && e.dataTransfer) e.dataTransfer.dropEffect = 'move';
         }
 
-        async function handleProductDrop(e, targetIdx) {
-            e.preventDefault();
-            const fromIdx = draggedProductIdx !== null ? draggedProductIdx : Number(e.dataTransfer?.getData('text/plain'));
-            draggedProductIdx = null;
-            if (Number.isNaN(fromIdx) || fromIdx === targetIdx || fromIdx < 0 || targetIdx < 0) return;
-            if (fromIdx >= state.products.length || targetIdx >= state.products.length) return;
-
-            const [moved] = state.products.splice(fromIdx, 1);
+        async function handleProductDrop(targetIdx) {
+            if (draggedProductIdx === null || draggedProductIdx === targetIdx) {
+                draggedProductIdx = null;
+                return;
+            }
+            const [moved] = state.products.splice(draggedProductIdx, 1);
             state.products.splice(targetIdx, 0, moved);
+            draggedProductIdx = null;
+
             saveState(STORAGE_KEYS.PRODUCTS, state.products);
-            renderProductsGrid();
             renderAdminProductsList();
+            renderProductsGrid();
             await persistProductOrderCloud();
-            showToast('បានរៀបលំដាប់ទំនិញ និង Sync រួចរាល់');
+            showToast('បានរៀបលំដាប់ទំនិញ និងរក្សាទុកក្នុង Cloud រួចរាល់');
         }
 
-        function generateUniqueCopySku(baseSku) {
-            const cleanBase = String(baseSku || 'AD').trim() || 'AD';
-            const existingSkus = new Set(
-                state.products.map((p) => String(p.sku || '').trim().toLowerCase())
-            );
-            for (let i = 1; i <= 999; i++) {
-                const candidate = `${cleanBase}-COPY${i > 1 ? i : ''}`;
-                if (!existingSkus.has(candidate.toLowerCase())) {
-                    return candidate;
-                }
-            }
-            return `${cleanBase}-${Date.now().toString().slice(-4)}`;
-        }
+        async function moveProductOrder(idx, delta) {
+            const nextIdx = idx + delta;
+            if (nextIdx < 0 || nextIdx >= state.products.length) return;
+            const [moved] = state.products.splice(idx, 1);
+            state.products.splice(nextIdx, 0, moved);
 
-        async function duplicateAdminProduct(productId) {
-            const source = state.products.find((p) => p.id === productId);
-            if (!source) return;
-            const srcIdx = state.products.findIndex((p) => p.id === productId);
-            const uniqueSku = generateUniqueCopySku(source.sku);
-            const cloned = {
-                ...source,
-                id: 'prod-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
-                sku: uniqueSku,
-                name: `${source.name} (Copy)`,
-                status: normalizeProductStatus(source.status, source.stock),
-                images: Array.isArray(source.images) && source.images.length > 0 ? [...source.images] : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
-            };
-            if (srcIdx >= 0) {
-                state.products.splice(srcIdx + 1, 0, cloned);
-            } else {
-                state.products.unshift(cloned);
-            }
             saveState(STORAGE_KEYS.PRODUCTS, state.products);
-            await persistProductOrderCloud();
-            renderProductsGrid();
             renderAdminProductsList();
-            showToast(`បាន Duplicate «${source.name}» រួចរាល់`);
+            renderProductsGrid();
+            await persistProductOrderCloud();
+            showToast('បានផ្លាស់ទីលំដាប់ទំនិញរួចរាល់');
         }
 
-        function validateSkuUniqueness() {
-            const skuInput = document.getElementById('prodSkuInput');
-            const errEl = document.getElementById('prodSkuError');
-            const submitBtn = document.getElementById('saveProductSubmitBtn');
-            const editId = document.getElementById('editProductId')?.value || '';
-            if (!skuInput || !errEl || !submitBtn) return true;
+        async function adjustProductStock(productId, delta) {
+            const prod = state.products.find((p) => p.id === productId);
+            if (!prod) return;
+            prod.stock = Math.max(0, Number(prod.stock || 0) + delta);
+            prod.status = normalizeProductStatus(prod.status, prod.stock);
+            saveState(STORAGE_KEYS.PRODUCTS, state.products);
+            renderAdminProductsList();
+            renderProductsGrid();
+            await upsertProductCloud(prod);
+        }
 
-            const candidateSku = skuInput.value.trim().toLowerCase();
-            if (!candidateSku) {
-                errEl.classList.add('hidden');
-                skuInput.classList.remove('border-rose-500');
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                return true;
+        function renderProdFormImagesPreview() {
+            const box = document.getElementById('prodFormImagesPreview');
+            if (!box) return;
+            if (!state.formImages || state.formImages.length === 0) {
+                box.innerHTML = `<p class="text-[11px] text-zinc-500">មិនទាន់មានរូបភាព — ប្រព័ន្ធនឹងប្រើរូប Default ប្រសិនបើទុកទទេ។</p>`;
+                return;
             }
 
-            const isDuplicate = state.products.some((p) => {
-                if (editId && String(p.id) === String(editId)) return false;
-                return String(p.sku || '').trim().toLowerCase() === candidateSku;
-            });
+            box.innerHTML = state.formImages.map((src, i) => {
+                const isPrimary = i === 0;
+                return `
+                    <div draggable="true"
+                         ondragstart="handleFormImageDragStart(${i})"
+                         ondragover="handleFormImageDragOver(event)"
+                         ondrop="handleFormImageDrop(${i})"
+                         class="relative group w-20 h-20 rounded-xl overflow-hidden bg-surface border-2 ${isPrimary ? 'border-gold-400 shadow-md shadow-gold-500/20' : 'border-zinc-700'} cursor-grab active:cursor-grabbing transition">
+                        <img src="${escapeAttr(src)}"
+                             onerror="this.src='https://placehold.co/160x160/1c1c24/e5be52?text=Aura'"
+                             class="w-full h-full object-cover pointer-events-none">
+                        <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-extrabold ${isPrimary ? 'bg-gold-500 text-obsidian' : 'bg-obsidian/80 text-zinc-300'}">
+                            ${isPrimary ? 'Main' : `#${i + 1}`}
+                        </span>
+                        <div class="absolute bottom-1 inset-x-1 flex items-center justify-between gap-1 opacity-0 group-hover:opacity-100 transition">
+                            ${!isPrimary
+                                ? `<button type="button" onclick="setFormImageAsPrimary(${i})" title="ដាក់ជា Thumbnail រូបទី ១"
+                                           class="px-1.5 py-0.5 rounded bg-gold-500 text-obsidian text-[9px] font-extrabold">
+                                       ដាក់ទី ១
+                                   </button>`
+                                : `<span></span>`}
+                            <button type="button" onclick="removeFormImage(${i})" title="លុបរូបភាព"
+                                    class="w-5 h-5 rounded bg-rose-600 text-white text-[10px] flex items-center justify-center">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
-            if (isDuplicate) {
-                errEl.classList.remove('hidden');
-                skuInput.classList.add('border-rose-500');
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                return false;
-            } else {
-                errEl.classList.add('hidden');
-                skuInput.classList.remove('border-rose-500');
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                return true;
+        function handleFormImageDragStart(idx) {
+            draggedFormImageIdx = idx;
+        }
+
+        function handleFormImageDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleFormImageDrop(targetIdx) {
+            if (draggedFormImageIdx === null || draggedFormImageIdx === targetIdx) {
+                draggedFormImageIdx = null;
+                return;
             }
+            const [moved] = state.formImages.splice(draggedFormImageIdx, 1);
+            state.formImages.splice(targetIdx, 0, moved);
+            draggedFormImageIdx = null;
+            renderProdFormImagesPreview();
         }
 
-        function openProductModal(productId = null) {
-            const titleEl = document.getElementById('productFormTitle');
-            const idInput = document.getElementById('editProductId');
-
-            if (productId) {
-                const prod = state.products.find((p) => p.id === productId);
-                if (!prod) return;
-                titleEl.textContent = 'កែសម្រួលព័ត៌មានទំនិញ';
-                idInput.value = prod.id;
-                document.getElementById('prodNameInput').value = prod.name || '';
-                document.getElementById('prodSkuInput').value = prod.sku || '';
-                document.getElementById('prodPriceInput').value = prod.price || 0;
-                document.getElementById('prodCrossPriceInput').value = prod.crossPrice || '';
-                document.getElementById('prodStockInput').value = prod.stock ?? 10;
-                document.getElementById('prodSoldCountInput').value = getProductSoldCount(prod);
-                document.getElementById('prodCategoryInput').value = prod.category || 'ហុងស៊ុយ';
-                document.getElementById('prodStatusInput').value = normalizeProductStatus(prod.status, prod.stock);
-                document.getElementById('prodDescInput').value = prod.description || '';
-                state.formImages = [...(prod.images || [])];
-                state.formColors = Array.isArray(prod.colors) ? [...prod.colors] : [];
-                state.formSizes = Array.isArray(prod.sizes) ? [...prod.sizes] : [];
-            } else {
-                titleEl.textContent = 'បន្ថែមទំនិញថ្មី';
-                idInput.value = '';
-                document.getElementById('productForm').reset();
-                document.getElementById('prodCrossPriceInput').value = '';
-                document.getElementById('prodStockInput').value = 10;
-                document.getElementById('prodSoldCountInput').value = 0;
-                document.getElementById('prodStatusInput').value = 'In Stock';
-                state.formImages = [];
-                state.formColors = [];
-                state.formSizes = [];
-            }
-
-            validateSkuUniqueness();
-            renderFormImagesPreview();
-            renderProdFormVariants();
-            document.getElementById('productFormModal').classList.remove('hidden');
-        }
-
-        function closeProductFormModal() {
-            const modalEl = document.getElementById('productFormModal');
-            if (modalEl) modalEl.classList.add('hidden');
-            const editInput = document.getElementById('editProductId');
-            if (editInput) editInput.value = '';
-        }
-
-        async function handleProductFilesUpload(e) {
-            const files = e.target && e.target.files ? Array.from(e.target.files) : [];
-            if (files.length === 0) return;
-            for (const file of files) {
-                const url = await uploadImageToSupabase(file, 'products');
-                if (url) {
-                    state.formImages.push(url);
-                }
-            }
-            renderFormImagesPreview();
-            e.target.value = '';
-            showToast(`បានផ្ទុករូបភាព ${files.length} សន្លឹករួចរាល់`);
-        }
-
-        function addProductImageUrl() {
-            const urlInput = document.getElementById('prodImageUrlInput');
-            if (!urlInput) return;
-            const url = urlInput.value.trim();
-            if (!url) return;
-            state.formImages.push(url);
-            urlInput.value = '';
-            renderFormImagesPreview();
+        function setFormImageAsPrimary(idx) {
+            if (idx <= 0 || idx >= state.formImages.length) return;
+            const [chosen] = state.formImages.splice(idx, 1);
+            state.formImages.unshift(chosen);
+            renderProdFormImagesPreview();
         }
 
         function removeFormImage(idx) {
-            if (idx >= 0 && idx < state.formImages.length) {
-                state.formImages.splice(idx, 1);
-                renderFormImagesPreview();
-            }
+            state.formImages.splice(idx, 1);
+            renderProdFormImagesPreview();
         }
 
-        function setFormImageAsThumbnail(idx) {
-            if (idx > 0 && idx < state.formImages.length) {
-                const [selected] = state.formImages.splice(idx, 1);
-                state.formImages.unshift(selected);
-                renderFormImagesPreview();
-            }
-        }
-
-        function handleFormImageDragStart(e, idx) {
-            draggedFormImageIdx = idx;
-            if (e && e.dataTransfer) {
-                e.dataTransfer.effectAllowed = 'move';
-                try { e.dataTransfer.setData('text/plain', String(idx)); } catch (_) {}
-            }
-        }
-
-        function addProdVariantOption(kind) {
-            const inputId = kind === 'color' ? 'prodColorNewInput' : 'prodSizeNewInput';
-            const inputEl = document.getElementById(inputId);
-            if (!inputEl) return;
-            const raw = String(inputEl.value || '').trim();
-            if (!raw) return;
-
-            const parts = raw.split(/[,،/]+/).map((s) => s.trim()).filter(Boolean);
-            const targetList = kind === 'color' ? state.formColors : state.formSizes;
-            parts.forEach((p) => {
-                if (!targetList.some((existing) => existing.toLowerCase() === p.toLowerCase())) {
-                    targetList.push(p);
-                }
-            });
-            inputEl.value = '';
-            renderProdFormVariants();
-        }
-
-        function removeProdVariantOption(kind, idx) {
-            const targetList = kind === 'color' ? state.formColors : state.formSizes;
-            if (idx >= 0 && idx < targetList.length) {
-                targetList.splice(idx, 1);
-                renderProdFormVariants();
-            }
-        }
-
-        function renderProdFormVariants() {
+        function renderProdFormVariantsPreview() {
             const colorsBox = document.getElementById('prodFormColorsList');
             const sizesBox = document.getElementById('prodFormSizesList');
             if (colorsBox) {
-                colorsBox.innerHTML = state.formColors.map((col, idx) => `
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold-500/15 border border-gold-400/35 text-gold-300 text-[11px] font-bold">
-                        <span>${escapeHtml(col)}</span>
-                        <button type="button" onclick="removeProdVariantOption('color', ${idx})" class="text-rose-400 hover:text-rose-300">
+                colorsBox.innerHTML = (state.formColors || []).map((c, idx) => `
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-charcoal border border-gold-500/30 text-[11px] font-bold text-gold-200">
+                        <span>${escapeHtml(c)}</span>
+                        <button type="button" onclick="removeProdVariantOption('color', ${idx})" class="text-rose-400 hover:text-rose-300 ml-0.5">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </span>
                 `).join('');
             }
             if (sizesBox) {
-                sizesBox.innerHTML = state.formSizes.map((sz, idx) => `
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/15 border border-sky-400/35 text-sky-300 text-[11px] font-bold">
-                        <span>${escapeHtml(sz)}</span>
-                        <button type="button" onclick="removeProdVariantOption('size', ${idx})" class="text-rose-400 hover:text-rose-300">
+                sizesBox.innerHTML = (state.formSizes || []).map((s, idx) => `
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-charcoal border border-gold-500/30 text-[11px] font-bold text-gold-200">
+                        <span>${escapeHtml(s)}</span>
+                        <button type="button" onclick="removeProdVariantOption('size', ${idx})" class="text-rose-400 hover:text-rose-300 ml-0.5">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </span>
@@ -4954,79 +4641,225 @@
             }
         }
 
-        function handleFormImageDragOver(e) {
-            e.preventDefault();
-            if (e && e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+        function addProdVariantOption(kind) {
+            if (kind === 'color') {
+                const inp = document.getElementById('prodColorNewInput');
+                const val = (inp?.value || '').trim();
+                if (!val) return;
+                state.formColors = state.formColors || [];
+                if (!state.formColors.includes(val)) state.formColors.push(val);
+                if (inp) inp.value = '';
+            } else if (kind === 'size') {
+                const inp = document.getElementById('prodSizeNewInput');
+                const val = (inp?.value || '').trim();
+                if (!val) return;
+                state.formSizes = state.formSizes || [];
+                if (!state.formSizes.includes(val)) state.formSizes.push(val);
+                if (inp) inp.value = '';
+            }
+            renderProdFormVariantsPreview();
         }
 
-        function handleFormImageDrop(e, targetIdx) {
-            e.preventDefault();
-            const fromIdx = draggedFormImageIdx !== null ? draggedFormImageIdx : Number(e.dataTransfer?.getData('text/plain'));
-            draggedFormImageIdx = null;
-            if (Number.isNaN(fromIdx) || fromIdx === targetIdx || fromIdx < 0 || targetIdx < 0) return;
-            if (fromIdx >= state.formImages.length || targetIdx >= state.formImages.length) return;
-
-            const [moved] = state.formImages.splice(fromIdx, 1);
-            state.formImages.splice(targetIdx, 0, moved);
-            renderFormImagesPreview();
+        function removeProdVariantOption(kind, idx) {
+            if (kind === 'color' && Array.isArray(state.formColors)) {
+                state.formColors.splice(idx, 1);
+            } else if (kind === 'size' && Array.isArray(state.formSizes)) {
+                state.formSizes.splice(idx, 1);
+            }
+            renderProdFormVariantsPreview();
         }
 
-        function renderFormImagesPreview() {
-            const box = document.getElementById('prodFormImagesPreview');
-            box.innerHTML = state.formImages.map((src, idx) => `
-                <div draggable="true"
-                     ondragstart="handleFormImageDragStart(event, ${idx})"
-                     ondragover="handleFormImageDragOver(event)"
-                     ondrop="handleFormImageDrop(event, ${idx})"
-                     class="relative w-20 h-20 rounded-xl overflow-hidden border-2 ${idx === 0 ? 'border-gold-400 shadow-md shadow-gold-500/20' : 'border-zinc-700'} cursor-grab active:cursor-grabbing group">
-                    <img src="${escapeAttr(src)}" class="w-full h-full object-cover">
-                    ${idx === 0
-                        ? `<span class="absolute bottom-0 inset-x-0 bg-gold-500 text-obsidian text-[9px] font-extrabold text-center py-0.5">Thumbnail</span>`
-                        : `<button type="button" onclick="setFormImageAsThumbnail(${idx})" title="ដាក់ជា Thumbnail"
-                                   class="absolute bottom-0 inset-x-0 bg-obsidian/85 hover:bg-gold-500 text-gold-300 hover:text-obsidian text-[9px] font-bold text-center py-0.5 transition">
-                               ដាក់ជា Thumb
-                           </button>`}
-                    <button type="button" onclick="removeFormImage(${idx})"
-                            class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-rose-600 text-white text-[10px] flex items-center justify-center">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            `).join('');
+        function generateNextSku() {
+            const existingNums = state.products
+                .map((p) => {
+                    const m = String(p.sku || '').match(/(\d+)$/);
+                    return m ? parseInt(m[1], 10) : 0;
+                })
+                .filter((n) => n > 0);
+            const nextNum = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 105;
+            return `AD-${nextNum}`;
         }
 
-        function saveProductFromForm(e) {
-            e.preventDefault();
-            if (!validateSkuUniqueness()) {
-                showToast('SKU ជាន់គ្នា! សូមប្តូរលេខកូដ SKU មុនពេលរក្សាទុក។');
-                return;
+        function validateSkuUniqueness() {
+            const skuInput = document.getElementById('prodSkuInput');
+            const errEl = document.getElementById('prodSkuError');
+            const submitBtn = document.getElementById('saveProductSubmitBtn');
+            const editId = document.getElementById('editProductId').value;
+            if (!skuInput) return true;
+
+            const normalizedSku = skuInput.value.trim().toUpperCase();
+            const isDuplicate = state.products.some((p) => {
+                if (editId && String(p.id) === String(editId)) return false;
+                return String(p.sku || '').trim().toUpperCase() === normalizedSku;
+            });
+
+            if (errEl) {
+                errEl.classList.toggle('hidden', !isDuplicate);
+            }
+            if (submitBtn) {
+                submitBtn.disabled = isDuplicate;
+                submitBtn.classList.toggle('opacity-50', isDuplicate);
+                submitBtn.classList.toggle('cursor-not-allowed', isDuplicate);
+            }
+            return !isDuplicate;
+        }
+
+        function openProductModal(productId = null) {
+            const modal = document.getElementById('productFormModal');
+            const titleEl = document.getElementById('productFormTitle');
+            const colorInp = document.getElementById('prodColorNewInput');
+            const sizeInp = document.getElementById('prodSizeNewInput');
+            if (colorInp) colorInp.value = '';
+            if (sizeInp) sizeInp.value = '';
+
+            if (productId) {
+                const prod = state.products.find((p) => p.id === productId);
+                if (!prod) return;
+                titleEl.textContent = 'កែប្រែព័ត៌មានទំនិញ';
+                document.getElementById('editProductId').value = prod.id;
+                document.getElementById('prodNameInput').value = prod.name || '';
+                document.getElementById('prodSkuInput').value = prod.sku || '';
+                document.getElementById('prodPriceInput').value = prod.price || '';
+                document.getElementById('prodCrossPriceInput').value = prod.crossPrice && Number(prod.crossPrice) > 0 ? prod.crossPrice : '';
+                document.getElementById('prodStockInput').value = prod.stock ?? 0;
+                document.getElementById('prodSoldCountInput').value = getProductSoldCount(prod);
+                document.getElementById('prodCategoryInput').value = prod.category || 'ហុងស៊ុយ';
+                document.getElementById('prodStatusInput').value = normalizeProductStatus(prod.status, prod.stock);
+                document.getElementById('prodDescInput').value = prod.description || '';
+                state.formImages = Array.isArray(prod.images) ? [...prod.images] : [];
+                state.formColors = Array.isArray(prod.colors) ? [...prod.colors] : [];
+                state.formSizes = Array.isArray(prod.sizes) ? [...prod.sizes] : [];
+            } else {
+                titleEl.textContent = 'បន្ថែមទំនិញថ្មី';
+                document.getElementById('editProductId').value = '';
+                document.getElementById('prodNameInput').value = '';
+                document.getElementById('prodSkuInput').value = generateNextSku();
+                document.getElementById('prodPriceInput').value = '';
+                document.getElementById('prodCrossPriceInput').value = '';
+                document.getElementById('prodStockInput').value = '10';
+                document.getElementById('prodSoldCountInput').value = '0';
+                document.getElementById('prodCategoryInput').value = 'ហុងស៊ុយ';
+                document.getElementById('prodStatusInput').value = 'In Stock';
+                document.getElementById('prodDescInput').value = '';
+                state.formImages = [];
+                state.formColors = [];
+                state.formSizes = [];
             }
 
+            validateSkuUniqueness();
+            renderProdFormImagesPreview();
+            renderProdFormVariantsPreview();
+            modal.classList.remove('hidden');
+        }
+
+        function closeProductFormModal() {
+            const formEl = document.getElementById('productForm');
+            const editIdEl = document.getElementById('editProductId');
+            const skuInput = document.getElementById('prodSkuInput');
+            const errEl = document.getElementById('prodSkuError');
+            const submitBtn = document.getElementById('saveProductSubmitBtn');
+            const colorInp = document.getElementById('prodColorNewInput');
+            const sizeInp = document.getElementById('prodSizeNewInput');
+            const imgUrlInp = document.getElementById('prodImageUrlInput');
+
+            if (formEl) formEl.reset();
+            if (editIdEl) editIdEl.value = '';
+            if (skuInput) skuInput.value = '';
+            if (colorInp) colorInp.value = '';
+            if (sizeInp) sizeInp.value = '';
+            if (imgUrlInp) imgUrlInp.value = '';
+            if (errEl) errEl.classList.add('hidden');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            state.formImages = [];
+            state.formColors = [];
+            state.formSizes = [];
+            renderProdFormImagesPreview();
+            renderProdFormVariantsPreview();
+
+            document.getElementById('productFormModal').classList.add('hidden');
+        }
+
+        async function handleProductFilesUpload(e) {
+            const files = Array.from((e.target && e.target.files) || []);
+            if (files.length === 0) return;
+            for (const file of files) {
+                const url = await uploadImageToSupabase(file, 'products');
+                if (url) state.formImages.push(url);
+            }
+            renderProdFormImagesPreview();
+            e.target.value = '';
+        }
+
+        function addProductImageUrl() {
+            const input = document.getElementById('prodImageUrlInput');
+            const url = input.value.trim();
+            if (!url) return;
+            state.formImages.push(url);
+            input.value = '';
+            renderProdFormImagesPreview();
+        }
+
+        async function saveProductFromForm(e) {
+            e.preventDefault();
+            if (!validateSkuUniqueness()) {
+                showToast('លេខកូដ SKU ជាន់គ្នា! សូមបញ្ចូលលេខកូដ SKU ថ្មី');
+                return;
+            }
             const editId = document.getElementById('editProductId').value;
             const name = document.getElementById('prodNameInput').value.trim();
-            const sku = document.getElementById('prodSkuInput').value.trim();
+            const sku = document.getElementById('prodSkuInput').value.trim().toUpperCase();
             const price = parseFloat(document.getElementById('prodPriceInput').value) || 0;
-            const crossPrice = parseFloat(document.getElementById('prodCrossPriceInput').value) || 0;
+            const crossPrice = Math.max(0, parseFloat(document.getElementById('prodCrossPriceInput').value) || 0);
             const stock = parseInt(document.getElementById('prodStockInput').value, 10) || 0;
             const soldCount = Math.max(0, parseInt(document.getElementById('prodSoldCountInput').value, 10) || 0);
             const category = document.getElementById('prodCategoryInput').value;
             const status = normalizeProductStatus(document.getElementById('prodStatusInput').value, stock);
             const description = document.getElementById('prodDescInput').value.trim();
-            const colors = [...state.formColors];
-            const sizes = [...state.formSizes];
+
+            const pendingColor = (document.getElementById('prodColorNewInput')?.value || '').trim();
+            if (pendingColor) {
+                state.formColors = state.formColors || [];
+                if (!state.formColors.includes(pendingColor)) state.formColors.push(pendingColor);
+            }
+            const pendingSize = (document.getElementById('prodSizeNewInput')?.value || '').trim();
+            if (pendingSize) {
+                state.formSizes = state.formSizes || [];
+                if (!state.formSizes.includes(pendingSize)) state.formSizes.push(pendingSize);
+            }
 
             const images = state.formImages.length > 0
                 ? [...state.formImages]
                 : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'];
+            const colors = Array.isArray(state.formColors) ? [...state.formColors] : [];
+            const sizes = Array.isArray(state.formSizes) ? [...state.formSizes] : [];
 
+            let savedProduct = null;
             if (editId) {
                 const idx = state.products.findIndex((p) => p.id === editId);
                 if (idx !== -1) {
-                    state.products[idx] = { ...state.products[idx], name, sku, price, crossPrice, stock, soldCount, category, status, description, images, colors, sizes };
-                    upsertProductCloud(state.products[idx]);
+                    state.products[idx] = {
+                        ...state.products[idx],
+                        name,
+                        sku,
+                        price,
+                        crossPrice,
+                        stock,
+                        soldCount,
+                        category,
+                        status,
+                        colors,
+                        sizes,
+                        description,
+                        images
+                    };
+                    savedProduct = state.products[idx];
                 }
-                showToast('បានកែប្រែទំនិញជោគជ័យ (រក្សាទីតាំងលើក្របមុខដដែល)');
             } else {
-                const created = {
+                savedProduct = {
                     id: 'prod-' + Date.now(),
                     name,
                     sku,
@@ -5036,388 +4869,399 @@
                     soldCount,
                     category,
                     status,
-                    description,
-                    images,
                     colors,
-                    sizes
+                    sizes,
+                    description,
+                    images
                 };
-                state.products.unshift(created);
-                upsertProductCloud(created);
-                showToast('បានបន្ថែមទំនិញថ្មីជោគជ័យ');
+                state.products.unshift(savedProduct);
             }
 
             saveState(STORAGE_KEYS.PRODUCTS, state.products);
-            closeProductFormModal();
             renderProductsGrid();
             renderAdminProductsList();
+            closeProductFormModal();
+            if (savedProduct) {
+                await upsertProductCloud(savedProduct);
+            }
+            showToast('បានរក្សាទុកទំនិញរួចរាល់');
         }
 
-        async function deleteAdminProduct(productId) {
-            const ok = await openConfirmModal('លុបទំនិញ', 'តើលោកអ្នកពិតជាចង់លុបទំនិញនេះចេញពីហាងមែនទេ?');
+        async function deleteProduct(productId) {
+            const ok = await openConfirmModal('លុបទំនិញ', 'តើលោកអ្នកពិតជាចង់លុបទំនិញនេះចេញមែនទេ?');
             if (!ok) return;
             state.products = state.products.filter((p) => p.id !== productId);
             saveState(STORAGE_KEYS.PRODUCTS, state.products);
-            await deleteProductCloud(productId);
             renderProductsGrid();
             renderAdminProductsList();
+            await deleteProductCloud(productId);
             showToast('បានលុបទំនិញរួចរាល់');
         }
 
-        function handleAdminOrderSearch(val) {
+        function setAdminOrderSearch(val) {
             state.adminOrderSearch = String(val || '').trim().toLowerCase();
             renderAdminOrdersList();
         }
 
-        function handleAdminOrderStatusFilter(val) {
-            state.adminOrderStatusFilter = val || 'All';
+        function setAdminOrderStatusFilter(statusVal) {
+            state.adminOrderStatusFilter = statusVal || 'All';
             renderAdminOrdersList();
+        }
+
+        function openCustomerOrderHistoryModal(phoneKey, customerName) {
+            const modal = document.getElementById('customerHistoryModal');
+            const titleEl = document.getElementById('customerHistoryModalTitle');
+            const subEl = document.getElementById('customerHistoryModalSubtitle');
+            const bodyEl = document.getElementById('customerHistoryModalBody');
+            if (!modal || !bodyEl) return;
+
+            const normalizedPhone = String(phoneKey || '').replace(/\s+/g, '');
+            const matchedOrders = state.orders.filter((o) => {
+                const pClean = String(o.customerPhone || '').replace(/\s+/g, '');
+                if (normalizedPhone) return pClean === normalizedPhone;
+                return String(o.customerName || '').trim().toLowerCase() === String(customerName || '').trim().toLowerCase();
+            });
+
+            const validOrders = matchedOrders.filter((o) => !['Cancelled', 'Refund'].includes(String(o.status || '')));
+            const totalSpent = validOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+            const latestAddress = (matchedOrders[0] && matchedOrders[0].customerAddress) || '';
+
+            if (titleEl) titleEl.textContent = `ប្រវត្តិទិញ៖ ${customerName || 'ភ្ញៀវ'}`;
+            if (subEl) {
+                subEl.textContent = `${phoneKey || ''} • ${matchedOrders.length} Order • ចំណាយសរុប $${totalSpent.toFixed(2)}${latestAddress ? ` • ${latestAddress}` : ''}`;
+            }
+
+            if (matchedOrders.length === 0) {
+                bodyEl.innerHTML = `<p class="text-xs text-zinc-400 text-center py-6">មិនមានប្រវត្តិបញ្ជាទិញទេ</p>`;
+            } else {
+                bodyEl.innerHTML = matchedOrders.map((ord) => `
+                    <div class="p-3.5 rounded-2xl bg-surface border border-zinc-800 space-y-2 text-xs">
+                        <div class="flex items-center justify-between gap-2 border-b border-zinc-800 pb-1.5">
+                            <div>
+                                <span class="font-extrabold text-gold-300">${escapeHtml(ord.id)}</span>
+                                <span class="text-[11px] text-zinc-400 ml-2">${escapeHtml(ord.createdAt || '')}</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gold-500/15 text-gold-300 border border-gold-500/30">${escapeHtml(ord.status || '')}</span>
+                        </div>
+                        <div class="space-y-1 text-zinc-200">
+                            ${(ord.items || []).map((it) => {
+                                const varStr = formatVariantDisplay(it.selectedColor, it.selectedSize);
+                                return `<p>• ${escapeHtml(it.name)} ${varStr ? `(${escapeHtml(varStr)}) ` : ''}<strong>x${it.qty}</strong> — $${(Number(it.price || 0) * Number(it.qty || 1)).toFixed(2)}</p>`;
+                            }).join('')}
+                        </div>
+                        <div class="flex items-center justify-between pt-1.5 border-t border-zinc-800/80 text-[11px]">
+                            <span class="text-zinc-400 truncate max-w-[65%]">${escapeHtml(ord.customerAddress || '')}</span>
+                            <span class="font-extrabold text-gold-300">$${Number(ord.total || 0).toFixed(2)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeCustomerHistoryModal() {
+            const modal = document.getElementById('customerHistoryModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function openAdminOrderReceipt(orderId) {
+            const ord = state.orders.find((o) => String(o.id) === String(orderId));
+            if (ord) openReceiptModal(ord);
+        }
+
+        async function saveAdminOrderNote(orderId) {
+            const ord = state.orders.find((o) => String(o.id) === String(orderId));
+            const inp = document.getElementById(`adminOrderNote-${orderId}`);
+            if (!ord || !inp) return;
+            ord.adminNote = inp.value.trim();
+            saveState(STORAGE_KEYS.ORDERS, state.orders);
+            await upsertOrderCloud(ord);
+            showToast('បានរក្សាទុកកំណត់ចំណាំ Order រួចរាល់');
         }
 
         function renderAdminOrdersList() {
             const container = document.getElementById('adminSectionOrders');
             if (!container) return;
 
+            const nonCancelledOrders = state.orders.filter((o) => !['Cancelled', 'Refund'].includes(String(o.status || '')));
+            const totalRevenue = nonCancelledOrders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+            const toShipCount = state.orders.filter((o) => o.status === 'To Ship').length;
+
             const phoneCounts = {};
             state.orders.forEach((o) => {
-                const norm = String(o.customerPhone || '').replace(/\s+/g, '');
-                if (norm) {
-                    phoneCounts[norm] = (phoneCounts[norm] || 0) + 1;
-                }
+                const key = String(o.customerPhone || '').replace(/\s+/g, '') || String(o.customerName || '').trim().toLowerCase();
+                if (key) phoneCounts[key] = (phoneCounts[key] || 0) + 1;
             });
+            const repeatCustomersCount = Object.values(phoneCounts).filter((c) => c > 1).length;
 
-            const totalOrdersCount = state.orders.length;
-            const toShipCount = state.orders.filter((o) => o.status === 'To Ship').length;
-            const revenueTotal = state.orders
-                .filter((o) => !['Cancelled', 'Refund'].includes(String(o.status || '')))
-                .reduce((sum, o) => sum + Number(o.total || 0), 0);
-            const repeatCustomersCount = Object.values(phoneCounts).filter((cnt) => cnt > 1).length;
-
-            const kpiHtml = `
+            const kpiAndFilterHtml = `
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
                     <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800">
-                        <p class="text-[11px] text-zinc-400">Order ទាំងអស់</p>
-                        <p class="text-lg font-extrabold text-white mt-0.5">${totalOrdersCount}</p>
-                        <p class="text-[10px] text-gold-300 mt-0.5">To Ship: ${toShipCount}</p>
+                        <p class="text-[10px] font-bold text-zinc-400">Order ទាំងអស់</p>
+                        <p class="text-lg font-extrabold text-white mt-0.5">${state.orders.length}</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-charcoal border border-amber-500/25">
+                        <p class="text-[10px] font-bold text-amber-300">រង់ចាំដឹក (To Ship)</p>
+                        <p class="text-lg font-extrabold text-amber-300 mt-0.5">${toShipCount}</p>
                     </div>
                     <div class="p-3.5 rounded-2xl bg-charcoal border border-emerald-500/25">
-                        <p class="text-[11px] text-zinc-400">ចំណូលសរុប (Active)</p>
-                        <p class="text-lg font-extrabold text-emerald-400 mt-0.5">$${revenueTotal.toFixed(2)}</p>
-                        <p class="text-[10px] text-zinc-500 mt-0.5">មិនរាប់បញ្ចូល Cancel/Refund</p>
+                        <p class="text-[10px] font-bold text-emerald-300">ចំណូលសរុប (Active)</p>
+                        <p class="text-lg font-extrabold text-emerald-400 mt-0.5">$${totalRevenue.toFixed(2)}</p>
                     </div>
                     <div class="p-3.5 rounded-2xl bg-charcoal border border-gold-500/25">
-                        <p class="text-[11px] text-zinc-400">ភ្ញៀវទិញម្តងទៀត</p>
-                        <p class="text-lg font-extrabold text-gold-300 mt-0.5">${repeatCustomersCount}</p>
-                        <p class="text-[10px] text-zinc-500 mt-0.5">ទិញចាប់ពី ២ ដងឡើង</p>
+                        <p class="text-[10px] font-bold text-gold-300">ភ្ញៀវទិញម្តងទៀត</p>
+                        <p class="text-lg font-extrabold text-gold-300 mt-0.5">${repeatCustomersCount} នាក់</p>
                     </div>
-                    <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800 flex flex-col justify-between">
-                        <p class="text-[11px] text-zinc-400">នាំចេញទិន្នន័យ</p>
-                        <button type="button" onclick="downloadOrdersExcel()"
-                                class="mt-1.5 w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 transition">
+                </div>
+
+                <div class="rounded-2xl bg-charcoal border border-zinc-800 p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
+                        <input type="text"
+                               value="${escapeAttr(state.adminOrderSearch || '')}"
+                               oninput="setAdminOrderSearch(this.value)"
+                               placeholder="ស្វែងរកតាមលេខ ORD-... , ឈ្មោះភ្ញៀវ ឬលេខទូរស័ព្ទ..."
+                               class="w-full pl-9 pr-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-gold-400">
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <select onchange="setAdminOrderStatusFilter(this.value)"
+                                class="px-3 py-2 rounded-xl bg-surface border border-zinc-700 text-xs font-bold text-gold-300 focus:outline-none focus:border-gold-400">
+                            ${['All', 'To Pay', 'To Ship', 'To Receive', 'To Review', 'Completed', 'Refund', 'Cancelled'].map((st) =>
+                                `<option value="${st}" ${state.adminOrderStatusFilter === st ? 'selected' : ''}>${st === 'All' ? 'ស្ថានភាពទាំងអស់' : st}</option>`
+                            ).join('')}
+                        </select>
+                        <button type="button" onclick="exportOrdersToExcel()"
+                                class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold flex items-center gap-1.5 transition">
                             <i class="fa-solid fa-file-excel"></i>
-                            <span>Download Excel</span>
+                            <span>Excel</span>
                         </button>
                     </div>
                 </div>
             `;
 
-            const filterStatuses = ['All', 'To Pay', 'To Ship', 'To Receive', 'Completed', 'To Review', 'Refund', 'Cancelled'];
-            const filterBarHtml = `
-                <div class="p-3.5 rounded-2xl bg-charcoal border border-zinc-800 flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
-                    <div class="relative flex-1">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></i>
-                        <input id="adminOrderSearchInput" type="text"
-                               value="${escapeAttr(state.adminOrderSearch)}"
-                               oninput="handleAdminOrderSearch(this.value)"
-                               placeholder="ស្វែងរកលេខ ORD-..., ឈ្មោះភ្ញៀវ ឬលេខទូរស័ព្ទ..."
-                               class="w-full pl-9 pr-3 py-2 rounded-xl bg-surface border border-zinc-700 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-gold-400">
-                    </div>
-                    <select id="adminOrderStatusFilterSelect"
-                            onchange="handleAdminOrderStatusFilter(this.value)"
-                            class="px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-xs font-bold text-gold-300 focus:outline-none focus:border-gold-400">
-                        ${filterStatuses.map((st) => `<option value="${st}" ${state.adminOrderStatusFilter === st ? 'selected' : ''}>ស្ថានភាព៖ ${st}</option>`).join('')}
-                    </select>
-                </div>
-            `;
+            const q = String(state.adminOrderSearch || '').trim().toLowerCase();
+            const stFilter = state.adminOrderStatusFilter || 'All';
 
-            const filteredOrders = state.orders.filter((o) => {
-                const matchesStatus = state.adminOrderStatusFilter === 'All' || String(o.status) === state.adminOrderStatusFilter;
-                const q = state.adminOrderSearch;
-                const matchesQuery = !q ||
-                    String(o.id || '').toLowerCase().includes(q) ||
-                    String(o.customerName || '').toLowerCase().includes(q) ||
-                    String(o.customerPhone || '').toLowerCase().includes(q);
-                return matchesStatus && matchesQuery;
+            const filteredOrders = state.orders.filter((ord) => {
+                const matchStatus = stFilter === 'All' || ord.status === stFilter;
+                const matchQuery = !q ||
+                    String(ord.id || '').toLowerCase().includes(q) ||
+                    String(ord.customerName || '').toLowerCase().includes(q) ||
+                    String(ord.customerPhone || '').toLowerCase().includes(q);
+                return matchStatus && matchQuery;
             });
 
             if (filteredOrders.length === 0) {
-                container.innerHTML = `${kpiHtml}${filterBarHtml}<p class="text-xs text-zinc-400 text-center py-8">រកមិនឃើញវិក្កយបត្រដែលត្រូវនឹងលក្ខខណ្ឌទេ</p>`;
+                container.innerHTML = kpiAndFilterHtml + `
+                    <div class="text-center py-10 rounded-3xl bg-charcoal border border-zinc-800 text-xs text-zinc-400">
+                        មិនមាន Order ដែលត្រូវនឹងការស្វែងរក/ច្រោះទេ
+                    </div>
+                `;
                 return;
             }
 
-            const statuses = ['To Pay', 'To Ship', 'To Receive', 'Completed', 'To Review', 'Refund', 'Cancelled'];
-
-            const cardsHtml = filteredOrders.map((order) => {
-                const normPhone = String(order.customerPhone || '').replace(/\s+/g, '');
-                const orderCountForPhone = normPhone ? (phoneCounts[normPhone] || 1) : 1;
-                const customerBadge = orderCountForPhone > 1
-                    ? `<button type="button" onclick="openCustomerHistoryModal('${escapeAttr(order.customerPhone)}')" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/30 transition">ភ្ញៀវទិញ ${orderCountForPhone} ដង</button>`
-                    : `<button type="button" onclick="openCustomerHistoryModal('${escapeAttr(order.customerPhone)}')" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition">ភ្ញៀវថ្មី</button>`;
-
-                const isCancelled = String(order.status || '') === 'Cancelled';
-                const statusBadgeStyle = isCancelled
-                    ? 'bg-rose-950/80 text-rose-300 border-rose-500/40'
-                    : 'bg-surface text-gold-300 border-zinc-700';
-
-                const itemsText = (order.items || []).map((i) => {
-                    const prodMatch = state.products.find((p) => String(p.id) === String(i.productId));
-                    const skuLabel = i.sku || (prodMatch && prodMatch.sku) || '';
-                    const skuTag = skuLabel ? `[${escapeHtml(skuLabel)}] ` : '';
-                    return `${skuTag}${escapeHtml(i.name)} (x${i.qty})`;
-                }).join(', ');
-
+            const statuses = ['To Pay', 'To Ship', 'To Receive', 'To Review', 'Completed', 'Refund', 'Cancelled'];
+            container.innerHTML = kpiAndFilterHtml + filteredOrders.map((ord) => {
+                const isCancelled = ord.status === 'Cancelled';
+                const pKey = String(ord.customerPhone || '').replace(/\s+/g, '') || String(ord.customerName || '').trim().toLowerCase();
+                const customerOrderCount = phoneCounts[pKey] || 1;
                 return `
-                    <div class="p-4 sm:p-5 rounded-2xl bg-charcoal border ${isCancelled ? 'border-rose-500/30 opacity-90' : 'border-zinc-800'} space-y-3">
+                    <div class="p-4 sm:p-5 rounded-3xl bg-charcoal border ${isCancelled ? 'border-rose-900/50 opacity-85' : 'border-zinc-800'} space-y-3">
                         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2.5">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-xs font-extrabold text-gold-300">${escapeHtml(order.id)}</span>
-                                ${customerBadge}
-                                <span class="text-[11px] text-zinc-400">${escapeHtml(order.createdAt)}</span>
+                            <div>
+                                <span class="text-xs font-extrabold text-gold-300">${escapeHtml(ord.id)}</span>
+                                <span class="text-[11px] text-zinc-400 ml-2">${escapeHtml(ord.createdAt)}</span>
+                                ${ord.promoCode ? `<span class="ml-2 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-gold-500/15 text-gold-300 border border-gold-500/30">Code: ${escapeHtml(ord.promoCode)}</span>` : ''}
                             </div>
-
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                <button type="button" onclick="openReceiptById('${escapeAttr(order.id)}')"
-                                        class="px-2.5 py-1.5 rounded-xl bg-surface hover:bg-zinc-800 border border-gold-500/30 text-gold-300 text-xs font-bold transition">
-                                    <i class="fa-solid fa-file-invoice mr-1"></i> វិក្កយបត្រ
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <button type="button" onclick="openAdminOrderReceipt('${escapeAttr(ord.id)}')"
+                                        class="px-2.5 py-1 rounded-xl bg-surface hover:bg-zinc-700 border border-zinc-700 text-gold-300 text-[11px] font-bold transition">
+                                    <i class="fa-solid fa-receipt mr-1"></i> វិក្កយបត្រ
                                 </button>
-                                <select onchange="updateAdminOrderStatus('${escapeAttr(order.id)}', this.value)"
-                                        class="px-3 py-1.5 rounded-xl border text-xs font-bold focus:outline-none ${statusBadgeStyle}">
-                                    ${statuses.map((st) => `<option value="${st}" ${order.status === st ? 'selected' : ''}>${st}</option>`).join('')}
+                                <select onchange="updateOrderStatus('${escapeAttr(ord.id)}', this.value)"
+                                        class="px-3 py-1 rounded-xl bg-surface border border-zinc-700 text-xs font-bold text-gold-300 focus:outline-none">
+                                    ${statuses.map((st) => `<option value="${st}" ${ord.status === st ? 'selected' : ''}>${st}</option>`).join('')}
                                 </select>
                                 ${!isCancelled ? `
-                                    <button type="button" onclick="cancelAdminOrder('${escapeAttr(order.id)}')"
-                                            class="px-2.5 py-1.5 rounded-xl bg-amber-950/70 hover:bg-amber-900/80 border border-amber-500/30 text-amber-300 text-xs font-bold transition">
-                                        <i class="fa-solid fa-ban mr-1"></i> Cancel
+                                    <button type="button" onclick="cancelOrder('${escapeAttr(ord.id)}')"
+                                            class="px-2.5 py-1 rounded-xl bg-amber-950/80 hover:bg-amber-900 border border-amber-500/30 text-amber-300 text-[11px] font-bold transition">
+                                        Cancel Order
                                     </button>
                                 ` : ''}
-                                <button type="button" onclick="deleteAdminOrder('${escapeAttr(order.id)}')"
-                                        title="លុប Order ចោល"
-                                        class="px-2.5 py-1.5 rounded-xl bg-rose-950/70 hover:bg-rose-900 text-rose-300 border border-rose-500/30 text-xs font-bold transition">
-                                    <i class="fa-solid fa-trash mr-1"></i> លុប
+                                <button type="button" onclick="deleteOrder('${escapeAttr(ord.id)}')"
+                                        title="លុប Order"
+                                        class="px-2.5 py-1 rounded-xl bg-rose-950/70 hover:bg-rose-900 text-rose-300 text-xs font-bold">
+                                    <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-zinc-300">
-                            <p>
-                                <span class="text-zinc-500">អតិថិជន៖</span>
-                                <button type="button" onclick="openCustomerHistoryModal('${escapeAttr(order.customerPhone)}')" class="font-bold text-white hover:text-gold-300 underline decoration-dotted">
-                                    ${escapeHtml(order.customerName)}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="text-zinc-400">ភ្ញៀវ៖</span>
+                                <button type="button" onclick="openCustomerOrderHistoryModal('${escapeAttr(ord.customerPhone || '')}', '${escapeAttr(ord.customerName || '')}')"
+                                        class="font-bold text-gold-300 hover:underline text-left">
+                                    ${escapeHtml(ord.customerName)} (${escapeHtml(ord.customerPhone)})
                                 </button>
-                                (${escapeHtml(order.customerPhone)})
-                            </p>
-                            <p><span class="text-zinc-500">ទីតាំងដឹក៖</span> ${escapeHtml(order.customerAddress)}</p>
+                                ${customerOrderCount > 1 ? `
+                                    <button type="button" onclick="openCustomerOrderHistoryModal('${escapeAttr(ord.customerPhone || '')}', '${escapeAttr(ord.customerName || '')}')"
+                                            class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-gold-500/15 text-gold-300 border border-gold-400/40">
+                                        ទិញ ${customerOrderCount} ដង
+                                    </button>
+                                ` : ''}
+                            </div>
+                            <div><span class="text-zinc-400">ទីតាំងដឹក៖</span> <strong class="text-zinc-200">${escapeHtml(ord.customerAddress)}</strong></div>
+                            <div><span class="text-zinc-400">ការទូទាត់៖</span> <strong class="text-zinc-200">${escapeHtml(ord.paymentMethod)}</strong></div>
+                            <div><span class="text-zinc-400">សរុប៖</span> <strong class="text-gold-400">$${Number(ord.total).toFixed(2)}</strong> <span class="text-emerald-400 text-[11px]">(ដឹកហ្វ្រី)</span></div>
                         </div>
 
-                        <p class="text-xs text-zinc-200 bg-surface/70 p-2.5 rounded-xl">${itemsText}</p>
+                        <div class="p-3 rounded-2xl bg-surface/80 text-xs space-y-1">
+                            ${ord.items.map((it) => {
+                                const varStr = formatVariantDisplay(it.selectedColor, it.selectedSize);
+                                return `<p class="text-zinc-200">• ${escapeHtml(it.name)} ${varStr ? `<span class="text-gold-300/90 text-[11px]">(${escapeHtml(varStr)})</span> ` : ''}<strong>x${it.qty}</strong> — $${(it.price * it.qty).toFixed(2)}</p>`;
+                            }).join('')}
+                        </div>
 
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 pt-1">
-                            <input id="adminOrderNote-${escapeAttr(order.id)}" type="text"
-                                   value="${escapeAttr(order.adminNote || '')}"
-                                   placeholder="កំណត់ចំណាំផ្ទៃក្នុង (ឧ. ផ្ញើវីរះប៊ុនថាំ សាខា... / បង់រួច ABA)..."
-                                   class="flex-1 px-3 py-1.5 rounded-xl bg-surface border border-zinc-700/80 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-gold-400">
-                            <button type="button" onclick="saveAdminOrderNote('${escapeAttr(order.id)}')"
-                                    class="px-3 py-1.5 rounded-xl bg-surface hover:bg-zinc-800 border border-zinc-700 text-xs font-bold text-gold-300 shrink-0 transition">
-                                <i class="fa-solid fa-floppy-disk mr-1"></i> រក្សា Note
+                        <div class="flex items-center gap-2 pt-1">
+                            <input id="adminOrderNote-${escapeAttr(ord.id)}" type="text"
+                                   value="${escapeAttr(ord.adminNote || '')}"
+                                   placeholder="កំណត់ចំណាំផ្ទៃក្នុង (ឧ. ផ្ញើវីរះប៊ុនថាំ សាខា..., បង់រួច ABA)..."
+                                   class="flex-1 min-w-0 px-3 py-1.5 rounded-xl bg-surface border border-zinc-700/80 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-gold-400">
+                            <button type="button" onclick="saveAdminOrderNote('${escapeAttr(ord.id)}')"
+                                    class="px-3 py-1.5 rounded-xl bg-surface hover:bg-zinc-700 border border-zinc-700 text-gold-300 text-xs font-bold shrink-0 transition">
+                                រក្សាចំណាំ
                             </button>
-                        </div>
-
-                        <div class="flex items-center justify-between text-xs pt-1">
-                            <span class="text-zinc-400">
-                                ទូទាត់៖ <strong>${escapeHtml(order.paymentMethod)}</strong>
-                                ${order.promoCode ? `• កូដ៖ <strong class="text-gold-300">${escapeHtml(order.promoCode)}</strong>` : ''}
-                                • ដឹកហ្វ្រី
-                            </span>
-                            <span class="text-sm font-extrabold text-gold-400">សរុប៖ $${Number(order.total).toFixed(2)}</span>
                         </div>
                     </div>
                 `;
             }).join('');
-
-            container.innerHTML = kpiHtml + filterBarHtml + cardsHtml;
         }
 
-        function saveAdminOrderNote(orderId) {
-            const inputEl = document.getElementById(`adminOrderNote-${orderId}`);
-            if (!inputEl) return;
-            const ord = state.orders.find((o) => String(o.id) === String(orderId));
-            if (!ord) return;
-            ord.adminNote = inputEl.value.trim();
-            saveState(STORAGE_KEYS.ORDERS, state.orders);
-            upsertOrderCloud(ord);
-            showToast(`បានរក្សា Note សម្រាប់ ${orderId} រួចរាល់`);
-        }
-
-        function openCustomerHistoryModal(phoneStr) {
-            const normTarget = String(phoneStr || '').replace(/\s+/g, '');
-            const matchingOrders = state.orders.filter((o) =>
-                String(o.customerPhone || '').replace(/\s+/g, '') === normTarget
-            );
-            if (matchingOrders.length === 0) return;
-
-            const latest = matchingOrders[0];
-            const totalSpent = matchingOrders
-                .filter((o) => !['Cancelled', 'Refund'].includes(String(o.status || '')))
-                .reduce((sum, o) => sum + Number(o.total || 0), 0);
-
-            document.getElementById('customerHistoryModalTitle').textContent =
-                `ប្រវត្តិទិញរបស់៖ ${latest.customerName || 'ភ្ញៀវ'}`;
-            document.getElementById('customerHistoryModalSubtitle').textContent =
-                `ទូរស័ព្ទ៖ ${latest.customerPhone || ''} • ទិញ ${matchingOrders.length} ដង • ចំណាយសរុប៖ $${totalSpent.toFixed(2)}`;
-
-            document.getElementById('customerHistoryModalBody').innerHTML = `
-                <div class="p-3 rounded-2xl bg-surface/80 border border-zinc-800 text-xs text-zinc-300">
-                    <span class="text-zinc-500">ទីតាំងដឹកចុងក្រោយ៖</span> <strong>${escapeHtml(latest.customerAddress || '')}</strong>
-                </div>
-                ${matchingOrders.map((o) => {
-                    const itemsStr = (o.items || []).map((i) => `${escapeHtml(i.name)} (x${i.qty})`).join(', ');
-                    return `
-                        <div class="p-3.5 rounded-2xl bg-surface/60 border border-zinc-800 space-y-1.5 text-xs">
-                            <div class="flex items-center justify-between gap-2">
-                                <span class="font-extrabold text-gold-300">${escapeHtml(o.id)}</span>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-charcoal text-gold-300 border border-zinc-700">${escapeHtml(o.status)}</span>
-                            </div>
-                            <p class="text-[11px] text-zinc-400">${escapeHtml(o.createdAt)}</p>
-                            <p class="text-zinc-200">${itemsStr}</p>
-                            ${o.adminNote ? `<p class="text-[11px] text-amber-300">Note: ${escapeHtml(o.adminNote)}</p>` : ''}
-                            <p class="text-right font-extrabold text-emerald-400">$${Number(o.total || 0).toFixed(2)}</p>
-                        </div>
-                    `;
-                }).join('')}
-            `;
-
-            document.getElementById('customerHistoryModal').classList.remove('hidden');
-        }
-
-        function closeCustomerHistoryModal() {
-            document.getElementById('customerHistoryModal').classList.add('hidden');
-        }
-
-        function updateAdminOrderStatus(orderId, newStatus) {
-            const ord = state.orders.find((o) => String(o.id) === String(orderId));
-            if (!ord) return;
-            ord.status = newStatus;
-            saveState(STORAGE_KEYS.ORDERS, state.orders);
-            upsertOrderCloud(ord);
-            renderAdminOrdersList();
-            renderOrderStatusTabs();
-            updateMeOrderBadge();
-            showToast(`បានប្តូរស្ថានភាព ${orderId} ទៅជា ${newStatus}`);
-        }
-
-        async function cancelAdminOrder(orderId) {
-            const ok = await openConfirmModal(
-                'Cancel Order',
-                `តើលោកអ្នកពិតជាចង់ Cancel វិក្កយបត្រ ${orderId} មែនទេ?`
-            );
-            if (!ok) return;
-            updateAdminOrderStatus(orderId, 'Cancelled');
-        }
-
-        async function deleteAdminOrder(orderId) {
-            const ok = await openConfirmModal(
-                'លុប Order ចោល',
-                `តើលោកអ្នកពិតជាចង់លុបវិក្កយបត្រ ${orderId} ចេញជាអចិន្ត្រៃយ៍មែនទេ?`
-            );
-            if (!ok) return;
-
-            state.orders = state.orders.filter((o) => String(o.id) !== String(orderId));
-            saveState(STORAGE_KEYS.ORDERS, state.orders);
-
-            try {
-                const updatedIds = getMyOrderIds().filter((id) => String(id) !== String(orderId));
-                localStorage.setItem(MY_ORDER_IDS_KEY, JSON.stringify(updatedIds));
-            } catch (_) {}
-
-            await deleteOrderCloud(orderId);
-            renderAdminOrdersList();
-            renderOrderStatusTabs();
-            updateMeOrderBadge();
-            showToast(`បានលុប Order ${orderId} រួចរាល់`);
-        }
-
-        function escapeCsvCell(val) {
-            const str = String(val ?? '').replace(/\r?\n/g, ' ');
-            return `"${str.replace(/"/g, '""')}"`;
-        }
-
-        function downloadOrdersExcel() {
-            if (!Array.isArray(state.orders) || state.orders.length === 0) {
-                showToast('មិនមានទិន្នន័យ Order សម្រាប់ Download ទេ');
+        function exportOrdersToExcel() {
+            if (!state.orders || state.orders.length === 0) {
+                showToast('មិនទាន់មាន Order សម្រាប់ Export ទៅ Excel ទេ');
                 return;
             }
 
-            try {
-                const headers = [
-                    'Order ID',
-                    'Date',
-                    'Customer Name',
-                    'Phone',
-                    'Address',
-                    'Payment Method',
-                    'Status',
-                    'Admin Note',
-                    'Items',
-                    'Subtotal ($)',
-                    'Promo Code',
-                    'Discount ($)',
-                    'Total ($)'
+            const escapeXml = (val) => String(val ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+
+            const headers = [
+                'Order ID',
+                'Date / Time',
+                'Customer Name',
+                'Phone',
+                'Address',
+                'Payment Method',
+                'Status',
+                'Items',
+                'Subtotal ($)',
+                'Discount ($)',
+                'Shipping Fee ($)',
+                'Total ($)'
+            ];
+
+            const rowsXml = state.orders.map((ord) => {
+                const itemsText = (ord.items || [])
+                    .map((it) => `${it.name || ''} (x${it.qty || 1})`)
+                    .join('; ');
+                const cells = [
+                    ord.id || '',
+                    ord.createdAt || '',
+                    ord.customerName || '',
+                    ord.customerPhone || '',
+                    ord.customerAddress || '',
+                    ord.paymentMethod || '',
+                    ord.status || '',
+                    itemsText,
+                    Number(ord.subtotal || 0).toFixed(2),
+                    Number(ord.discount || 0).toFixed(2),
+                    '0.00',
+                    Number(ord.total || 0).toFixed(2)
                 ];
+                return `<Row>${cells.map((c) => `<Cell><Data ss:Type="String">${escapeXml(c)}</Data></Cell>`).join('')}</Row>`;
+            }).join('');
 
-                const rows = state.orders.map((order) => {
-                    const itemsStr = (order.items || []).map((i) => {
-                        const prodMatch = state.products.find((p) => String(p.id) === String(i.productId));
-                        const skuLabel = i.sku || (prodMatch && prodMatch.sku) || '';
-                        const skuPrefix = skuLabel ? `[${skuLabel}] ` : '';
-                        return `${skuPrefix}${i.name} (x${i.qty})`;
-                    }).join('; ');
+            const workbookXml = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+          xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+  <Worksheet ss:Name="Aura Decor Orders">
+    <Table>
+      <Row>${headers.map((h) => `<Cell><Data ss:Type="String">${escapeXml(h)}</Data></Cell>`).join('')}</Row>
+      ${rowsXml}
+    </Table>
+  </Worksheet>
+</Workbook>`;
 
-                    return [
-                        order.id || '',
-                        order.createdAt || '',
-                        order.customerName || '',
-                        order.customerPhone || '',
-                        order.customerAddress || '',
-                        order.paymentMethod || '',
-                        order.status || '',
-                        order.adminNote || '',
-                        itemsStr,
-                        Number(order.subtotal || 0).toFixed(2),
-                        order.promoCode || '',
-                        Number(order.discount || 0).toFixed(2),
-                        Number(order.total || 0).toFixed(2)
-                    ].map(escapeCsvCell).join(',');
-                });
-
-                const csvContent = '\uFEFF' + [headers.map(escapeCsvCell).join(','), ...rows].join('\r\n');
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            try {
+                const blob = new Blob([workbookXml], { type: 'application/vnd.ms-excel;charset=utf-8;' });
                 const url = URL.createObjectURL(blob);
-                const stamp = new Date().toISOString().slice(0, 10);
                 const link = document.createElement('a');
+                const dateStamp = new Date().toISOString().slice(0, 10);
                 link.href = url;
-                link.download = `AuraDecor-Orders-${stamp}.csv`;
+                link.download = `AuraDecor-Orders-${dateStamp}.xls`;
                 link.style.display = 'none';
                 document.body.appendChild(link);
                 link.click();
                 setTimeout(() => {
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                }, 800);
-
-                showToast('បាន Download ឯកសារ Orders សម្រាប់ Excel រួចរាល់!');
+                }, 1000);
+                showToast('បាន Download ឯកសារ Excel (.xls) រួចរាល់!');
             } catch (err) {
-                console.warn('Excel export error:', err);
+                console.warn('Excel export warning:', err);
                 showToast('មិនអាច Download ឯកសារ Excel បានទេ');
             }
+        }
+
+        async function updateOrderStatus(orderId, newStatus) {
+            const ord = state.orders.find((o) => o.id === orderId);
+            if (!ord) return;
+            ord.status = newStatus;
+            saveState(STORAGE_KEYS.ORDERS, state.orders);
+            renderOrderStatusTabs();
+            updateMeOrderBadge();
+            renderAdminOrdersList();
+            if (state.activeTab === 'me') renderCustomerOrdersView();
+            await upsertOrderCloud(ord);
+            showToast(`បានប្តូរស្ថានភាព ${orderId} ទៅជា ${newStatus}`);
+        }
+
+        async function cancelOrder(orderId) {
+            const ord = state.orders.find((o) => o.id === orderId);
+            if (!ord) return;
+            const ok = await openConfirmModal(
+                'Cancel Order',
+                `តើលោកអ្នកពិតជាចង់ Cancel Order «${orderId}» មែនទេ?`
+            );
+            if (!ok) return;
+
+            ord.status = 'Cancelled';
+            saveState(STORAGE_KEYS.ORDERS, state.orders);
+            renderOrderStatusTabs();
+            updateMeOrderBadge();
+            renderAdminOrdersList();
+            if (state.activeTab === 'me') renderCustomerOrdersView();
+            await upsertOrderCloud(ord);
+            showToast(`Order ${orderId} ត្រូវបាន Cancel រួចរាល់`);
+        }
+
+        async function deleteOrder(orderId) {
+            const ok = await openConfirmModal('លុប Order', 'តើលោកអ្នកពិតជាចង់លុប Order នេះចេញមែនទេ?');
+            if (!ok) return;
+            state.orders = state.orders.filter((o) => o.id !== orderId);
+            saveState(STORAGE_KEYS.ORDERS, state.orders);
+            renderOrderStatusTabs();
+            updateMeOrderBadge();
+            renderAdminOrdersList();
+            if (state.activeTab === 'me') renderCustomerOrdersView();
+            await deleteOrderCloud(orderId);
+            showToast('បានលុប Order រួចរាល់');
         }
 
         function populateBannerForm() {
@@ -5425,8 +5269,10 @@
             document.getElementById('bannerTitleInput').value = state.banner.title || '';
             document.getElementById('bannerSubtitleInput').value = state.banner.subtitle || '';
             document.getElementById('bannerImageUrlInput').value = state.banner.image || '';
-            const iconInput = document.getElementById('storeIconUrlInput');
-            if (iconInput) iconInput.value = state.storeIcon || DEFAULT_STORE_ICON;
+            const iconUrlInput = document.getElementById('storeIconUrlInput');
+            if (iconUrlInput) {
+                iconUrlInput.value = (state.storeIcon && state.storeIcon !== DEFAULT_STORE_ICON) ? state.storeIcon : '';
+            }
             previewStoreIconUrl(state.storeIcon || DEFAULT_STORE_ICON);
         }
 
@@ -5436,7 +5282,7 @@
             const url = await uploadImageToSupabase(file, 'banner');
             if (url) {
                 document.getElementById('bannerImageUrlInput').value = url;
-                showToast('បានផ្ទុករូបភាព Banner រួចរាល់');
+                showToast('បាន Upload រូបភាព Banner រួចរាល់');
             }
             e.target.value = '';
         }
@@ -5452,22 +5298,23 @@
             saveState(STORAGE_KEYS.BANNER, state.banner);
             applyBannerToDOM();
             await persistStoreBrandingCloud();
-            showToast('បានរក្សាទុកក្របមុខ & Banner និង Sync រួចរាល់');
+            showToast('បានរក្សាទុកក្របមុខ និង Sync ទៅគ្រប់ Browser រួចរាល់!');
         }
 
         async function resetBannerSettings() {
             state.banner = { ...DEFAULT_BANNER };
-            state.storeIcon = DEFAULT_STORE_ICON;
             saveState(STORAGE_KEYS.BANNER, state.banner);
-            saveState(STORAGE_KEYS.STORE_ICON, state.storeIcon);
             populateBannerForm();
             applyBannerToDOM();
-            applyStoreIconToDOM();
             await persistStoreBrandingCloud();
-            showToast('បានត្រឡប់ក្របមុខ និង Icon ទៅដើមវិញ');
+            showToast('បានត្រឡប់ក្របមុខទៅដើមវិញ');
         }
 
-        window.addEventListener('DOMContentLoaded', initApp);
+        document.addEventListener('DOMContentLoaded', () => {
+            const yrEl = document.getElementById('footerYear');
+            if (yrEl) yrEl.textContent = String(new Date().getFullYear());
+            initApp();
+        });
     </script>
 </body>
 </html>
