@@ -509,7 +509,7 @@
                                 </button>
                             </div>
                             <p id="promoCodeStatus" class="text-[11px] text-zinc-400">
-                                វាយកូដប្រូម៉ូសិន នឹងបញ្ចុះតម្លៃអូតូភ្លាមៗ (អាចប្រើរួមជាមួយប្រូម៉ូសិនចំនួនទិញបាន)។
+                                វាយកូដប្រូម៉ូសិន វានឹងបញ្ចុះតម្លៃអូតូភ្លាមៗ (អាចប្រើរួមជាមួយប្រូម៉ូសិនចំនួនទិញបាន)។
                             </p>
                         </div>
 
@@ -756,6 +756,7 @@
                         <div id="detailPriceBox" class="flex items-baseline gap-2.5 flex-wrap">
                             <p id="detailPrice" class="text-2xl font-extrabold text-gold-400"></p>
                             <span id="detailCrossPrice" class="hidden text-sm text-zinc-500 line-through font-semibold"></span>
+                            <span id="detailSoldBadge" class="hidden text-xs font-bold text-zinc-400">0 Sold</span>
                             <span id="detailUnitOldPrice" class="hidden text-sm text-zinc-500 line-through font-semibold"></span>
                             <span id="detailUnitPromoNote" class="hidden text-[11px] font-bold text-emerald-400">(-$1.50 / មុខ)</span>
                         </div>
@@ -763,6 +764,24 @@
                     </div>
 
                     <div class="space-y-3 pt-3 border-t border-zinc-800">
+                        <!-- Color & Size Variant Selectors -->
+                        <div id="detailVariantsBox" class="hidden space-y-2.5">
+                            <div id="detailColorsGroup" class="hidden space-y-1.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold text-zinc-300">ជ្រើសរើសពណ៌ (Color):</span>
+                                    <span id="detailSelectedColorLabel" class="text-xs font-extrabold text-gold-300"></span>
+                                </div>
+                                <div id="detailColorPills" class="flex flex-wrap gap-1.5"></div>
+                            </div>
+                            <div id="detailSizesGroup" class="hidden space-y-1.5">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold text-zinc-300">ជ្រើសរើសទំហំ (Size):</span>
+                                    <span id="detailSelectedSizeLabel" class="text-xs font-extrabold text-gold-300"></span>
+                                </div>
+                                <div id="detailSizePills" class="flex flex-wrap gap-1.5"></div>
+                            </div>
+                        </div>
+
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-zinc-300">ជ្រើសរើសចំនួន:</span>
                             <div class="flex items-center gap-2 bg-surface border border-zinc-700 rounded-xl p-1">
@@ -893,13 +912,10 @@
                         <label class="block text-xs font-bold text-zinc-300 mb-1">លេខកូដ SKU *</label>
                         <input id="prodSkuInput" type="text" required oninput="validateSkuUniqueness()" placeholder="AD-001"
                                class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
-                        <p id="prodSkuError" class="hidden text-[11px] text-rose-400 font-bold mt-1">
-                            SKU នេះមានរួចហើយ! សូមប្រើលេខកូដផ្សេង។
-                        </p>
+                        <p id="prodSkuError" class="hidden text-[11px] text-rose-400 font-bold mt-1">លេខកូដ SKU នេះមានរួចហើយ សូមប្រើលេខកូដផ្សេង!</p>
                     </div>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-zinc-300 mb-1">តម្លៃបញ្ចុះរួច ($ USD) *</label>
                         <input id="prodPriceInput" type="number" step="0.01" min="0.01" required
@@ -913,6 +929,11 @@
                     <div>
                         <label class="block text-xs font-bold text-zinc-300 mb-1">ចំនួនស្តុក (Admin) *</label>
                         <input id="prodStockInput" type="number" min="0" required
+                               class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-300 mb-1">ចំនួនលក់ស្រាប់ (Sold)</label>
+                        <input id="prodSoldCountInput" type="number" min="0" placeholder="0"
                                class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400">
                     </div>
                 </div>
@@ -943,6 +964,46 @@
                     <label class="block text-xs font-bold text-zinc-300 mb-1">ការពិពណ៌នា (Description)</label>
                     <textarea id="prodDescInput" rows="3" placeholder="បញ្ចូលទំហំ ទម្ងន់ អត្ថន័យហុងស៊ុយ ឬព័ត៌មានលម្អិត..."
                               class="w-full px-3.5 py-2 rounded-xl bg-surface border border-zinc-700 text-sm text-white focus:outline-none focus:border-gold-400"></textarea>
+                </div>
+
+                <!-- Product Variants: Colors & Sizes (Admin) -->
+                <div class="p-3.5 rounded-2xl bg-surface/70 border border-gold-500/20 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-gold-300">
+                            <i class="fa-solid fa-swatchbook mr-1"></i> ជម្រើសពណ៌ &amp; ទំហំ (Color &amp; Size Variants)
+                        </span>
+                        <span class="text-[10px] text-zinc-400">ទុកទទេបើទំនិញមានតែ ១ ម៉ូដ</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="space-y-1.5">
+                            <label class="block text-[11px] font-bold text-zinc-300">ជម្រើសពណ៌ (Colors)</label>
+                            <div class="flex gap-1.5">
+                                <input id="prodColorNewInput" type="text"
+                                       onkeydown="if(event.key==='Enter'){event.preventDefault();addProdVariantOption('color');}"
+                                       placeholder="ឧ. ពណ៌មាស, ពណ៌ស..."
+                                       class="flex-1 min-w-0 px-3 py-1.5 rounded-xl bg-charcoal border border-zinc-700 text-xs text-white focus:outline-none focus:border-gold-400">
+                                <button type="button" onclick="addProdVariantOption('color')"
+                                        class="px-3 py-1.5 rounded-xl bg-gold-500/20 hover:bg-gold-500/30 border border-gold-400/40 text-gold-300 text-xs font-extrabold shrink-0 transition">
+                                    + ថែម
+                                </button>
+                            </div>
+                            <div id="prodFormColorsList" class="flex flex-wrap gap-1.5 pt-0.5"></div>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="block text-[11px] font-bold text-zinc-300">ជម្រើសទំហំ (Sizes)</label>
+                            <div class="flex gap-1.5">
+                                <input id="prodSizeNewInput" type="text"
+                                       onkeydown="if(event.key==='Enter'){event.preventDefault();addProdVariantOption('size');}"
+                                       placeholder="ឧ. តូច (S), កណ្តាល (M), ធំ (L)..."
+                                       class="flex-1 min-w-0 px-3 py-1.5 rounded-xl bg-charcoal border border-zinc-700 text-xs text-white focus:outline-none focus:border-gold-400">
+                                <button type="button" onclick="addProdVariantOption('size')"
+                                        class="px-3 py-1.5 rounded-xl bg-gold-500/20 hover:bg-gold-500/30 border border-gold-400/40 text-gold-300 text-xs font-extrabold shrink-0 transition">
+                                    + ថែម
+                                </button>
+                            </div>
+                            <div id="prodFormSizesList" class="flex flex-wrap gap-1.5 pt-0.5"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="space-y-2">
@@ -1166,6 +1227,7 @@
                 price: 19.00,
                 crossPrice: 23.00,
                 stock: 15,
+                soldCount: 48,
                 description: 'រូបសេះហុងស៊ុយពណ៌មាសប្រណិត តំណាងឱ្យភាពរីកចម្រើន ជោគជ័យក្នុងមុខជំនួញ និងការងារ។ ដឹកជញ្ជូនហ្វ្រីគ្រប់ខេត្ត និងភ្នំពេញ។',
                 images: ['https://placehold.co/600x600/1c1c24/e5be52?text=Golden+Horse+Feng+Shui']
             },
@@ -1178,6 +1240,7 @@
                 price: 18.50,
                 crossPrice: 22.00,
                 stock: 22,
+                soldCount: 35,
                 description: 'ថូផ្កាសេរ៉ាមិចរលោងស្អាត ស័ក្តិសមសម្រាប់ដាក់តាំងលើតុទទួលភ្ញៀវ តុធ្វើការ ឬតុគិតលុយ។ ដឹកជញ្ជូនហ្វ្រីទូទាំងប្រទេស។',
                 images: ['https://placehold.co/600x600/1c1c24/f6d87e?text=Ceramic+Decor+Vase']
             },
@@ -1190,6 +1253,7 @@
                 price: 24.00,
                 crossPrice: 29.00,
                 stock: 10,
+                soldCount: 27,
                 description: 'ចង្កៀងតុពន្លឺកក់ក្តៅ ជួយបង្កើតបរិយាកាសប្រណិត និងសម្រាកលំហែបានល្អ។ ដឹកជញ្ជូនហ្វ្រីគ្រប់ខេត្ត និងភ្នំពេញ។',
                 images: ['https://placehold.co/600x600/1c1c24/d4a42a?text=Luxury+Table+Lamp']
             },
@@ -1202,6 +1266,7 @@
                 price: 35.00,
                 crossPrice: 42.00,
                 stock: 8,
+                soldCount: 62,
                 description: 'ឈុតអំណោយសម្រាប់ជូនមិត្តភក្តិ ឬដៃគូពាណិជ្ជកម្មក្នុងថ្ងៃបើកហាងថ្មី មានប្រអប់ស្អាតប្រណិត។ ដឹកជញ្ជូនហ្វ្រីទូទាំងប្រទេស។',
                 images: ['https://placehold.co/600x600/1c1c24/e5be52?text=Grand+Opening+Gift']
             }
@@ -1229,7 +1294,11 @@
             orderStatusFilter: 'All',
             detailProductId: null,
             detailQty: 1,
-            formImages: []
+            detailSelectedColor: '',
+            detailSelectedSize: '',
+            formImages: [],
+            formColors: [],
+            formSizes: []
         };
 
         let confirmResolver = null;
@@ -1257,10 +1326,14 @@
             return 'bg-emerald-950/90 border-emerald-500/40 text-emerald-300';
         }
 
-        function handleHeaderLogoError(imgEl) {
-            if (!imgEl) return;
-            imgEl.onerror = null;
-            imgEl.src = FALLBACK_SVG_ICON;
+        function getProductSoldCount(prod) {
+            if (!prod) return 0;
+            return Math.max(0, Math.floor(Number(prod.soldCount || 0)));
+        }
+
+        function formatSoldCountDisplay(count) {
+            const n = Math.max(0, Math.floor(Number(count || 0)));
+            return `${n.toLocaleString('en-US')} Sold`;
         }
 
         function getMyOrderIds() {
@@ -1717,6 +1790,9 @@
                             desc: prod.description || '',
                             images: prod.images || [],
                             crossPrice: Number(prod.crossPrice || 0),
+                            soldCount: getProductSoldCount(prod),
+                            colors: Array.isArray(prod.colors) ? prod.colors : [],
+                            sizes: Array.isArray(prod.sizes) ? prod.sizes : [],
                             status: normalizedStatus,
                             [PRODUCT_SORT_META_KEY]: i
                         }),
@@ -1820,6 +1896,9 @@
                         desc: product.description || '',
                         images: product.images || [],
                         crossPrice: Number(product.crossPrice || 0),
+                        soldCount: getProductSoldCount(product),
+                        colors: Array.isArray(product.colors) ? product.colors : [],
+                        sizes: Array.isArray(product.sizes) ? product.sizes : [],
                         status: normalizedStatus,
                         [PRODUCT_SORT_META_KEY]: sortIdx >= 0 ? sortIdx : 0
                     }),
@@ -1920,7 +1999,10 @@
                         let imgs = row.image_url ? [row.image_url] : [];
                         let sortOrder = null;
                         let crossPriceVal = 0;
+                        let soldCountVal = 0;
                         let statusVal = '';
+                        let colorsArr = [];
+                        let sizesArr = [];
                         try {
                             const parsed = JSON.parse(row.description);
                             if (parsed && typeof parsed === 'object') {
@@ -1933,6 +2015,15 @@
                                 }
                                 if (Number(parsed.crossPrice || 0) > 0) {
                                     crossPriceVal = Number(parsed.crossPrice);
+                                }
+                                if (Number(parsed.soldCount || 0) > 0) {
+                                    soldCountVal = Math.floor(Number(parsed.soldCount));
+                                }
+                                if (Array.isArray(parsed.colors)) {
+                                    colorsArr = parsed.colors.map((c) => String(c || '').trim()).filter(Boolean);
+                                }
+                                if (Array.isArray(parsed.sizes)) {
+                                    sizesArr = parsed.sizes.map((s) => String(s || '').trim()).filter(Boolean);
                                 }
                                 if (parsed.status) {
                                     statusVal = parsed.status;
@@ -1955,6 +2046,9 @@
                             price: Number(row.price || 0),
                             crossPrice: crossPriceVal,
                             stock: Number(row.stock || 0),
+                            soldCount: soldCountVal || (existingLocal ? getProductSoldCount(existingLocal) : 0),
+                            colors: colorsArr.length > 0 ? colorsArr : (existingLocal && Array.isArray(existingLocal.colors) ? existingLocal.colors : []),
+                            sizes: sizesArr.length > 0 ? sizesArr : (existingLocal && Array.isArray(existingLocal.sizes) ? existingLocal.sizes : []),
                             description: descText,
                             images: imgs.length > 0 ? imgs : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor'],
                             _sortOrder: sortOrder
@@ -2206,10 +2300,17 @@
                 const unitPrice = Number(p.price || 0);
                 const crossPrice = Number(p.crossPrice || 0);
                 const hasCross = crossPrice > unitPrice;
+                const soldCount = getProductSoldCount(p);
                 const bundle2UnitPrice = Math.max(0, unitPrice - 1.5);
                 const bundle3UnitPrice = Math.max(0, unitPrice - 2.0);
                 const statusLabel = normalizeProductStatus(p.status, p.stock);
                 const statusBadgeCls = getProductStatusBadgeClasses(statusLabel);
+                const colorsList = Array.isArray(p.colors) ? p.colors : [];
+                const sizesList = Array.isArray(p.sizes) ? p.sizes : [];
+                const variantHintParts = [];
+                if (colorsList.length > 0) variantHintParts.push(`${colorsList.length} ពណ៌`);
+                if (sizesList.length > 0) variantHintParts.push(`${sizesList.length} ទំហំ`);
+                const variantHintText = variantHintParts.join(' • ');
                 const isHot = index === 0 || Number(p.stock || 0) <= 8;
                 const isNew = index === 1;
                 return `
@@ -2227,6 +2328,7 @@
                                 <span class="absolute bottom-2 left-2 px-2 py-0.5 rounded-full bg-obsidian/85 border border-gold-500/25 text-gold-300 text-[10px] font-bold">
                                     ដឹកហ្វ្រី
                                 </span>
+                                ${variantHintText ? `<span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-full bg-obsidian/85 border border-zinc-700 text-zinc-200 text-[9px] font-bold">${escapeHtml(variantHintText)}</span>` : ''}
                             </div>
                             <div class="p-2.5 sm:p-4 space-y-1">
                                 <p class="text-[10px] font-bold text-zinc-400 truncate">${escapeHtml(p.sku || '')} • ${escapeHtml(p.category || '')}</p>
@@ -2237,12 +2339,15 @@
                         </div>
 
                         <div class="px-2.5 sm:px-4 pb-3 pt-1 space-y-1.5">
-                            <div class="flex items-baseline justify-between gap-1 flex-wrap">
-                                <div class="flex items-baseline gap-1.5">
-                                    <span class="text-sm sm:text-base font-extrabold text-gold-400">$${unitPrice.toFixed(2)}</span>
-                                    ${hasCross ? `<span class="text-[11px] sm:text-xs font-semibold text-zinc-500 line-through">$${crossPrice.toFixed(2)}</span>` : ''}
+                            <div class="space-y-0.5">
+                                <div class="flex items-baseline justify-between gap-1.5">
+                                    <div class="flex items-baseline gap-1.5 min-w-0">
+                                        <span class="text-sm sm:text-base font-extrabold text-gold-400">$${unitPrice.toFixed(2)}</span>
+                                        ${hasCross ? `<span class="text-[11px] sm:text-xs font-semibold text-zinc-500 line-through">$${crossPrice.toFixed(2)}</span>` : ''}
+                                    </div>
+                                    ${soldCount > 0 ? `<span class="text-[11px] sm:text-xs font-semibold text-zinc-400 whitespace-nowrap shrink-0">${formatSoldCountDisplay(soldCount)}</span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-bold text-emerald-400 truncate">2:$${bundle2UnitPrice.toFixed(2)} • 3+:$${bundle3UnitPrice.toFixed(2)}</span>
+                                <p class="text-[10px] font-bold text-emerald-400 truncate">2:$${bundle2UnitPrice.toFixed(2)} • 3+:$${bundle3UnitPrice.toFixed(2)}</p>
                             </div>
                             <div class="flex items-center justify-end gap-1.5">
                                 <button type="button" onclick="event.stopPropagation(); quickAddToCart('${escapeAttr(p.id)}')"
@@ -2274,6 +2379,11 @@
 
             state.detailProductId = prod.id;
             state.detailQty = 1;
+            const colors = Array.isArray(prod.colors) ? prod.colors.filter(Boolean) : [];
+            const sizes = Array.isArray(prod.sizes) ? prod.sizes.filter(Boolean) : [];
+            state.detailSelectedColor = colors[0] || '';
+            state.detailSelectedSize = sizes[0] || '';
+            renderDetailVariantSelectors(prod);
 
             document.getElementById('detailSkuBadge').textContent = `${prod.sku || 'SKU'} • ${prod.category || ''}`;
             const detailStatusEl = document.getElementById('detailStatusBadge');
@@ -2294,6 +2404,16 @@
                 } else {
                     crossEl.textContent = '';
                     crossEl.classList.add('hidden');
+                }
+            }
+            const detailSoldEl = document.getElementById('detailSoldBadge');
+            const detailSoldCount = getProductSoldCount(prod);
+            if (detailSoldEl) {
+                if (detailSoldCount > 0) {
+                    detailSoldEl.textContent = formatSoldCountDisplay(detailSoldCount);
+                    detailSoldEl.classList.remove('hidden');
+                } else {
+                    detailSoldEl.classList.add('hidden');
                 }
             }
             document.getElementById('detailDescription').textContent = prod.description || 'ផលិតផលគុណភាពខ្ពស់ពី Aura Decor ដឹកជញ្ជូនហ្វ្រីគ្រប់ខេត្ត និងភ្នំពេញ។';
@@ -2322,6 +2442,87 @@
 
             renderDetailThumbnails();
             document.getElementById('productDetailModal').classList.remove('hidden');
+        }
+
+        function renderDetailVariantSelectors(prod) {
+            const box = document.getElementById('detailVariantsBox');
+            const colorsGroup = document.getElementById('detailColorsGroup');
+            const sizesGroup = document.getElementById('detailSizesGroup');
+            const colorPills = document.getElementById('detailColorPills');
+            const sizePills = document.getElementById('detailSizePills');
+            const colorLabel = document.getElementById('detailSelectedColorLabel');
+            const sizeLabel = document.getElementById('detailSelectedSizeLabel');
+            if (!box) return;
+
+            const colors = Array.isArray(prod?.colors) ? prod.colors.filter(Boolean) : [];
+            const sizes = Array.isArray(prod?.sizes) ? prod.sizes.filter(Boolean) : [];
+
+            if (colors.length === 0 && sizes.length === 0) {
+                box.classList.add('hidden');
+                return;
+            }
+
+            box.classList.remove('hidden');
+
+            if (colors.length > 0 && colorsGroup && colorPills) {
+                colorsGroup.classList.remove('hidden');
+                if (colorLabel) colorLabel.textContent = state.detailSelectedColor || '';
+                colorPills.innerHTML = colors.map((col, idx) => {
+                    const active = state.detailSelectedColor === col;
+                    return `
+                        <button type="button" onclick="selectDetailVariant('color', ${idx})"
+                                class="px-3 py-1.5 rounded-xl text-xs font-extrabold border transition ${
+                                    active
+                                        ? 'bg-gold-500 text-obsidian border-gold-300 shadow-md shadow-gold-500/20'
+                                        : 'bg-surface hover:bg-zinc-800 text-zinc-200 border-zinc-700'
+                                }">
+                            ${escapeHtml(col)}
+                        </button>
+                    `;
+                }).join('');
+            } else if (colorsGroup) {
+                colorsGroup.classList.add('hidden');
+            }
+
+            if (sizes.length > 0 && sizesGroup && sizePills) {
+                sizesGroup.classList.remove('hidden');
+                if (sizeLabel) sizeLabel.textContent = state.detailSelectedSize || '';
+                sizePills.innerHTML = sizes.map((sz, idx) => {
+                    const active = state.detailSelectedSize === sz;
+                    return `
+                        <button type="button" onclick="selectDetailVariant('size', ${idx})"
+                                class="px-3 py-1.5 rounded-xl text-xs font-extrabold border transition ${
+                                    active
+                                        ? 'bg-gold-500 text-obsidian border-gold-300 shadow-md shadow-gold-500/20'
+                                        : 'bg-surface hover:bg-zinc-800 text-zinc-200 border-zinc-700'
+                                }">
+                            ${escapeHtml(sz)}
+                        </button>
+                    `;
+                }).join('');
+            } else if (sizesGroup) {
+                sizesGroup.classList.add('hidden');
+            }
+        }
+
+        function selectDetailVariant(kind, idx) {
+            const prod = state.products.find((p) => p.id === state.detailProductId);
+            if (!prod) return;
+            if (kind === 'color') {
+                const colors = Array.isArray(prod.colors) ? prod.colors.filter(Boolean) : [];
+                if (colors[idx] !== undefined) {
+                    state.detailSelectedColor = colors[idx];
+                    if (detailGalleryImages[idx]) {
+                        scrollDetailToIndex(idx);
+                    }
+                }
+            } else if (kind === 'size') {
+                const sizes = Array.isArray(prod.sizes) ? prod.sizes.filter(Boolean) : [];
+                if (sizes[idx] !== undefined) {
+                    state.detailSelectedSize = sizes[idx];
+                }
+            }
+            renderDetailVariantSelectors(prod);
         }
 
         function scrollThumbnailsForwardToActive(idx) {
@@ -2612,13 +2813,19 @@
 
         function addDetailToCart() {
             if (!state.detailProductId) return;
-            addProductToCart(state.detailProductId, state.detailQty);
+            addProductToCart(state.detailProductId, state.detailQty, false, {
+                color: state.detailSelectedColor,
+                size: state.detailSelectedSize
+            });
             closeProductDetailModal();
         }
 
         function buyDetailNow() {
             if (!state.detailProductId) return;
-            addProductToCart(state.detailProductId, state.detailQty, true);
+            addProductToCart(state.detailProductId, state.detailQty, true, {
+                color: state.detailSelectedColor,
+                size: state.detailSelectedSize
+            });
             closeProductDetailModal();
             switchTab('cart');
             setTimeout(() => {
@@ -2661,10 +2868,22 @@
         }
 
         function quickAddToCart(productId) {
+            const prod = state.products.find((p) => p.id === productId);
+            const hasVariants = prod && ((Array.isArray(prod.colors) && prod.colors.length > 0) || (Array.isArray(prod.sizes) && prod.sizes.length > 0));
+            if (hasVariants) {
+                openProductDetail(productId);
+                return;
+            }
             addProductToCart(productId, 1);
         }
 
         function quickBuyNow(productId) {
+            const prod = state.products.find((p) => p.id === productId);
+            const hasVariants = prod && ((Array.isArray(prod.colors) && prod.colors.length > 0) || (Array.isArray(prod.sizes) && prod.sizes.length > 0));
+            if (hasVariants) {
+                openProductDetail(productId);
+                return;
+            }
             addProductToCart(productId, 1, true);
             switchTab('cart');
             setTimeout(() => {
@@ -2673,11 +2892,25 @@
             }, 150);
         }
 
-        function addProductToCart(productId, qty, silent = false) {
+        function formatVariantDisplay(color, size) {
+            const parts = [];
+            if (color) parts.push(`ពណ៌៖ ${color}`);
+            if (size) parts.push(`ទំហំ៖ ${size}`);
+            return parts.join(' • ');
+        }
+
+        function addProductToCart(productId, qty, silent = false, options = {}) {
             const prod = state.products.find((p) => p.id === productId);
             if (!prod) return;
 
-            const existing = state.cart.find((item) => item.productId === productId);
+            const chosenColor = String(options.color || (Array.isArray(prod.colors) && prod.colors[0]) || '').trim();
+            const chosenSize = String(options.size || (Array.isArray(prod.sizes) && prod.sizes[0]) || '').trim();
+
+            const existing = state.cart.find((item) =>
+                item.productId === productId &&
+                String(item.selectedColor || '') === chosenColor &&
+                String(item.selectedSize || '') === chosenSize
+            );
             if (existing) {
                 existing.qty += qty;
             } else {
@@ -2685,6 +2918,8 @@
                     productId: prod.id,
                     name: prod.name,
                     sku: prod.sku,
+                    selectedColor: chosenColor,
+                    selectedSize: chosenSize,
                     price: Number(prod.price || 0),
                     image: (prod.images && prod.images[0]) || 'https://placehold.co/200x200/1c1c24/e5be52?text=Aura',
                     qty: qty
@@ -2694,7 +2929,8 @@
             saveState(STORAGE_KEYS.CART, state.cart);
             updateCartBadges();
             if (!silent) {
-                showToast(`បានដាក់ «${prod.name}» ចូលកន្ត្រក (${qty})`);
+                const variantSuffix = formatVariantDisplay(chosenColor, chosenSize);
+                showToast(`បានដាក់ «${prod.name}${variantSuffix ? ` (${variantSuffix})` : ''}» ចូលកន្ត្រក (${qty})`);
             }
         }
 
@@ -2793,6 +3029,7 @@
                 const effectiveUnit = Math.max(0, Number(item.price || 0) - perItemDiscount);
                 const lineTotal = effectiveUnit * item.qty;
                 const origLineTotal = Number(item.price || 0) * item.qty;
+                const variantBadge = formatVariantDisplay(item.selectedColor, item.selectedSize);
                 return `
                     <div class="p-4 rounded-2xl bg-charcoal border border-zinc-800 flex items-center gap-3.5">
                         <img src="${escapeAttr(item.image || 'https://placehold.co/200x200/1c1c24/e5be52?text=Aura')}"
@@ -2801,6 +3038,7 @@
                         <div class="flex-1 min-w-0 space-y-1">
                             <p class="text-[10px] font-bold text-gold-300">${escapeHtml(item.sku || '')}</p>
                             <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(item.name)}</h4>
+                            ${variantBadge ? `<p class="text-[11px] font-bold text-gold-300/90 truncate">${escapeHtml(variantBadge)}</p>` : ''}
                             <div class="flex items-center gap-2 text-xs">
                                 <span class="font-extrabold text-gold-400">$${effectiveUnit.toFixed(2)}</span>
                                 ${perItemDiscount > 0 ? `<span class="text-zinc-500 line-through">$${Number(item.price || 0).toFixed(2)}</span>` : ''}
@@ -3214,8 +3452,10 @@
                 const prodMatch = state.products.find((p) => String(p.id) === String(it.productId));
                 const skuLabel = it.sku || (prodMatch && prodMatch.sku) || '';
                 const skuPrefix = skuLabel ? `[${skuLabel}] ` : '';
+                const varStr = formatVariantDisplay(it.selectedColor, it.selectedSize);
+                const varSuffix = varStr ? ` (${varStr})` : '';
                 const lineTotal = (Number(it.price || 0) * Number(it.qty || 1)).toFixed(2);
-                return `• ${skuPrefix}${it.name} x${it.qty} = $${lineTotal}`;
+                return `• ${skuPrefix}${it.name}${varSuffix} x${it.qty} = $${lineTotal}`;
             });
 
             const textLines = [
@@ -3390,6 +3630,21 @@
                 await incrementPromoUsedCount(createdOrder.promoCode);
             }
 
+            // Increment Sold Count automatically for each ordered product
+            let soldUpdated = false;
+            (createdOrder.items || []).forEach((orderedItem) => {
+                const targetProd = state.products.find((p) => String(p.id) === String(orderedItem.productId));
+                if (targetProd) {
+                    targetProd.soldCount = getProductSoldCount(targetProd) + Math.max(1, Number(orderedItem.qty || 1));
+                    soldUpdated = true;
+                }
+            });
+            if (soldUpdated) {
+                saveState(STORAGE_KEYS.PRODUCTS, state.products);
+                renderProductsGrid();
+                await persistProductOrderCloud();
+            }
+
             saveMyOrderId(createdOrder.id);
             state.customerProfile = { name, phone, address };
             saveState(STORAGE_KEYS.CUSTOMER_PROFILE, state.customerProfile);
@@ -3422,9 +3677,14 @@
                 const prodMatch = state.products.find((p) => String(p.id) === String(it.productId));
                 const skuLabel = it.sku || (prodMatch && prodMatch.sku) || '';
                 const skuBadge = skuLabel ? `<span class="inline-block px-1.5 py-0.5 mr-1 rounded bg-zinc-200 text-zinc-800 font-mono text-[10px] font-extrabold">[${escapeHtml(skuLabel)}]</span>` : '';
+                const varStr = formatVariantDisplay(it.selectedColor, it.selectedSize);
+                const varHtml = varStr ? `<span class="block text-[10px] font-bold text-amber-700">${escapeHtml(varStr)}</span>` : '';
                 return `
                     <div class="flex justify-between items-start gap-2 py-1.5 border-b border-zinc-100">
-                        <span>${skuBadge}${escapeHtml(it.name)} (x${it.qty})</span>
+                        <div>
+                            <span>${skuBadge}${escapeHtml(it.name)} (x${it.qty})</span>
+                            ${varHtml}
+                        </div>
                         <span class="font-bold shrink-0">$${(it.price * it.qty).toFixed(2)}</span>
                     </div>
                 `;
@@ -3508,7 +3768,9 @@
                 const prodMatch = state.products.find((p) => String(p.id) === String(it.productId));
                 const skuLabel = it.sku || (prodMatch && prodMatch.sku) || '';
                 const skuPrefix = skuLabel ? `[${skuLabel}] ` : '';
-                lines.push(`• ${skuPrefix}${it.name} x${it.qty} = $${(Number(it.price) * Number(it.qty)).toFixed(2)}`);
+                const varStr = formatVariantDisplay(it.selectedColor, it.selectedSize);
+                const varSuffix = varStr ? ` (${varStr})` : '';
+                lines.push(`• ${skuPrefix}${it.name}${varSuffix} x${it.qty} = $${(Number(it.price) * Number(it.qty)).toFixed(2)}`);
             });
             lines.push(`------------------------`);
             lines.push(`តម្លៃដើម៖ $${Number(order.subtotal).toFixed(2)}`);
@@ -4177,6 +4439,11 @@
             const cardsHtml = state.products.map((p, idx) => {
                 const img = (p.images && p.images[0]) || 'https://placehold.co/200x200/1c1c24/e5be52?text=Aura';
                 const statusLabel = normalizeProductStatus(p.status, p.stock);
+                const soldVal = getProductSoldCount(p);
+                const variantSummary = formatVariantDisplay(
+                    Array.isArray(p.colors) && p.colors.length ? p.colors.join(', ') : '',
+                    Array.isArray(p.sizes) && p.sizes.length ? p.sizes.join(', ') : ''
+                );
                 return `
                     <div draggable="true"
                          ondragstart="handleProductDragStart(event, ${idx})"
@@ -4194,8 +4461,10 @@
                                 <p class="text-xs text-zinc-400">
                                     តម្លៃ៖ <strong class="text-gold-400">$${Number(p.price).toFixed(2)}</strong> •
                                     ស្ថានភាព៖ <strong class="text-gold-300">${escapeHtml(statusLabel)}</strong> •
-                                    ស្តុកនៅសល់៖ <strong class="text-emerald-400">${Number(p.stock || 0)}</strong>
+                                    ស្តុកនៅសល់៖ <strong class="text-emerald-400">${Number(p.stock || 0)}</strong> •
+                                    លក់បាន៖ <strong class="text-sky-300">${soldVal.toLocaleString('en-US')} Sold</strong>
                                 </p>
+                                ${variantSummary ? `<p class="text-[11px] text-amber-300/90 truncate mt-0.5">${escapeHtml(variantSummary)}</p>` : ''}
                             </div>
                         </div>
 
@@ -4236,6 +4505,7 @@
                     'Price ($)',
                     'Cross Price ($)',
                     'Stock',
+                    'Sold Count',
                     'Description',
                     'Images'
                 ];
@@ -4251,6 +4521,7 @@
                         Number(p.price || 0).toFixed(2),
                         Number(p.crossPrice || 0).toFixed(2),
                         Number(p.stock || 0),
+                        getProductSoldCount(p),
                         p.description || '',
                         imgsStr
                     ].map(escapeCsvCell).join(',');
@@ -4352,8 +4623,9 @@
                 const idxPrice = colIdx(['price ($)', 'price'], 5);
                 const idxCross = colIdx(['cross price ($)', 'crossprice', 'cross_price'], 6);
                 const idxStock = colIdx(['stock', 'qty', 'quantity'], 7);
-                const idxDesc = colIdx(['description', 'desc'], 8);
-                const idxImages = colIdx(['images', 'image_url', 'image'], 9);
+                const idxSold = colIdx(['sold count', 'sold', 'soldcount'], 8);
+                const idxDesc = colIdx(['description', 'desc'], 9);
+                const idxImages = colIdx(['images', 'image_url', 'image'], 10);
 
                 let updatedCount = 0;
                 let addedCount = 0;
@@ -4368,6 +4640,7 @@
                     const parsedPrice = parseFloat(String(row[idxPrice] ?? '0').replace(/[^0-9.-]/g, ''));
                     const parsedCross = parseFloat(String(row[idxCross] ?? '0').replace(/[^0-9.-]/g, ''));
                     const parsedStock = parseInt(String(row[idxStock] ?? '0').replace(/[^0-9-]/g, ''), 10);
+                    const parsedSold = parseInt(String(row[idxSold] ?? '0').replace(/[^0-9-]/g, ''), 10);
                     const rowCat = String(row[idxCat] || '').trim() || 'ហុងស៊ុយ';
                     const rowStatus = normalizeProductStatus(
                         String(row[idxStatus] || '').trim(),
@@ -4395,6 +4668,7 @@
                             price: Number.isFinite(parsedPrice) ? parsedPrice : existing.price,
                             crossPrice: Number.isFinite(parsedCross) ? parsedCross : (existing.crossPrice || 0),
                             stock: Number.isFinite(parsedStock) ? parsedStock : (existing.stock || 0),
+                            soldCount: Number.isFinite(parsedSold) && parsedSold >= 0 ? parsedSold : getProductSoldCount(existing),
                             description: rowDesc || existing.description,
                             images: parsedImgs.length > 0 ? parsedImgs : existing.images
                         };
@@ -4409,6 +4683,7 @@
                             price: Number.isFinite(parsedPrice) ? parsedPrice : 0,
                             crossPrice: Number.isFinite(parsedCross) ? parsedCross : 0,
                             stock: Number.isFinite(parsedStock) ? parsedStock : 0,
+                            soldCount: Number.isFinite(parsedSold) && parsedSold >= 0 ? parsedSold : 0,
                             description: rowDesc,
                             images: parsedImgs.length > 0 ? parsedImgs : ['https://placehold.co/600x600/1c1c24/e5be52?text=Aura+Decor']
                         };
@@ -4548,60 +4823,76 @@
                 document.getElementById('prodPriceInput').value = prod.price || 0;
                 document.getElementById('prodCrossPriceInput').value = prod.crossPrice || '';
                 document.getElementById('prodStockInput').value = prod.stock ?? 10;
+                document.getElementById('prodSoldCountInput').value = getProductSoldCount(prod);
                 document.getElementById('prodCategoryInput').value = prod.category || 'ហុងស៊ុយ';
                 document.getElementById('prodStatusInput').value = normalizeProductStatus(prod.status, prod.stock);
                 document.getElementById('prodDescInput').value = prod.description || '';
                 state.formImages = [...(prod.images || [])];
+                state.formColors = Array.isArray(prod.colors) ? [...prod.colors] : [];
+                state.formSizes = Array.isArray(prod.sizes) ? [...prod.sizes] : [];
             } else {
                 titleEl.textContent = 'បន្ថែមទំនិញថ្មី';
                 idInput.value = '';
                 document.getElementById('productForm').reset();
                 document.getElementById('prodCrossPriceInput').value = '';
                 document.getElementById('prodStockInput').value = 10;
+                document.getElementById('prodSoldCountInput').value = 0;
                 document.getElementById('prodStatusInput').value = 'In Stock';
                 state.formImages = [];
+                state.formColors = [];
+                state.formSizes = [];
             }
 
             validateSkuUniqueness();
             renderFormImagesPreview();
+            renderProdFormVariants();
             document.getElementById('productFormModal').classList.remove('hidden');
         }
 
         function closeProductFormModal() {
-            document.getElementById('productFormModal').classList.add('hidden');
+            const modalEl = document.getElementById('productFormModal');
+            if (modalEl) modalEl.classList.add('hidden');
+            const editInput = document.getElementById('editProductId');
+            if (editInput) editInput.value = '';
         }
 
-        function handleProductFilesUpload(e) {
-            const files = Array.from(e.target.files || []);
-            files.forEach(async (file) => {
-                const imgUrl = await uploadImageToSupabase(file, 'products');
-                if (imgUrl) {
-                    state.formImages.push(imgUrl);
-                    renderFormImagesPreview();
+        async function handleProductFilesUpload(e) {
+            const files = e.target && e.target.files ? Array.from(e.target.files) : [];
+            if (files.length === 0) return;
+            for (const file of files) {
+                const url = await uploadImageToSupabase(file, 'products');
+                if (url) {
+                    state.formImages.push(url);
                 }
-            });
+            }
+            renderFormImagesPreview();
             e.target.value = '';
+            showToast(`បានផ្ទុករូបភាព ${files.length} សន្លឹករួចរាល់`);
         }
 
         function addProductImageUrl() {
-            const input = document.getElementById('prodImageUrlInput');
-            const url = input.value.trim();
+            const urlInput = document.getElementById('prodImageUrlInput');
+            if (!urlInput) return;
+            const url = urlInput.value.trim();
             if (!url) return;
             state.formImages.push(url);
-            input.value = '';
+            urlInput.value = '';
             renderFormImagesPreview();
         }
 
         function removeFormImage(idx) {
-            state.formImages.splice(idx, 1);
-            renderFormImagesPreview();
+            if (idx >= 0 && idx < state.formImages.length) {
+                state.formImages.splice(idx, 1);
+                renderFormImagesPreview();
+            }
         }
 
         function setFormImageAsThumbnail(idx) {
-            if (idx <= 0 || idx >= state.formImages.length) return;
-            const [picked] = state.formImages.splice(idx, 1);
-            state.formImages.unshift(picked);
-            renderFormImagesPreview();
+            if (idx > 0 && idx < state.formImages.length) {
+                const [selected] = state.formImages.splice(idx, 1);
+                state.formImages.unshift(selected);
+                renderFormImagesPreview();
+            }
         }
 
         function handleFormImageDragStart(e, idx) {
@@ -4609,6 +4900,57 @@
             if (e && e.dataTransfer) {
                 e.dataTransfer.effectAllowed = 'move';
                 try { e.dataTransfer.setData('text/plain', String(idx)); } catch (_) {}
+            }
+        }
+
+        function addProdVariantOption(kind) {
+            const inputId = kind === 'color' ? 'prodColorNewInput' : 'prodSizeNewInput';
+            const inputEl = document.getElementById(inputId);
+            if (!inputEl) return;
+            const raw = String(inputEl.value || '').trim();
+            if (!raw) return;
+
+            const parts = raw.split(/[,،/]+/).map((s) => s.trim()).filter(Boolean);
+            const targetList = kind === 'color' ? state.formColors : state.formSizes;
+            parts.forEach((p) => {
+                if (!targetList.some((existing) => existing.toLowerCase() === p.toLowerCase())) {
+                    targetList.push(p);
+                }
+            });
+            inputEl.value = '';
+            renderProdFormVariants();
+        }
+
+        function removeProdVariantOption(kind, idx) {
+            const targetList = kind === 'color' ? state.formColors : state.formSizes;
+            if (idx >= 0 && idx < targetList.length) {
+                targetList.splice(idx, 1);
+                renderProdFormVariants();
+            }
+        }
+
+        function renderProdFormVariants() {
+            const colorsBox = document.getElementById('prodFormColorsList');
+            const sizesBox = document.getElementById('prodFormSizesList');
+            if (colorsBox) {
+                colorsBox.innerHTML = state.formColors.map((col, idx) => `
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold-500/15 border border-gold-400/35 text-gold-300 text-[11px] font-bold">
+                        <span>${escapeHtml(col)}</span>
+                        <button type="button" onclick="removeProdVariantOption('color', ${idx})" class="text-rose-400 hover:text-rose-300">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </span>
+                `).join('');
+            }
+            if (sizesBox) {
+                sizesBox.innerHTML = state.formSizes.map((sz, idx) => `
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/15 border border-sky-400/35 text-sky-300 text-[11px] font-bold">
+                        <span>${escapeHtml(sz)}</span>
+                        <button type="button" onclick="removeProdVariantOption('size', ${idx})" class="text-rose-400 hover:text-rose-300">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </span>
+                `).join('');
             }
         }
 
@@ -4665,9 +5007,12 @@
             const price = parseFloat(document.getElementById('prodPriceInput').value) || 0;
             const crossPrice = parseFloat(document.getElementById('prodCrossPriceInput').value) || 0;
             const stock = parseInt(document.getElementById('prodStockInput').value, 10) || 0;
+            const soldCount = Math.max(0, parseInt(document.getElementById('prodSoldCountInput').value, 10) || 0);
             const category = document.getElementById('prodCategoryInput').value;
             const status = normalizeProductStatus(document.getElementById('prodStatusInput').value, stock);
             const description = document.getElementById('prodDescInput').value.trim();
+            const colors = [...state.formColors];
+            const sizes = [...state.formSizes];
 
             const images = state.formImages.length > 0
                 ? [...state.formImages]
@@ -4676,7 +5021,7 @@
             if (editId) {
                 const idx = state.products.findIndex((p) => p.id === editId);
                 if (idx !== -1) {
-                    state.products[idx] = { ...state.products[idx], name, sku, price, crossPrice, stock, category, status, description, images };
+                    state.products[idx] = { ...state.products[idx], name, sku, price, crossPrice, stock, soldCount, category, status, description, images, colors, sizes };
                     upsertProductCloud(state.products[idx]);
                 }
                 showToast('បានកែប្រែទំនិញជោគជ័យ (រក្សាទីតាំងលើក្របមុខដដែល)');
@@ -4688,10 +5033,13 @@
                     price,
                     crossPrice,
                     stock,
+                    soldCount,
                     category,
                     status,
                     description,
-                    images
+                    images,
+                    colors,
+                    sizes
                 };
                 state.products.unshift(created);
                 upsertProductCloud(created);
